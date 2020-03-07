@@ -2,15 +2,23 @@
 <html lang="en">
     <head>
         <title>SFU Lost and Found</title>
-        <meta charset="utf-8" />
-        <link rel="stylesheet" href="frontend/css/layout.css">
-        <!-- <script type="text/javascript" src="frontend/javascript/temp.js"></script> -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, inital-scale=1">
+        <link rel="stylesheet" href="../css/layout.css">
+        <!-- <script type="text/javascript" src="something.js"></script> -->
     </head>
 
     <body>
+        <nav>
+            <ul>
+                <li><a class="active" href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
 
         <h1>Lost Item Form</h1>
-        <form action="frontend/php/temp.php" method="post" id="submitForm">
+        <form id="submitForm">
             <fieldset>
 
                 <p>Was this item lost or stolen</p>
@@ -39,7 +47,7 @@
                 <input type="time" id="timeLost" name="time">
                 <br>
 
-                <textarea rows="4" cols="50" name="extra" form="submitForm">Please add any additional information</textarea>
+                <textarea rows="4" cols="50" name="extra" form="submitForm">Please describe the item lost in as much detail</textarea>
                 <br>
 
                 <input type="submit">
