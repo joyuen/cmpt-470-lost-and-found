@@ -1,7 +1,13 @@
 # LostAndFound
 
-The project is split into two servers:
-   * `frontend` - webpages, web server stuff, sends requests to the backend server to get user data and stuff
-   * `backend` - internal webserver, manages MongoDB, reveals an API for the frontend server to use
+## Setup
 
-Both servers need to be running (frontend communicates with the backend). Check the `README` in each folder to see how to get each server running. (currently backend is under construction)
+1. Install [MongoDB](https://www.mongodb.com/download-center/community)
+2. run `npm install`
+
+## Running the Server
+
+1. Have MongoDB running on `localhost:27017` (this is the default location)
+   * run the `mongo` command in some folder
+2. `node server.js` (or `nodemon`)
+3. server is on `localhost:8000`
