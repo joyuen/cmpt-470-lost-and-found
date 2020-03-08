@@ -1,0 +1,3 @@
+{{#each postings}}
+    {{> posting}}
+{{/each}}

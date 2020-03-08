@@ -8,6 +8,7 @@
 ## Running the Server
 
 1. Have MongoDB running on `localhost:27017` (this is the default location)
-   * run the `mongo` command in some folder
+   * run the `mongod` command to start the server
+   * (specify a directory for MongoDB to put stuff into: `mongod --dbpath <some_path>`)
 2. `node server.js` (or `nodemon`)
 3. server is on `localhost:8000`
