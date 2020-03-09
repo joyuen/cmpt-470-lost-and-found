@@ -15,9 +15,12 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
+    "express-session": "^1.17.0",
     "handlebars": "^4.7.3",
     "hbs": "^4.1.0",
     "mongodb": "^3.5.4",
-    "mongoose": "^5.9.3"
+    "mongoose": "^5.9.3",
+    "passport": "^0.4.1",
+    "passport-cas2": "0.0.11"
   }
 }
