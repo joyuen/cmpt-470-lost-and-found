@@ -1,0 +1,24 @@
+stages:
+  - build
+  - test
+
+build-image:
+  tags:
+    - docker-build
+  stage: build
+  variables:
+    REPOSITORY_NAME: darieni/cmpt470
+    IMAGE_TAG: $CI_COMMIT_SHORT_SHA
+  script:
+    - docker build -t $REPOSITORY_NAME:$IMAGE_TAG $CI_PROJECT_DIR
+    - docker tag $REPOSITORY_NAME:$IMAGE_TAG $REPOSITORY_NAME:latest-dev
+    - docker push $REPOSITORY_NAME:$IMAGE_TAG
+    - docker push $REPOSITORY_NAME:latest-dev
+
+# test:
+#   stage: test
+#   image: 
+#     name: darieni/cmpt470:latest-dev
+#     entrypoint: [""]
+#   script:
+#     - npm run test
