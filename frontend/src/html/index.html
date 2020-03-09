@@ -5,19 +5,20 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, inital-scale=1">
         <link rel="stylesheet" href="../css/layout.css">
+        <link rel="stylesheet" href="../css/post.css">
         <!-- <script type="text/javascript" src="something.js"></script> -->
     </head>
 
     <body>
         <nav>
-            <ul>
-                <li><a class="active" href="index.html">Home</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="contact.html">Contact</a></li>
-            </ul>
+            <a class="active" href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
         </nav>
 
-        <h1>Lost Item Form</h1>
+        <header>
+            <h1>Item Report Form</h1>
+        </header>
         <form id="submitForm">
             <fieldset>
 
@@ -26,28 +27,36 @@
                 <label for="lost">Lost</label>
                 <input type="radio" id="stolen" name="status" value="stolen">
                 <label for="stolen">Stolen</label>
+                <input type="radio" id="found" name="status" value="found">
+                <label for="stolen">Found</label>
                 <br>
 
-                <label for = "itemLost">Type of item missing:</label>
+                <label for = "itemLost">Type of item being reported:</label>
                 <select id = "itemLost" name="item">
                     <option value = "wallet">Wallet</option>
                     <option value = "phone">Phone</option>
                     <option value = "keys">Keys</option>
                     <option value = "laptop">Laptop</option>
                     <option value = "pencilCase">Pencil Case</option>
+                    <option value = "clothing">Clothing</option>
+                    <option value = "textbook">Textbook</option>
                     <option value = "other">Other</option>
                 </select>
                 <br>
 
-                <label for="dateLost">What date did the item go missing:</label>
+                <label for="dateLost">What date did the item go missing or was found:</label>
                 <input type="date" id="dateLost" name="date" min="2020-01-01" max="2020-12-31">
                 <br>
 
-                <label for="timeLost">What time did the item go missing:</label>
+                <label for="timeLost">What time did the item go missing or was found:</label>
                 <input type="time" id="timeLost" name="time">
                 <br>
 
-                <textarea rows="4" cols="50" name="extra" form="submitForm">Please describe the item lost in as much detail</textarea>
+                <label for="locationLost">Where did the item go missing or was found:</label>
+                <input type="text" id="locationLost" name="location">
+                <br>
+
+                <textarea rows="4" cols="50" name="extra" form="submitForm">Please describe the item in as much detail</textarea>
                 <br>
 
                 <input type="submit">
