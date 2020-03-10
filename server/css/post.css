@@ -1,5 +1,9 @@
 form {
-    padding-left: 35%;
-    padding-right: 25%;
-    width: 30%
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+fieldset {
+    display: flex;
 }

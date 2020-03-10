@@ -13,6 +13,7 @@
         <nav>
             <a href="index.html">Home</a>
             <a class="active" href="post.html">Create Post</a>
+            <a href="">View Posts</a>
             <a href="about.html">About</a>
             <a href="contact.html">Contact</a>
         </nav>
@@ -20,20 +21,25 @@
         <header>
             <h1>Item Report Form</h1>
         </header>
+
         <form id="submitForm">
             <fieldset>
-
-                <p>Was this item lost, stolen, or found?</p>
-                <input type="radio" id="lost" name="status" value="lost">
-                <label for="lost">Lost</label>
-                <input type="radio" id="stolen" name="status" value="stolen">
-                <label for="stolen">Stolen</label>
-                <input type="radio" id="found" name="status" value="found">
-                <label for="stolen">Found</label>
+                <div>
+                    <p>Was the item being reported lost, stolen, or found?</p>
+                    <label>
+                        <input type="radio" id="lost" name="status" value="lost"/>Lost
+                    </label>
+                    <label>
+                        <input type="radio" id="stolen" name="status" value="stolen"/>Stolen
+                    </label>
+                    <label>
+                        <input type="radio" id="found" name="status" value="found"/>Found
+                    </label>
+                </div>
                 <br>
 
-                <label for = "itemLost">Type of item being reported:</label>
-                <select id = "itemLost" name="item">
+                <label for="item">Type of item being reported:</label>
+                <select id="item" name="item">
                     <option value = "wallet">Wallet</option>
                     <option value = "phone">Phone</option>
                     <option value = "keys">Keys</option>
@@ -45,25 +51,25 @@
                 </select>
                 <br>
 
-                <label for="dateLost">What date did the item go missing or was found:</label>
-                <input type="date" id="dateLost" name="date" min="2020-01-01" max="2020-12-31">
+                <label for="date">Estimated date when the item went missing or was found:</label>
+                <input type="date" id="date" name="date" min="2020-01-01" max="2020-12-31">
                 <br>
 
-                <label for="timeLost">What time did the item go missing or was found:</label>
-                <input type="time" id="timeLost" name="time">
+                <label for="time">Estimated time the item went missing or was found:</label>
+                <input type="time" id="time" name="time">
                 <br>
 
-                <label for="locationLost">Where did the item go missing or was found:</label>
-                <input type="text" id="locationLost" name="location">
+                <label for="location">Estimated location where the item went missing or was found:</label>
+                <input type="text" id="location" name="location">
                 <br>
 
-                <textarea rows="4" cols="50" name="extra" form="submitForm">Please describe the item in as much detail</textarea>
+                <label for="detail">Please describe the item in as much detail as possible</label>
+                <textarea rows="4" cols="50" id="detail" name="detail"></textarea>
                 <br>
 
-                <input type="submit">
+                <input type="submit" value="Submit">
             </fieldset>
         </form>
-
     </body>
 
 </html>
