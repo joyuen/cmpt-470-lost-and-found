@@ -58,6 +58,8 @@ getClient.catch((error) => {
 }).then((client) => {
     // Set up endpoints
     require('./routes')(app, client, templates);
+    app.use(express.static('server/html'));
+    app.use('/css', express.static('server/css'));
     app.get('*', (req, res) => {
         res.sendFile(path.join(__dirname, 'server/index.html'));
     });
