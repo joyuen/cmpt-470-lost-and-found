@@ -1,16 +1,10 @@
-var express = require('express')
+var express = require('express');
+var postings = require('../model/postings');
 
-module.exports = function (db, templates) {
-    var router = express.Router();
-    router.get('/', async function(req, res) {
-        var collection = db.collection('data');
+var router = express.Router();
+router.get('/', async function(req, res) {
+    var all_postings = await postings.getAllPostings();
+    res.render('postings', {"page": 'postings', "postings": all_postings});
+});
 
-        var cursor = collection.find();
-        var all_postings = await cursor.toArray();
-        console.log(all_postings.length);
-
-        res.render('postings', {"page": 'postings', "postings": all_postings});
-    });
-
-    return router;
-};
+module.exports = router;

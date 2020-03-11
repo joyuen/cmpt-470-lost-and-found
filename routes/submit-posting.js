@@ -1,14 +1,11 @@
-var express = require('express')
+var express = require('express');
+var postings = require('../model/postings');
 
-module.exports = function (db) {
-    var router = express.Router();
-    router.post('/', async function(req, res) {
-        // TODO: validate req.body
+var router = express.Router();
+router.post('/', async function(req, res) {
+    // TODO: validate req.body
+    await postings.addPosting(req.body);
+    return res.redirect('postings');
+});
 
-        var collection = db.collection('data');
-        collection.insertOne(req.body);
-        console.log(req.body);
-        return res.redirect('postings');
-    });
-    return router;
-};
+module.exports = router;
