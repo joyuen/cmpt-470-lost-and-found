@@ -7,9 +7,9 @@ module.exports = function (db, templates) {
 
         var cursor = collection.find();
         var all_postings = await cursor.toArray();
-        console.log(all_postings);
+        console.log(all_postings.length);
 
-        res.send(templates['allpostings']({"postings": all_postings}));
+        res.render('postings', {"page": 'postings', "postings": all_postings});
     });
 
     return router;

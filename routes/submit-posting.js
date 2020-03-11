@@ -8,7 +8,7 @@ module.exports = function (db) {
         var collection = db.collection('data');
         collection.insertOne(req.body);
         console.log(req.body);
-        return res.redirect('index.html');
+        return res.redirect('postings');
     });
     return router;
 };
