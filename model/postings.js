@@ -1,7 +1,6 @@
 var mongoose = require('mongoose');
 
 // Constants
-const DB_URL = 'mongodb://127.0.0.1:27017';
 const posting_schema = new mongoose.Schema({
     title: String,
     status: String,
@@ -14,9 +13,6 @@ const posting_schema = new mongoose.Schema({
     posted_by: String,
     creation_date: Date,
 });
-
-// database connection
-mongoose.connect(DB_URL, {useNewUrlParser: true});
 
 var Postings = mongoose.model('posting', posting_schema);
 
