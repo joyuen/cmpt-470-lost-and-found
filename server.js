@@ -28,6 +28,7 @@ app.get('/post', (req, res) => res.render('post', {'page': 'post'}));
 // Posting endpoints
 app.use('/postings', require('./routes/postings'));
 app.use('/submit-posting', require('./routes/submit-posting'));
+app.use('/viewpost', require('./routes/viewpost'));
 
 // Default page behaviour -- root is landing page
 // Any unrecognized endpoints get redirected to landing page

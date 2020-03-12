@@ -11,6 +11,8 @@ const posting_schema = new mongoose.Schema({
     location: String,
     detail: String,
     image: Buffer,
+    posted_by: String,
+    creation_date: Date,
 });
 
 // database connection
@@ -25,6 +27,13 @@ var PostingModel = {
 
     getAllPostings : function() {
         var query = Postings.find();
+        return query.exec();
+    },
+
+    getPostingById : function(id) {
+        var query = Postings.find()
+            .skip(id)
+            .limit(1);
         return query.exec();
     },
 };
