@@ -16,12 +16,18 @@
             <h1>Item Report Form</h1>
         </header>
 
-        <form id="submitForm" action="submit-posting" method="POST">
+        <form id="submitForm" action="submit-posting" method="POST" enctype="multipart/form-data">
             <fieldset>
                 <div>
-                    <p>Was the item being reported lost, stolen, or found?</p>
+                    <label for="title">Posting title: </label>
+                    <input type="text" id="title" name="title" required />
+                </div>
+                <br>
+
+                <div>
+                    <p>Is the item being reported lost, stolen, or found?</p>
                     <label>
-                        <input type="radio" id="lost" name="status" value="lost"/>Lost
+                        <input type="radio" id="lost" name="status" value="lost" checked required/>Lost
                     </label>
                     <label>
                         <input type="radio" id="stolen" name="status" value="stolen"/>Stolen
@@ -31,9 +37,9 @@
                     </label>
                 </div>
                 <br>
-
+            
                 <label for="item">Type of item being reported:</label>
-                <select id="item" name="item">
+                <select id="item" name="item" required>
                     <option value = "wallet">Wallet</option>
                     <option value = "phone">Phone</option>
                     <option value = "keys">Keys</option>
@@ -45,20 +51,46 @@
                 </select>
                 <br>
 
-                <label for="date">Estimated date when the item went missing or was found:</label>
-                <input type="date" id="date" name="date" min="2020-01-01" max="2020-12-31">
+                <label for="date">Estimate date/time when the item went missing or was found:</label>
+                <input type="datetime-local" id="date" name="date" required>
+                <script>
+                    function pad(n, width, z) {
+                        z = z || '0';
+                        n = n + '';
+                        return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+                    }
+
+                    var today = new Date();
+                    var YYYY = today.getFullYear();
+                    var MM = pad(today.getMonth()+1, 2);
+                    var DD = pad(today.getDate(), 2);
+                    var hh = pad(today.getHours(), 2);
+                    var mm = pad(today.getMinutes(), 2);
+                    var today_formatted = `${YYYY}-${MM}-${DD}T${hh}:${mm}`;
+                    var input_date = document.getElementById("date");
+                    input_date.max = today_formatted;
+                    input_date.value = today_formatted;
+                </script>
                 <br>
 
-                <label for="time">Estimated time the item went missing or was found:</label>
-                <input type="time" id="time" name="time">
+                <label for="location">Campus:</label>
+                <select id="campus" name="campus" required>
+                    <option value="burnaby">Burnaby Mountain Campus</option>
+                    <option value="surrey">Surrey Central Campus</option>
+                    <option value="vancouver">Vancouver Campus</option>
+                </select>
                 <br>
 
-                <label for="location">Estimated location where the item went missing or was found:</label>
+                Extra location details:
                 <input type="text" id="location" name="location">
                 <br>
 
                 <label for="detail">Please describe the item in as much detail as possible</label>
                 <textarea rows="4" cols="50" id="detail" name="detail"></textarea>
+                <br>
+
+                <label for="image">Upload image of item, if available:</label>
+                <input type="file" id="image" name="image" accept="image/png, image/jpeg" />
                 <br>
 
                 <input type="submit" value="Submit">

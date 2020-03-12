@@ -3,12 +3,14 @@ var mongoose = require('mongoose');
 // Constants
 const DB_URL = 'mongodb://127.0.0.1:27017';
 const posting_schema = new mongoose.Schema({
+    title: String,
     status: String,
     item: String,
-    date: String,
-    time: String,
+    date: Date,
+    campus: String,
     location: String,
-    detail: String
+    detail: String,
+    image: Buffer,
 });
 
 // database connection
