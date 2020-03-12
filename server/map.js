@@ -108,12 +108,9 @@ function initMap() {
                 map: map,
             })
             existing[key] = m;
-            let infowindow = new google.maps.InfoWindow({
-              content: "<div>" + pos.info + "</div>"
-            });
 
             m.addListener('click', function() {
-                infowindow.open(map, m);
+                document.getElementById('content').innerHTML = pos.info;
             })
         }
     });
@@ -124,9 +121,38 @@ function initMap() {
           map: map,
         });
 
+        var btn = document.createElement("input");
+        //Set the attributes
+        btn.setAttribute("type","button");
+        btn.value = "Create Post";
+        btn.style.marginLeft = "20px";
+        btn.style.marginTop = "20px";
+        btn.onclick = function() {
+            var overlay = document.getElementById('overlay')
+            overlay.style.display = "block";
+            overlay.style.left = document.getElementById('sidebar').offsetWidth + "px";
+
+            var f = function() {
+                overlay.style.display = "none";
+                overlay.removeEventListener("click", f);
+                marker.setMap(null);
+            }
+            overlay.addEventListener("click", f);
+        };
+        //Add the button to the body
+        document.getElementById('content').innerHTML = "";
+        document.getElementById('content').appendChild(btn);
+
         marker.addListener('click', function() {
+            if(marker) {
+                marker.setMap(null);
+            }
+        });
+
+        var listener = map.addListener('click', function() {
             marker.setMap(null);
-        })
+            google.maps.event.removeListener(listener);
+        });
     });
 }
 

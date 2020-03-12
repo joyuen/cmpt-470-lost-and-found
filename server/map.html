@@ -29,7 +29,7 @@
         #floating-panel {
             margin: 10px;
         }
-        .sidebar {
+        #sidebar {
             height: 100%;
             width: 300px;
         }
@@ -41,6 +41,14 @@
             display: flex;
             height: 100%;
         }
+        #overlay {
+            display: none;
+            background-color: rgba(0,0,0,0.7);
+            position: absolute;
+            z-index: 5;
+            height: 100%;
+            width: 100%;
+        }
         /* Optional: Makes the page fill the window. */
         html, body {
             height: 100%;
@@ -50,14 +58,15 @@
     </style>
 </head>
 <body>
+    <div id="overlay"></div>
     <main class="flex-container">
-        <aside class="sidebar">
+        <aside id="sidebar">
             <header>
                 <b>S</b>omething<br>
                 <b>F</b>ound at<br>
                 <b>U</b>niversity<br>
             </header>
-
+            <div id="content"></div>
         </aside>
         <div class="map-container">
             <div id="floating-panel">
