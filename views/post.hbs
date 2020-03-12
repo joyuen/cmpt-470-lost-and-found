@@ -10,19 +10,13 @@
     </head>
 
     <body>
-        <nav>
-            <a href="index.html">Home</a>
-            <a class="active" href="post.html">Create Post</a>
-            <a href="">View Posts</a>
-            <a href="about.html">About</a>
-            <a href="contact.html">Contact</a>
-        </nav>
+        {{> navbar}}
 
         <header>
             <h1>Item Report Form</h1>
         </header>
 
-        <form id="submitForm">
+        <form id="submitForm" action="submit-posting" method="POST">
             <fieldset>
                 <div>
                     <p>Was the item being reported lost, stolen, or found?</p>
