@@ -56,6 +56,7 @@ require('./routes/auth.js')(app);
 
 // Public stuff
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/images', express.static(path.join(__dirname, '/uploads/images')));
 
 // Normal endpoints
 app.get('/about', (req, res) => res.render('about', {'page': 'about'}));

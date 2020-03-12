@@ -9,7 +9,7 @@ const posting_schema = new mongoose.Schema({
     campus: String,
     location: String,
     detail: String,
-    image: Buffer,
+    image_id: String,
     posted_by: String,
     creation_date: Date,
 });
