@@ -1,5 +1,23 @@
 // This is the minimum zoom level that we'll allow
 let minZoomLevel = 16;
+// Track markers
+let existing = {};
+
+let testMarkers = [{id: 1, lat: 49.278871, lng: -122.916386, info: "Hello"},
+               {id: 2, lat: 49.279340, lng: -122.922866, info: "World"}]
+
+function getMarkers(n, s, w, e) {
+    // TODO: Retrieve from DB
+    var markers = testMarkers;
+    let m = {}
+    // Below for each loop should be a query to db
+    markers.forEach(function(pos) {
+        if (n > pos.lat && pos.lat > s && w < pos.lng && pos.lng < e) {
+            m[pos.id] = pos;
+        }
+    });
+    return m;
+}
 
 function initMap() {
     // GLOBALS
@@ -68,11 +86,54 @@ function initMap() {
     var styleControl = document.getElementById('floating-panel');
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(styleControl);
 
+    map.addListener('idle', function() {
+        // This is only for testing, need to grab new coords from db from idle listener below
+        var bounds = map.getBounds();
+        neBounds = bounds.getNorthEast();
+        swBounds = bounds.getSouthWest();
+        var markers = getMarkers(neBounds.lat(), swBounds.lat(), swBounds.lng(), neBounds.lng());
+        for(var key in existing) {
+            if(!(key in markers)) {
+                existing[key].setMap(null);
+                delete existing[key];
+            }
+        }
+        for(var key in markers) {
+            if(key in existing) {
+                continue;
+            }
+            let pos = markers[key];
+            let m = new google.maps.Marker({
+                position: new google.maps.LatLng(pos.lat, pos.lng),
+                map: map,
+            })
+            existing[key] = m;
+            let infowindow = new google.maps.InfoWindow({
+              content: "<div>" + pos.info + "</div>"
+            });
+
+            m.addListener('click', function() {
+                infowindow.open(map, m);
+            })
+        }
+    });
+
+    map.addListener('click', function(event) {
+        var marker = new google.maps.Marker({
+          position: event.latLng,
+          map: map,
+        });
+
+        marker.addListener('click', function() {
+            marker.setMap(null);
+        })
+    });
 }
 
 function showBurnaby() {
     map.setOptions({center: burnabyCenter, zoom: burnabyMinZoom, minZoom: burnabyMinZoom, restriction: {latLngBounds: burnabyBounds, strictBounds: false}})
     map.setCenter(burnabyCenter);
+    map.setZoom(burnabyMinZoom);
 }
 
 function showVancouver() {
