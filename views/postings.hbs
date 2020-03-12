@@ -48,7 +48,12 @@
         {{> navbar}}
         <table>
         {{#each postings}}
-            {{> posting}}
+        <tr class={{status}}>
+            <td>{{post_status status}}</td>
+            <td><a href={{url}}>{{title}}</a></td>
+            <td>{{post_campus campus}}</td>
+            <td>{{date_humanized}}</td>
+        </tr>
         {{/each}}
         </table>
     </body>

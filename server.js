@@ -15,7 +15,7 @@ app.set('view engine', 'hbs');
 
 // Configure Handlebars
 hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
-hbs.registerHelper("navActivate", function(a, b) { return a == b; });
+require('./views/helpers/helpers');
 
 // Public stuff
 app.use(express.static(path.join(__dirname, 'public')));
