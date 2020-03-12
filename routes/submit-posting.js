@@ -22,7 +22,7 @@ router.post('/', upload.single('image'), async function(req, res) {
         req.body.image = "";
     }
 
-    req.body.posted_by = "testing";
+    req.body.posted_by = req.user.id;
     req.body.creation_date = new Date();
 
     await postings.addPosting(req.body);
