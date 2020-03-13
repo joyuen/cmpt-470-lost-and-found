@@ -1,0 +1,47 @@
+header {
+    text-align: left;
+    background-color: teal;
+    color: white;
+    margin: 0;
+    padding-left: 5%;
+    font-size: 24px;
+    font-family: "Courier New", Courier, monospace
+}
+b {
+    color: black;
+}
+/* Always set the map height explicitly to define the size of the div
+* element that contains the map. */
+#map {
+    height: 100%;
+    width: 100%;
+}
+#floating-panel {
+    margin: 10px;
+}
+#sidebar {
+    height: 100%;
+    width: 300px;
+}
+.map-container {
+    height: 100%;
+    width: 100%;
+}
+.flex-container {
+    display: flex;
+    height: 100%;
+}
+#overlay {
+    display: none;
+    background-color: rgba(0,0,0,0.7);
+    position: absolute;
+    z-index: 5;
+    height: 100%;
+    width: 100%;
+}
+/* Optional: Makes the page fill the window. */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
