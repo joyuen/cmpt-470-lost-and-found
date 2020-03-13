@@ -1,7 +1,6 @@
 var express = require('express');
 var postings = require('../model/postings');
 var images = require('../model/images');
-var moment = require('moment');
 
 var router = express.Router();
 router.get('/', async function(req, res) {

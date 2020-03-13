@@ -15,10 +15,10 @@
             {{!-- <div style="height: 300px; background-color: lightgreen;">
                 Small map goes here
             </div> --}}
-            {{#if (navActivate image_url "")}}
-                <p id="image_gone">No image available!</p>
-            {{else}}
+            {{#if image_url}}
                 <img id="image" src="{{image_url}}"></img>
+            {{else}}
+                <p id="image_gone">No image available!</p>
             {{/if}}
             <p id="summary">
                 <b>{{post_status status}}</b> at <b>{{post_campus campus}}</b> <br>
