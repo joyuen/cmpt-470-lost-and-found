@@ -5,70 +5,32 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, inital-scale=1">
         <link rel="stylesheet" href="../css/layout.css">
-        <style>
-            html {
-                box-sizing: border-box;
-            }
-
-            .sidebar {
-                float: right;
-                width: 30%;
-                margin: 5px;
-            }
-
-            .post {
-                float: left;
-                width: 67%;
-                margin: 5px;
-            }
-
-            h2 {
-                margin-bottom: 0px;
-            }
-            hr {
-                margin: 0px;
-            }
-            hr +p {
-                margin-top: 10px;
-            }
-
-            #misctable {
-                font-size: 12px;
-                border-collapse: collapse;
-                border: 1px solid #CCC;
-            }
-
-            #misctable th, #misctable td {
-                border: none;
-            }
-
-            #misctable th {
-                text-align: right;
-                padding-right: 5px;
-            }
-
-            #misctable p {
-                padding: 0px;
-                margin: 0px;
-            }
-
-            #misctable tr:nth-child(even) {
-                background-color: #f2f2f2;
-            }
-            #misctable tr:nth-child(odd) {
-                background-color: #f8f8f8;
-            }
-        </style>
+        <link rel="stylesheet" href="../css/viewpost.css">
     </head>
 
     <body>
         {{> navbar}}
 
+        <div class="sidebar">
+            {{!-- <div style="height: 300px; background-color: lightgreen;">
+                Small map goes here
+            </div> --}}
+            {{#if (navActivate image_url "")}}
+                <p id="image_gone">No image available!</p>
+            {{else}}
+                <img id="image" src="{{image_url}}"></img>
+            {{/if}}
+            <p id="summary">
+                <b>{{post_status status}}</b> at <b>{{post_campus campus}}</b> <br>
+                {{location}} <br>
+                {{post_date date}}
+            </p>
+            <br>
+        </div>
         <div class="post">
-            {{!-- <button style="float:right;">Contact</button> --}}
-            <h2>{{title}}</h2>
+            <h2 id="title">{{title}}</h2>
             <hr>
-            <p style="height: 200px;">{{detail}}</p>
+            <p id="details">{{detail}}</p>
             <table id="misctable">
                 <tr>
                     <th><p>Contact Info:</p></th>
@@ -85,18 +47,5 @@
             </table>
         </div>
 
-        <div class="sidebar">
-            <div style="height: 300px; background-color: lightgreen;">
-                Small map goes here
-            </div>
-            <p style="text-align: center; width: 100%; background-color: lightblue; margin: 0px;">
-                <b>{{post_status status}}</b> at <b>{{post_campus campus}}</b> <br>
-                {{location}} <br>
-                {{post_date date}}
-            </p>
-            <br>
-            <img style="max-height:300px; height:100%; max-width:300px; width:100%; background-color: lightyellow;" src="{{image_url}}">
-            </img>
-        </div>
     </body>
 </html>

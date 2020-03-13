@@ -9,7 +9,7 @@ router.get('/', async function(req, res) {
     var posting = (await postings.getPostingById(posting_id))[0];
     console.log(posting);
 
-    posting.image_url = images.getImageUrl(posting.image_id);
+    posting.image_url = (posting.image_id) ? images.getImageUrl(posting.image_id) : "";
 
     res.render('viewpost', posting);
 });
