@@ -62,6 +62,7 @@ app.use('/images', express.static(path.join(__dirname, '/uploads/images')));
 app.get('/about', (req, res) => res.render('about', {'page': 'about'}));
 app.get('/contact', (req, res) => res.render('contact', {'page': 'contact'}));
 app.get('/makepost', (req, res) => res.render('makepost', {'page': 'makepost'}));
+app.get('/map', (req, res) => res.render('map', { 'page': 'map' }));
 
 // Posting endpoints
 app.use('/postings', require('./routes/postings'));
