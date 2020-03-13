@@ -3,8 +3,8 @@ html {
     width: 100%;
 }
 
-h1, h2, p, ol, li, a {
-    font-family: Arial;
+* {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 nav {
