@@ -7,6 +7,7 @@
         <meta name="viewport" content="width=device-width, inital-scale=1">
         <link rel="stylesheet" href="../css/layout.css">
         <link rel="stylesheet" href="../css/post.css">
+        <script src="/js/makepost.js"></script>
     </head>
 
     <body>
@@ -20,9 +21,8 @@
             <fieldset>
                 <div>
                     <label for="title">Posting title (briefly describe item): </label>
-                    <input type="text" id="title" name="title" required />
+                    <input type="text" id="title" name="title" maxlength="255" required />
                 </div>
-                <br>
 
                 <div>
                     <p>Is the item being reported lost, stolen, or found?</p>
@@ -53,24 +53,6 @@
 
                 <label for="date">Estimate date/time when the item went missing or was found:</label>
                 <input type="datetime-local" id="date" name="date" required>
-                <script>
-                    function pad(n, width, z) {
-                        z = z || '0';
-                        n = n + '';
-                        return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-                    }
-
-                    var today = new Date();
-                    var YYYY = today.getFullYear();
-                    var MM = pad(today.getMonth()+1, 2);
-                    var DD = pad(today.getDate(), 2);
-                    var hh = pad(today.getHours(), 2);
-                    var mm = pad(today.getMinutes(), 2);
-                    var today_formatted = `${YYYY}-${MM}-${DD}T${hh}:${mm}`;
-                    var input_date = document.getElementById("date");
-                    input_date.max = today_formatted;
-                    input_date.value = today_formatted;
-                </script>
                 <br>
 
                 <label for="location">Campus:</label>
@@ -82,11 +64,11 @@
                 <br>
 
                 Extra location details:
-                <input type="text" id="location" name="location">
+                <input type="text" id="location" name="location" maxlength="255">
                 <br>
 
-                <label for="detail">Please describe the item in as much detail as possible</label>
-                <textarea rows="4" cols="50" id="detail" name="detail"></textarea>
+                <label for="detail">Please describe the item in as much detail as possible (max 2000 characters):</label>
+                <textarea rows="4" cols="50" id="detail" name="detail" maxlength="2000"></textarea>
                 <br>
 
                 <label for="image">Upload image of item, if available:</label>
