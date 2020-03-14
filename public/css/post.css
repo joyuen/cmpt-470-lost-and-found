@@ -1,9 +1,10 @@
-form {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+#submitForm {
+    display: inline-block;
+    border: 1px solid black;
+    text-align: left;
+    padding: 10px;
 }
 
-fieldset {
-    display: flex;
+#submitForm div {
+    margin-bottom: 1.5em;
 }

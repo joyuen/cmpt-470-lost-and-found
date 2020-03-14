@@ -5,13 +5,21 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, inital-scale=1">
         <link rel="stylesheet" href="../css/layout.css">
-        <!-- <script type="text/javascript" src="something.js"></script> -->
+        <link rel="stylesheet" href="../css/postings.css">
     </head>
 
     <body>
         {{> navbar}}
-        {{#each postings}}
-            {{> posting}}
-        {{/each}}
+        
+        <table id="postings">
+            {{#each postings}}
+            <tr class="posting {{status}}">
+                <td>{{post_status status}}</td>
+                <td><a href={{url}}>{{title}}</a></td>
+                <td>{{post_campus campus}}</td>
+                <td>{{date_humanized}}</td>
+            </tr>
+            {{/each}}
+        </table>
     </body>
 </html>
