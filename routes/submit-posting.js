@@ -3,7 +3,7 @@ var postings = require('../model/postings');
 var images = require('../model/images');
 var multer = require('multer');
 var path = require('path');
-const { check, validationResult } = require('express-validator');
+const { check, validationResult } = require('express-validator/check');
 
 const upload = multer({
     dest: './uploads',
@@ -27,6 +27,10 @@ const formChecks = [
 
 var router = express.Router();
 router.post('/', upload.single('image'), formChecks, async function(req, res) {
+    // combine date and time
+    req.body.date = new Date(`${req.body.date} ${req.body.time}`);
+    delete req.body.time;
+
     const errorFormatter = ({ location, msg, param, value, nestedErrors }) => {
         return `${location}[${param}]: ${msg}`;
     };

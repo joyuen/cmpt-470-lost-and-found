@@ -1,13 +1,10 @@
-form {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-fieldset {
-    display: flex;
-}
-
-label {
+#submitForm {
     display: inline-block;
+    border: 1px solid black;
+    text-align: left;
+    padding: 10px;
+}
+
+#submitForm div {
+    margin-bottom: 1.5em;
 }
