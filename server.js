@@ -1,4 +1,6 @@
 // Imports
+require = require("esm")(module /*, options*/);
+const config = require('./config.js');
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
@@ -8,9 +10,9 @@ const passport = require('passport');
 const errorHandler = require('errorhandler');
 
 // Constants
-const isProduction = process.env.NODE_ENV === 'production';
-const port = process.env.PORT || 8000;
-const DB_URL = 'mongodb://localhost:27017';
+const isProduction = config.isProduction;
+const port = config.port;
+const DB_URL = config.DB_URL;
 
 const app = express();
 
@@ -25,7 +27,6 @@ if (!isProduction) {
             },
         });
     });
-
     mongoose.set('debug', true);
 } else {
     // Put production options here if we have any

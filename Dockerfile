@@ -3,6 +3,6 @@ RUN apk --no-cache add git
 WORKDIR /app
 ADD package.json /app
 RUN npm install
-ADD . /
+ADD . /app
 
-ENTRYPOINT [ "npm run" ]
+CMD [ "npm", "start" ]
