@@ -84,7 +84,6 @@ var Postings = mongoose.model('posting', posting_schema);
 //  Controller
 //---------------------------------------
 var PostingController = {
-    model: Postings,
     /**
      *  Add a posting to the database
      *  @param {object} posting - attributes to construct the posting document with
@@ -109,11 +108,14 @@ var PostingController = {
      * @param {string} id - the posting id
      * @returns posting corresponding to the id
      */
-    getPostingById : async function(id) {
-        var query = Postings.find()
-            .skip(id)
-            .limit(1);
-        return query.exec();
+    getPostingById : async function(posting_id) {
+        // turn posting id -> _id attribute in database
+        // but they're the same right now, so nothing fancy
+        var database_id = posting_id;
+        var query = Postings.find({_id: database_id}).limit(1);
+        return query.exec().then(docs => {
+            return docs[0];
+        });
     },
 };
 
