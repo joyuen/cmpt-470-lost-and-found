@@ -3,7 +3,7 @@ var postings = require('../model/postings');
 var images = require('../model/images');
 var multer = require('multer');
 var path = require('path');
-const { check, validationResult } = require('express-validator/check');
+const { check, validationResult } = require('express-validator');
 
 const upload = multer({
     dest: './uploads',
@@ -13,10 +13,11 @@ const upload = multer({
     }
 });
 
+// maybe remove these now that it's being tested in the postings model?
 const formChecks = [
     check('title').isLength({min:1, max:256}),
-    check('status').isIn(['lost', 'found', 'stolen']),
-    check('item').isLength({min:1, max:256}),     // also add verification for specific values when form is finalized
+    check('status').isIn(['lost', 'found', 'stolen', 'returned']),
+    check('item').isLength({min:1, max:256}),
     check('date').custom(value => {
         return (new Date(value)) <= (new Date());
     }),
@@ -26,33 +27,72 @@ const formChecks = [
 ];
 
 var router = express.Router();
+
+const validation_error = function(res, message) {
+    res.status(422).send(`
+        Error sending posting to server! Reason:
+        <pre>${err.message}</pre>
+    `);
+}
+
+/**
+ *  Supported POST values
+ *      title -
+ *      status -
+ *      item - 
+ *      date - 
+ *      time - 
+ *      campus -
+ *      location - 
+ *      detail - 
+ *      a single file [an image] can also be uploaded
+ */
 router.post('/', upload.single('image'), formChecks, async function(req, res) {
-    // combine date and time
+    // turn separate date and time values into a combined datetime
     req.body.date = new Date(`${req.body.date} ${req.body.time}`);
     delete req.body.time;
 
-    const errorFormatter = ({ location, msg, param, value, nestedErrors }) => {
-        return `${location}[${param}]: ${msg}`;
-    };
-    const errors = validationResult(req).formatWith(errorFormatter);
+    // validate the form inputs
+    const errors = validationResult(req).formatWith(
+        ({ location, msg, param, value, nestedErrors }) => {
+            return `${location}[${param}]: ${msg}`;
+        }
+    );
     if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array() })
-    }
-
-    if (req.file) {
-        const fileExt = path.extname(req.file.originalname).toLowerCase();
-        req.body.image_id = await images.saveImageFromFile(req.file.path, fileExt);
-    } else {
-        req.body.image_id = "";
+        return validation_error(res, errors.array()); // res.status(422).json({ errors: errors.array() })
     }
 
     if (req.user == undefined) {
-        return res.send("login info found to be undefined -- are you logged in?");
+        return validation_error(res, "login info found to be undefined -- are you logged in?");
     }
-    req.body.posted_by = req.user.id;
-    req.body.creation_date = new Date();
 
-    await postings.addPosting(req.body);
+    var new_post = {
+        title: req.body.title,
+        category: req.body.item,
+        description: req.body.detail,
+        status: req.body.status,
+        campus: req.body.campus,
+        building: "",
+        room: "",
+        location: req.body.location,
+        creation_date: new Date(),
+        lost_date: req.body.date,
+        posted_by: req.user.id,
+        image_id: "",           // to be filled in
+    };
+
+    if (req.file) {
+        const fileExt = path.extname(req.file.originalname).toLowerCase();
+        new_post.image_id = await images.saveImageFromFile(req.file.path, fileExt);
+    } else {
+        new_post.image_id = "";
+    }
+
+    try {
+        var id = await postings.addPosting(new_post);
+    } catch (err) {
+        return validation_error(res, err.message);
+    }
     return res.redirect('postings');
 });
 
