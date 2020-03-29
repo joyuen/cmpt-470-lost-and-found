@@ -66,6 +66,7 @@ app.get('/makepost', (req, res) => res.render('makepost', {'page': 'makepost'}))
 app.get('/map', (req, res) => res.render('map', { 'page': 'map' }));
 
 app.use('/account', require('./routes/account'));
+app.use('/admin', require('./routes/admin'));
 
 // Posting endpoints
 app.use('/postings', require('./routes/postings'));
