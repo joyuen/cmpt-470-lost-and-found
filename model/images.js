@@ -15,6 +15,12 @@ var imageModel = {
     
     getImageUrl : function(id) {
         return `/images/${id}`;
+    },
+
+    getIds : function() {
+        return fs.readdirSync(IMAGE_DIRECTORY).map((filename) => {
+            return path.parse(filename).name;
+        });
     }
 };
 

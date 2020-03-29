@@ -55,6 +55,11 @@ require('./views/helpers/helpers');
 require('./routes/auth.js')(app);
 // ALL ROUTES MUST GO AFTER AUTH!
 
+// Dev endpoints
+if (!isProduction) {
+    app.use('/dev', require('./routes/dev'));
+}
+
 // Public stuff
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/images', express.static(path.join(__dirname, '/uploads/images')));
