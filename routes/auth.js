@@ -15,6 +15,7 @@ var cas = new CasStrategy({
             if (!user) {
                 user = new User({
                     id: username,
+                    name: username
                 });
                 user.save(function (err) {
                     if (err) console.log(err);
@@ -72,7 +73,7 @@ module.exports = function (app) {
         });
 
     app.get('/logout', function (req, res) {
-        var returnURL = 'http://example.com/';
+        var returnURL = 'https://www.sfu.ca';
         cas.logout(req, res, returnURL);
     });
 

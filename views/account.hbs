@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>SFU Lost and Found</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, inital-scale=1">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/info.css">
+    <link rel="stylesheet" href="/css/account.css">
+</head>
+
+<body>
+    {{> navbar}}
+
+    <header>
+        <h1>Account</h1>
+    </header>
+    <main>
+        <form method="POST">
+            <label>Username
+                <input type="text" value="{{user.id}}" disabled="true" />
+            </label></br>
+            <label>Email
+                <input type="text" value="{{user.email}}" disabled="true" />
+            </label></br>
+            <label>Display Name
+                <input type="text" name="name" id="name" value="{{user.name}}" />
+            </label></br>
+            <div>
+            <label>Phone Number (Optional)
+                <input type="tel" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" value="{{user.phone}}">
+                <span class="validity"></span>
+                <small>Format: 123-456-7890</small>
+            </label></div></br>
+
+            <button type="submit">Save</button>
+        </form>
+    </main>
+</body>
+
+</html>
