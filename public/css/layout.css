@@ -43,6 +43,10 @@ nav #logout {
   margin-left: auto
 }
 
+nav .left-justify {
+  margin-left: auto;
+}
+
 header {
     text-align: center;
 }
