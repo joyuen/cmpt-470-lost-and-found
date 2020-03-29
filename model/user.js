@@ -5,6 +5,10 @@ var userSchema = new Schema({
     id: String,
     name: String,
     phone: String,
+    admin: {
+        type: Boolean,
+        default: false
+    },
 });
 
 userSchema.virtual('email').get(function () {
