@@ -48,11 +48,8 @@ passport.deserializeUser(function (id, done) {
                 if (err) console.log(err);
                 return done(err, user);
             });
-        } else {
-            //found user. Return
-            return done(err, user);
         }
-        done(err, user);
+        return done(err, user);
     });
 });
 
