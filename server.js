@@ -67,13 +67,13 @@ app.use('/images', express.static(path.join(__dirname, '/uploads/images')));
 // Normal endpoints
 app.get('/about', (req, res) => res.render('about', {'page': 'about'}));
 app.get('/contact', (req, res) => res.render('contact', {'page': 'contact'}));
-app.get('/makepost', (req, res) => res.render('makepost', {'page': 'makepost'}));
 app.get('/map', (req, res) => res.render('map', { 'page': 'map' }));
 
 // Posting endpoints
 app.use('/postings', require('./routes/postings'));
 app.use('/submit-posting', require('./routes/submit-posting'));
 app.use('/viewpost', require('./routes/viewpost'));
+app.use('/makepost', require('./routes/makepost'));
 
 // Default page behaviour -- root is landing page
 // Any unrecognized endpoints get redirected to landing page

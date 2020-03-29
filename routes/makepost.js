@@ -5,6 +5,31 @@ var multer = require('multer');
 var path = require('path');
 const { check, validationResult } = require('express-validator');
 
+var router = express.Router();
+
+// ---------------------------------
+//  GET request
+// ---------------------------------
+router.get('/', async function(req, res) {
+    res.render('makepost', {'page': 'makepost'});
+});
+
+// ---------------------------------
+//  POST request
+// ---------------------------------
+/**
+ *  Supported POST values
+ *      title -
+ *      status -
+ *      item - 
+ *      date - 
+ *      time - 
+ *      campus -
+ *      location - 
+ *      detail - 
+ *      a single file [an image] can also be uploaded
+ */
+
 const upload = multer({
     dest: './uploads',
     limits: {fileSize: 10*1024*1024},
@@ -26,8 +51,6 @@ const formChecks = [
     check('detail').isLength({max: 2500}),
 ];
 
-var router = express.Router();
-
 const validation_error = function(res, message) {
     res.status(422).send(`
         Error sending posting to server! Reason:
@@ -35,18 +58,6 @@ const validation_error = function(res, message) {
     `);
 }
 
-/**
- *  Supported POST values
- *      title -
- *      status -
- *      item - 
- *      date - 
- *      time - 
- *      campus -
- *      location - 
- *      detail - 
- *      a single file [an image] can also be uploaded
- */
 router.post('/', upload.single('image'), formChecks, async function(req, res) {
     // turn separate date and time values into a combined datetime
     req.body.date = new Date(`${req.body.date} ${req.body.time}`);
