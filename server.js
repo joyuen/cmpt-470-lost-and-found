@@ -55,6 +55,11 @@ require('./views/helpers/helpers');
 require('./routes/auth.js')(app);
 // ALL ROUTES MUST GO AFTER AUTH!
 
+// Dev endpoints
+if (!isProduction) {
+    app.use('/dev', require('./routes/dev'));
+}
+
 // Public stuff
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/images', express.static(path.join(__dirname, '/uploads/images')));
@@ -62,7 +67,6 @@ app.use('/images', express.static(path.join(__dirname, '/uploads/images')));
 // Normal endpoints
 app.get('/about', (req, res) => res.render('about', {'page': 'about'}));
 app.get('/contact', (req, res) => res.render('contact', {'page': 'contact'}));
-app.get('/makepost', (req, res) => res.render('makepost', {'page': 'makepost'}));
 app.get('/map', (req, res) => res.render('map', { 'page': 'map' }));
 
 app.use('/account', require('./routes/account'));
@@ -70,8 +74,8 @@ app.use('/admin', require('./routes/admin'));
 
 // Posting endpoints
 app.use('/postings', require('./routes/postings'));
-app.use('/submit-posting', require('./routes/submit-posting'));
 app.use('/viewpost', require('./routes/viewpost'));
+app.use('/makepost', require('./routes/makepost'));
 
 // Default page behaviour -- root is landing page
 // Any unrecognized endpoints get redirected to landing page
