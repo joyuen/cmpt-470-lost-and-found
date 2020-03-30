@@ -10,25 +10,16 @@ var router = express.Router();
 // ---------------------------------
 //  GET request
 // ---------------------------------
-router.get('/', async function(req, res) {
-    res.render('makepost', {'page': 'makepost'});
-});
+router.get('/:id', async function(req, res) {
+    var id = req.params.id.slice(1,)
+    if (id != "makepost" && id != "postings" && id != "map" && id != "about" && id != "contact") {
+        console.log(id)
+    }
 
-// ---------------------------------
-//  POST request
-// ---------------------------------
-/**
- *  Supported POST values
- *      title -
- *      status -
- *      item -
- *      date -
- *      time -
- *      campus -
- *      location -
- *      detail -
- *      a single file [an image] can also be uploaded
- */
+    var posting = await postings.getPostingById(id);
+    console.log(posting)
+    res.render('editpost', { posting });
+});
 
 const upload = multer({
     dest: './uploads',
@@ -86,21 +77,17 @@ router.post('/', upload.single('image'), formChecks, async function(req, res) {
         building: "",
         room: "",
         location: req.body.location,
-        creationDate: new Date(),
-        lostDate: req.body.date,
-        postedBy: req.user.id,
-        imageID: "",           // to be filled in
-        coordinates: {              // until the map is finished, default values
-            type: "Point",
-            coordinates: [49.277012, -122.918049],    // should be in the middle of burnaby campus
-        },
+        creation_date: new Date(),
+        lost_date: req.body.date,
+        posted_by: req.user.id,
+        image_id: "",           // to be filled in
     };
 
     if (req.file) {
         const fileExt = path.extname(req.file.originalname).toLowerCase();
-        new_post.imageID = await images.saveImageFromFile(req.file.path, fileExt);
+        new_post.image_id = await images.saveImageFromFile(req.file.path, fileExt);
     } else {
-        new_post.imageID = "";
+        new_post.image_id = "";
     }
 
     try {

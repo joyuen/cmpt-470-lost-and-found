@@ -71,9 +71,9 @@ app.get('/map', (req, res) => res.render('map', { 'page': 'map' }));
 
 // Posting endpoints
 app.use('/postings', require('./routes/postings'));
-app.use('/submit-posting', require('./routes/submit-posting'));
 app.use('/viewpost', require('./routes/viewpost'));
 app.use('/makepost', require('./routes/makepost'));
+app.use('/editpost', require('./routes/editpost'));
 
 // Default page behaviour -- root is landing page
 // Any unrecognized endpoints get redirected to landing page
