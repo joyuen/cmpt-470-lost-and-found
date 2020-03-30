@@ -1,0 +1,31 @@
+{{#> layout}}
+{{#*inline "head"}}
+<link rel="stylesheet" href="/css/account.css">
+{{/inline}}
+{{#*inline "content"}}
+<header>
+  <h1>Account</h1>
+</header>
+<main>
+  <form method="POST">
+    <label>Username
+      <input type="text" value="{{user.id}}" disabled="true" />
+    </label></br>
+    <label>Email
+      <input type="text" value="{{user.email}}" disabled="true" />
+    </label></br>
+    <label>Display Name
+      <input type="text" name="name" id="name" value="{{user.name}}" />
+    </label></br>
+    <div>
+      <label>Phone Number (Optional)
+        <input type="tel" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" value="{{user.phone}}">
+        <span class="validity"></span>
+        <small>Format: 123-456-7890</small>
+      </label></div></br>
+
+    <button type="submit">Save</button>
+  </form>
+</main>
+{{/inline}}
+{{/layout}}

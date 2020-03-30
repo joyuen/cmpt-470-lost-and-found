@@ -69,6 +69,9 @@ app.get('/about', (req, res) => res.render('about', {'page': 'about'}));
 app.get('/contact', (req, res) => res.render('contact', {'page': 'contact'}));
 app.get('/map', (req, res) => res.render('map', { 'page': 'map' }));
 
+app.use('/account', require('./routes/account'));
+app.use('/admin', require('./routes/admin'));
+
 // Posting endpoints
 app.use('/postings', require('./routes/postings'));
 app.use('/viewpost', require('./routes/viewpost'));
