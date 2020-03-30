@@ -86,17 +86,21 @@ router.post('/', upload.single('image'), formChecks, async function(req, res) {
         building: "",
         room: "",
         location: req.body.location,
-        creation_date: new Date(),
-        lost_date: req.body.date,
-        posted_by: req.user.id,
-        image_id: "",           // to be filled in
+        creationDate: new Date(),
+        lostDate: req.body.date,
+        postedBy: req.user.id,
+        imageID: "",           // to be filled in
+        coordinates: {              // until the map is finished, default values
+            type: "Point",
+            coordinates: [49.277012, -122.918049],    // should be in the middle of burnaby campus
+        },
     };
 
     if (req.file) {
         const fileExt = path.extname(req.file.originalname).toLowerCase();
-        new_post.image_id = await images.saveImageFromFile(req.file.path, fileExt);
+        new_post.imageID = await images.saveImageFromFile(req.file.path, fileExt);
     } else {
-        new_post.image_id = "";
+        new_post.imageID = "";
     }
 
     try {

@@ -247,8 +247,19 @@ var wordList = [
     "year", "yellow", "yes", "yesterday", "yet", "you", "young", "younger",
     "your", "yourself", "youth", "zero", "zebra", "zipper", "zoo", "zulu"
 ];
+
+// https://xkcd.com/color/rgb/
+var COLOURS = ["purple", "green", "blue", "pink", "brown", "red", "light blue", "teal",
+"orange", "light green", "magenta", "yellow", "sky blue", "grey", "lime green",
+"light purple", "violet", "dark green", "turquoise", "lavender", "dark blue",
+"tan", "cyan", "aqua"];
+
 function randint(a, b) {
     return Math.round(Math.random() * (b - a + 1) + a - 0.5);
+}
+
+function randfloat(a, b) {
+    return Math.random() * (b-a) + a; 
 }
 
 function randchoice(list) {
@@ -262,6 +273,24 @@ function generateRandomWords(numwords) {
 // todo: actually implement this?
 function generateRandomRoom(campus) {
     return ["MBC", "10053"];
+}
+
+function randomColour() {
+    return randchoice(COLOURS);
+}
+
+function generateRandomPosition(campus) {
+    bounds = {
+        'burnaby': [[49.272003, -122.933773], [49.282021, -122.902325]],
+        'vancouver': [[49.284213, -123.113048], [49.285356, -123.111055]],
+        'surrey': [[49.185315, -122.852098], [49.190122, -122.845559]],
+    }
+
+    var boundsLat = [bounds[campus][0][0], bounds[campus][1][0]];
+    var boundsLng = [bounds[campus][0][1], bounds[campus][1][1]];
+    var randomLat = randfloat(boundsLat[0], boundsLat[1]);
+    var randomLng = randfloat(boundsLng[0], boundsLng[1]);
+    return [randomLat, randomLng];
 }
 
 const ONE_MINUTE = 60 * 1000;
@@ -278,7 +307,6 @@ function makeRandomPosting(args) {
     var [building, room] = generateRandomRoom(campus);
 
     stuff = {
-        title: generateRandomWords(randint(1, 5)),
         category: randchoice(["wallet", "phone", "keys", "laptop", "clothing", "textbook", "other"]),
         description: generateRandomWords(randint(0, 50)) + ". Randomly generated post.",
         status: status,
@@ -286,28 +314,24 @@ function makeRandomPosting(args) {
         building: building,
         room: room,
         location: randchoice(["", "in the hallway outside", "on the floor by the wall", "under a seat", "by the windows"]),
-        creation_date: creation_date,
-        lost_date: lost_date,
-        image_id: randchoice(images),
-        posted_by: args.userid,
+        creationDate: creation_date,
+        lostDate: lost_date,
+        imageID: randchoice(images),
+        postedBy: args.userid,
+        coordinates: {
+            type: "Point",
+            coordinates: generateRandomPosition(campus),
+        }
     };
 
+    var title_status = (status == "found") ? "found" : "lost";
+    stuff.title = `${title_status} a ${randomColour()} ${stuff.category}`;
+
     if (status == "returned") {
-        stuff.return_date = new Date(creation_date - randint(0, time_lost));
+        stuff.returnDate = new Date(creation_date - randint(0, time_lost));
     }
 
     return stuff;
 }
-
-// function submitPosting(posting) {
-//     console.log(posting);
-// }
-
-// function generatePosts(n) {
-//     for (var i = 0; i < n; i++) {
-//         var posting = makeRandomPosting();
-//         submitPosting(posting);
-//     }
-// }
 
 module.exports = makeRandomPosting;

@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 //  Posting Model
 //---------------------------------------
 // custom mongoose types
-function StringNotEmpty(length) {       // String that must contain content in it
+function string_not_empty(length) {       // String that must contain content in it
     return {
         type: String,
         required: true,
@@ -13,7 +13,7 @@ function StringNotEmpty(length) {       // String that must contain content in i
     };
 }
 
-function StringOptional(length) {       // String that can be left blank
+function string_optional(length) {       // String that can be left blank
     return {
         type: String,
         maxlength: length,
@@ -21,10 +21,22 @@ function StringOptional(length) {       // String that can be left blank
     };
 }
 
+const point_schema = new mongoose.Schema({
+    type: {
+      type: String,
+      enum: ['Point'],
+      required: true
+    },
+    coordinates: {
+      type: [Number],
+      required: true
+    }
+  });  
+
 const posting_schema = new mongoose.Schema({
-    title: StringNotEmpty(256),
-    category: StringNotEmpty(256),
-    description: StringOptional(2000),
+    title: string_not_empty(256),
+    category: string_not_empty(256),
+    description: string_optional(2000),
     status: {
         type: String,
         required: true, 
@@ -36,45 +48,36 @@ const posting_schema = new mongoose.Schema({
         required: true, 
         enum: ["surrey", "burnaby", "vancouver"],
     },
-    building: StringOptional(256),       // todo: add verification on this
-    room: StringOptional(256),
-    location: StringOptional(256),
+    building: string_optional(256),       // todo: add verification on this
+    room: string_optional(256),
+    location: string_optional(256),
+    coordinates: {
+        type: point_schema,
+        required: true,  
+    },
 
-    creation_date: {type: Date, required: true}, 
-    lost_date: {type: Date, required: true}, 
-    return_date: {type: Date}, // this will be set later when the item is returned
+    creationDate: {type: Date, required: true}, 
+    lostDate: {type: Date, required: true}, 
+    returnDate: {type: Date}, // this will be set later when the item is returned
 
-    image_id: StringOptional(256),
-    posted_by: StringNotEmpty(256),
+    imageID: string_optional(256),
+    postedBy: string_not_empty(256),
 });
 
 // Custom validators
-posting_schema.path('lost_date').validate(function (v) {
-    return (this.lost_date <= this.creation_date);
+posting_schema.path('lostDate').validate(function (v) {
+    return (this.lostDate <= this.creationDate);
 });
 
-posting_schema.path('return_date').validate(function (v) {
-    return (this.lost_date <= this.return_date);
+posting_schema.path('returnDate').validate(function (v) {
+    return (this.lostDate <= this.returnDate);
 });
 
-posting_schema.path('return_date').validate(function (v) {
+posting_schema.path('returnDate').validate(function (v) {
     return (this.status == "returned");
 });
 
 // Helper functions
-posting_schema.virtual('campusFull').get(function() {
-    switch (this.campus) {
-        case "surrey": return "Surrey Campus";
-        case "burnaby": return "Burnaby Mountain Campus";
-        case "vancouver": return "Vancouver Campus";
-    }
-});
-
-posting_schema.virtual('statusFull').get(function() {
-    // just capitalize the first letter, nothing special yet
-    return this.status[0].toUpperCase() + this.campus.slice(1);
-});
-
 posting_schema.virtual('id').get(function() {
     return this._id;        // maybe do something fancy with it later
 })
@@ -86,8 +89,8 @@ var Postings = mongoose.model('posting', posting_schema);
 var PostingController = {
     /**
      *  Add a posting to the database
-     *  @param {object} posting - attributes to construct the posting document with
-     *  @returns {Promise<String>} id of the posting just created
+     *  @param {object} posting - attributes to construct the posting document with (see schema)
+     *  @returns id of the posting just created
      *  @throws validation error if posting is invalid
      */ 
     addPosting : async function(posting) {

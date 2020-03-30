@@ -71,7 +71,6 @@ app.get('/map', (req, res) => res.render('map', { 'page': 'map' }));
 
 // Posting endpoints
 app.use('/postings', require('./routes/postings'));
-app.use('/submit-posting', require('./routes/submit-posting'));
 app.use('/viewpost', require('./routes/viewpost'));
 app.use('/makepost', require('./routes/makepost'));
 
