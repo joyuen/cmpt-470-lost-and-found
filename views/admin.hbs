@@ -1,0 +1,31 @@
+{{#> layout}}
+{{#*inline "head"}}
+<link rel="stylesheet" href="../css/admin.css">
+{{/inline}}
+{{#*inline "content"}}
+<h1>Registered Users</h1>
+<table class="user-table">
+  <thead>
+    <tr>
+      <th>SFU ID</th>
+      <th>Display Name</th>
+      <th>Email</th>
+      <th>Phone</th>
+      <th>Admin</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each users}}
+    <tr>
+      <td>{{id}}</td>
+      <td>{{name}}</td>
+      <td>{{email}}</td>
+      <td>{{phone}}</td>
+      <td>{{admin}}</td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>
+
+{{/inline}}
+{{/layout}}
