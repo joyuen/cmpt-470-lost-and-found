@@ -1,15 +1,110 @@
-<!doctype html>
-<html lang="en">
-    <head>
-        <title>SFU Lost and Found</title>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, inital-scale=1">
-        <link rel="stylesheet" href="../css/layout.css">
-        <link rel="stylesheet" href="../css/postings.css">
-    </head>
+{{#> layout}}
+  {{#*inline "head"}}
+  <link rel="stylesheet" href="../css/layout.css">
+<link rel="stylesheet" href="../css/postings.css">
+<style>
+    #searchKeywords {
+        min-width: 300px;
+    }
 
-    <body>
-        {{> navbar}}
+    #searchBox {
+        display: block;
+        text-align: center;
+        margin-top: 50px;
+        margin-bottom: 50px;
+    }
+
+    #search {
+        display: inline-block; 
+    }
+
+    #advancedOptions {
+        display: grid;
+        grid-template-columns: 125px 375px;
+        column-gap: 10px;
+        margin: 10px;
+        align-items: center;
+    }
+
+    .advancedOptionsLabel {
+        text-align: right;
+    }
+
+    .advancedOptionsObject {
+        text-align: left;
+    }
+</style>
+  {{/inline}}
+
+  {{#*inline "content"}}
+        <div id="searchBox">
+            <form id="search">
+                <input id="searchKeywords" name="keywords" placeholder="title/description keywords" type="text">
+                <select name="status">
+                    <option value="all">All</option>
+                    <option value="lost">Lost</option>
+                    <option value="stolen">Stolen</option>
+                    <option value="returned">Returned</option>
+                </select>
+
+                <div id="advancedOptions">
+                    <div class="advancedOptionsLabel">
+                        <label for="campus">Campus: </label>
+                    </div>
+                    <div class="advancedOptionsObject">
+                        <select name="campus">
+                            <option value="">Any</option>
+                            <option value="burnaby">Burnaby Mountain Campus</option>
+                            <option value="surrey">Surrey Central Campus</option>
+                            <option value="vancouver">Vancouver Campus</option>
+                        </select>
+                    </div>
+                    <div class="advancedOptionsLabel">
+                        <label for="building">Building: </label>
+                    </div>
+                    <div class="advancedOptionsObject">
+                        <input name="building" placeholder="building" type="text">
+                    </div>
+                
+                
+                    <div class="advancedOptionsLabel">
+                        <label for="room">Room: </label>
+                    </div>
+                    <div class="advancedOptionsObject">
+                        <input name="room" placeholder="room" type="text">
+                    </div>
+                
+                    <div class="advancedOptionsLabel">
+                        <label for="lostDate">Lost Date: </label>
+                    </div>
+                    <div class="advancedOptionsObject">
+                        <input name="lostDate" type="date">
+                        <input name="lostTime" type="time">
+                        <br>
+                        <input name="lostDate2" type="date">
+                        <input name="lostTime2" type="time">
+                    </div>
+                
+                    <div class="advancedOptionsLabel">
+                        <label for="creationDate">Creation Date: </label>
+                    </div>
+                    <div class="advancedOptionsObject">
+                        <input name="creationDate" type="date">
+                        <input name="creationTime" type="time">
+                        <br>
+                        <input name="creationDate2" type="date">
+                        <input name="creationTime2" type="time">
+                    </div>                        
+                    </table>
+                </div>
+
+                <div id="formButtons">
+                    <button id="showAdvanced">Show Advanced Options</button>
+                    <button id="hideAdvanced">Hide Advanced Options</button>
+                    <button type="submit">Search</button>
+                </div>
+            </form>
+        </div>
         
         <table id="postings">
             {{#each postings}}
@@ -21,5 +116,28 @@
             </tr>
             {{/each}}
         </table>
-    </body>
-</html>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script>
+            $(document).ready(function(){
+                $('#showAdvanced').on('click', function(event) {
+                    $('#advancedOptions').toggle();
+                    $('#showAdvanced').hide();
+                    $('#hideAdvanced').show();
+                    event.preventDefault();
+                });
+
+                $('#hideAdvanced').on('click', function(event) {
+                    $('#advancedOptions').toggle();
+                    $('#showAdvanced').show();
+                    $('#hideAdvanced').hide();
+                    event.preventDefault();
+                });
+                
+                // show options by default
+                $('#advancedOptions').hide();
+                $('#hideAdvanced').hide();
+            });
+        </script>
+  {{/inline}}
+{{/layout}}
