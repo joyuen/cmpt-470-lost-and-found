@@ -31,7 +31,7 @@ const point_schema = new mongoose.Schema({
       type: [Number],
       required: true
     }
-  });  
+  });
 
 const posting_schema = new mongoose.Schema({
     title: string_not_empty(256),
@@ -39,13 +39,13 @@ const posting_schema = new mongoose.Schema({
     description: string_optional(2000),
     status: {
         type: String,
-        required: true, 
+        required: true,
         enum: ["lost", "found", "stolen", "returned"],
     },
-    
+
     campus: {
         type: String,
-        required: true, 
+        required: true,
         enum: ["surrey", "burnaby", "vancouver"],
     },
     building: string_optional(256),       // todo: add verification on this
@@ -53,11 +53,11 @@ const posting_schema = new mongoose.Schema({
     location: string_optional(256),
     coordinates: {
         type: point_schema,
-        required: true,  
+        required: true,
     },
 
-    creationDate: {type: Date, required: true}, 
-    lostDate: {type: Date, required: true}, 
+    creationDate: {type: Date, required: true},
+    lostDate: {type: Date, required: true},
     returnDate: {type: Date}, // this will be set later when the item is returned
 
     imageID: string_optional(256),
@@ -92,11 +92,35 @@ var PostingController = {
      *  @param {object} posting - attributes to construct the posting document with (see schema)
      *  @returns id of the posting just created
      *  @throws validation error if posting is invalid
-     */ 
+     */
     addPosting : async function(posting) {
         return Postings.create(posting).then(doc => {
             return doc.id;
         });
+    },
+
+    updatePosting : async function(posting, posting_id) {
+        var query = Postings.updateOne(
+            { _id: posting_id },
+            {
+                $set:
+                    {
+                        title: posting.title,
+                        category: posting.category,
+                        description: posting.description,
+                        status: posting.status,
+                        campus: posting.campus,
+                        building: posting.building,
+                        room: posting.room,
+                        location: posting.location,
+                        creationDate: posting.creationDate,
+                        lostDate: posting.lostDate,
+                        postedBy: posting.postedBy,
+                        imageID: posting.imageID,
+                        coordinates: posting.coordinates
+                    }
+            });
+        return query.exec();
     },
 
     /**

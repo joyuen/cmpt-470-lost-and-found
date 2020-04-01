@@ -20,7 +20,7 @@
         <form id="submitForm" method="POST" enctype="multipart/form-data">
             <div>
                 <label for="title">Posting title (briefly describe item): </label>
-                <input type="text" id="title" name="title" maxlength="255" required />
+                <input type="text" id="title" name="title" maxlength="255" value="{{posting.title}}" required />
             </div>
             <div>
                 <p style="margin-bottom:0px;">Is the item being reported lost, stolen, or found?</p>
@@ -65,12 +65,12 @@
 
             <div>
                 <label for="location">Extra location details:</label><br>
-                <input type="text" id="location" name="location" maxlength="255">
+                <input type="text" id="location" name="location" maxlength="255" value="{{posting.location}}">
             </div>
 
             <div>
                 <label for="detail">Please describe the item in as much detail as possible (max 2000 characters):</label><br>
-                <textarea rows="4" cols="50" id="detail" name="detail" maxlength="2000"></textarea>
+                <textarea rows="4" cols="50" id="detail" name="detail" maxlength="2000" placeholder="{{posting.description}}"></textarea>
             </div>
 
             <div>
