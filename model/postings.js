@@ -120,6 +120,8 @@ var PostingController = {
             return docs[0];
         });
     },
+
+    model: Postings,
 };
 
 module.exports = PostingController;

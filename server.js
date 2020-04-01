@@ -60,6 +60,8 @@ if (!isProduction) {
     app.use('/dev', require('./routes/dev'));
 }
 
+app.use('/api', require('./routes/api'));
+
 // Public stuff
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/images', express.static(path.join(__dirname, '/uploads/images')));
