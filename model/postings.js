@@ -1,5 +1,17 @@
 var mongoose = require('mongoose');
 
+// Create an object type UserException
+function DatabaseException(message) {
+    this.message = message;
+    this.name = 'DatabaseException';
+}
+
+// Make the exception convert to a pretty string when used as a string 
+// (e.g., by the error console)
+DatabaseException.prototype.toString = function() {
+    return `${this.name}: "${this.message}"`;
+}
+
 //---------------------------------------
 //  Posting Model
 //---------------------------------------
@@ -82,6 +94,11 @@ posting_schema.virtual('id').get(function() {
     return this._id;        // maybe do something fancy with it later
 })
 
+posting_schema.statics.deleteById = function(id) {
+    var database_id = id;
+     return this.deleteOne({_id: database_id});
+};
+
 var Postings = mongoose.model('posting', posting_schema);
 //---------------------------------------
 //  Controller
@@ -117,6 +134,9 @@ var PostingController = {
         var database_id = posting_id;
         var query = Postings.find({_id: database_id}).limit(1);
         return query.exec().then(docs => {
+            if (docs.length == 0) {
+                throw DatabaseException(`no posting with id ${posting_id} found`);
+            }
             return docs[0];
         });
     },
