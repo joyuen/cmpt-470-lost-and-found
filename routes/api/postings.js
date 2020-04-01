@@ -62,7 +62,7 @@ router.delete('/:id', async function(req, res) {
         return res.status(403);
     }
 
-    var result = await Postings.model.deleteById(req.params.id);
+    var result = await Postings.deleteById(req.params.id);
     if (result.ok == 1) {
         return res.status(200).json(result);
     } else {
@@ -98,11 +98,11 @@ router.put('/:id', multer_image.single('image'), async function(req, res) {
 
     var result;
     try {
-        result = await Postings.model.findOneAndUpdate({_id: req.params.id}, req.body, {runValidators: true}).exec();
+        result = await Postings.findOneAndUpdate({_id: req.params.id}, req.body, {runValidators: true}).exec();
     } catch (err) {
         return res.status(400).json(err.message);
     }
-    return res.status(200).json(result);
+    return res.status(200);
 });
 
 /**
@@ -223,7 +223,7 @@ router.get('/', [
 
     // maybe there's a pagination library that can do this smarter, but I can't find one
     // Rollin my own
-    var query = Postings.model.find();
+    var query = Postings.find();
 
     if (req.query.keywords) {
         // todo, need a text index

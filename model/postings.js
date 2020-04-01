@@ -89,59 +89,56 @@ posting_schema.path('returnDate').validate(function (v) {
     return (this.status == "returned");
 });
 
-// Helper functions
+// maybe in the future we want posting ids to be different from database ids
+// these two functions convert between the two
+posting_schema.statics.to_dbid = function(pid) {
+    return pid;
+}
+posting_schema.statics.from_dbid = function(dbid) {
+    return dbid;
+}
 posting_schema.virtual('id').get(function() {
-    return this._id;        // maybe do something fancy with it later
+    return this.from_dbid(this._id);
 })
 
-posting_schema.statics.deleteById = function(id) {
-    var database_id = id;
-     return this.deleteOne({_id: database_id});
+// Helper queries
+posting_schema.statics.deleteById = function(posting_id) {
+    return this.deleteOne({_id: this.to_dbid(posting_id)});
+};
+
+/**
+ *  Add a posting to the database
+ *  @param {object} posting - attributes to construct the posting document with (see schema)
+ *  @returns id of the posting just created
+ *  @throws validation error if posting is invalid
+ */ 
+posting_schema.statics.addPosting = async function(posting) {
+    return this.create(posting).then(doc => {
+        return doc.id;
+    });
+};
+
+/**
+ *  @returns cursor to iterate through all postings
+ */
+posting_schema.statics.getAllPostings = async function() {
+    var query = Postings.find();
+    return query.exec();
+};
+
+/**
+ * @param {string} id - the posting id
+ * @returns posting corresponding to the id
+ */
+posting_schema.statics.getPostingById = async function(posting_id) {
+    var query = Postings.find({_id: this.to_dbid(posting_id)}).limit(1);
+    return query.exec().then(docs => {
+        if (docs.length == 0) {
+            throw DatabaseException(`no posting with id ${posting_id} found`);
+        }
+        return docs[0];
+    });
 };
 
 var Postings = mongoose.model('posting', posting_schema);
-//---------------------------------------
-//  Controller
-//---------------------------------------
-var PostingController = {
-    /**
-     *  Add a posting to the database
-     *  @param {object} posting - attributes to construct the posting document with (see schema)
-     *  @returns id of the posting just created
-     *  @throws validation error if posting is invalid
-     */ 
-    addPosting : async function(posting) {
-        return Postings.create(posting).then(doc => {
-            return doc.id;
-        });
-    },
-
-    /**
-     *  @returns cursor to iterate through all postings
-     */
-    getAllPostings : async function() {
-        var query = Postings.find();
-        return query.exec();
-    },
-
-    /**
-     * @param {string} id - the posting id
-     * @returns posting corresponding to the id
-     */
-    getPostingById : async function(posting_id) {
-        // turn posting id -> _id attribute in database
-        // but they're the same right now, so nothing fancy
-        var database_id = posting_id;
-        var query = Postings.find({_id: database_id}).limit(1);
-        return query.exec().then(docs => {
-            if (docs.length == 0) {
-                throw DatabaseException(`no posting with id ${posting_id} found`);
-            }
-            return docs[0];
-        });
-    },
-
-    model: Postings,
-};
-
-module.exports = PostingController;
+module.exports = Postings;
