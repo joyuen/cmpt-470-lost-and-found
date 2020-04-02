@@ -9,13 +9,16 @@
 
 {{#*inline "content"}}
 <div id="overlay"></div>
-<main class="flex-container">
-    <aside id="sidebar">
+<main class="grid">
+    <aside class="grid-zero">
         <header class="title-container">
             <div class="sfu-title"><p class="sfu">S</p>omething</div>
             <div class="sfu-title"><p class="sfu">F</p>ound at</div>
             <div class="sfu-title"><p class="sfu">U</p>niversity</div>
         </header>
+    </aside>
+    <aside id="sidebar" class="grid-one">
+
         <div id="content">
             <div id="all-post" class="selected">
                 <!-- Add pagination shit https://codepen.io/harangue/pen/VeJowz -->
@@ -82,7 +85,7 @@
             </form>
         </div>
     </aside>
-    <div class="map-container">
+    <div class="grid-two">
         <div id="floating-panel">
             <input onclick="showBurnaby();" type=button value="Burnaby">
             <input onclick="showVancouver();" type=button value="Vancouver">
