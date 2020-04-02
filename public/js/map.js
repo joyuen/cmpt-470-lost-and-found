@@ -9,13 +9,13 @@ let testMarkers = [{id: 1, lat: 49.278871, lng: -122.916386, info: "Hello"},
 // Track current campus
 let campus = "burnaby";
 
-function getMarkers(n, s, w, e, callback) {
+function getMarkers(n, s, w, e) {
     var req = new XMLHttpRequest();
     req.onreadystatechange = function() {
         if (req.readyState === 4) {
             var response = req.responseText;
             var json = JSON.parse(response);
-            callback(json);
+            setMarkers(json);
         }
     };
     req.open('POST', location.origin + "/region");
@@ -23,6 +23,30 @@ function getMarkers(n, s, w, e, callback) {
     var data = "n="+n+"&s="+s+"&w="+w+"&e="+e;
     req.send(data);
 }
+
+function setMarkers(markers) {
+    for(var key in existing) {
+        if(!(key in markers)) {
+            existing[key].setMap(null);
+            delete existing[key];
+        }
+    }
+    for(var key in markers) {
+        if(key in existing) {
+            continue;
+        }
+        let pos = markers[key].coordinates.coordinates;
+        let m = new google.maps.Marker({
+            position: new google.maps.LatLng(pos[1], pos[0]),
+            map: map,
+        })
+        existing[key] = m;
+
+        m.addListener('click', function() {
+            // document.getElementById('content').innerHTML = pos.info;
+        })
+    }
+};
 
 function initMap() {
     // GLOBALS
@@ -97,31 +121,7 @@ function initMap() {
         neBounds = bounds.getNorthEast();
         swBounds = bounds.getSouthWest();
 
-        var f = function(markers) {
-            for(var key in existing) {
-                if(!(key in markers)) {
-                    existing[key].setMap(null);
-                    delete existing[key];
-                }
-            }
-            for(var key in markers) {
-                if(key in existing) {
-                    continue;
-                }
-                let pos = markers[key].coordinates.coordinates;
-                let m = new google.maps.Marker({
-                    position: new google.maps.LatLng(pos[1], pos[0]),
-                    map: map,
-                })
-                existing[key] = m;
-
-                m.addListener('click', function() {
-                    // document.getElementById('content').innerHTML = pos.info;
-                })
-            }
-        };
-
-        getMarkers(neBounds.lat(), swBounds.lat(), swBounds.lng(), neBounds.lng(), f);
+        getMarkers(neBounds.lat(), swBounds.lat(), swBounds.lng(), neBounds.lng());
 
     });
 
@@ -171,6 +171,7 @@ function initMap() {
 }
 
 function showBurnaby() {
+    setMarkers([])
     map.setOptions({center: burnabyCenter, zoom: burnabyMinZoom, minZoom: burnabyMinZoom, restriction: {latLngBounds: burnabyBounds, strictBounds: false}})
     map.setCenter(burnabyCenter);
     map.setZoom(burnabyMinZoom);
@@ -178,13 +179,17 @@ function showBurnaby() {
 }
 
 function showVancouver() {
+    setMarkers([])
     map.setOptions({center: vancouverCenter, zoom: vancouverMinZoom, minZoom: vancouverMinZoom, restriction: {latLngBounds: vancouverBounds, strictBounds: false}})
     map.setCenter(vancouverCenter);
+    map.setZoom(vancouverMinZoom);
     campus = "vancouver";
 }
 
 function showSurrey() {
+    setMarkers([])
     map.setOptions({center: surreyCenter, zoom: surreyMinZoom, minZoom: surreyMinZoom, restriction: {latLngBounds: surreyBounds, strictBounds: false}})
     map.setCenter(surreyCenter);
+    map.setZoom(surreyMinZoom);
     campus = "surrey";
 }
