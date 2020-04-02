@@ -15,7 +15,11 @@ function getMarkers(n, s, w, e) {
         if (req.readyState === 4) {
             var response = req.responseText;
             var json = JSON.parse(response);
-            setMarkers(json);
+            dict = {}
+            for(var r in json) {
+                dict[json[r]._id] = json[r];
+            }
+            setMarkers(dict);
         }
     };
     req.open('POST', location.origin + "/region");
@@ -43,7 +47,18 @@ function setMarkers(markers) {
         existing[key] = m;
 
         m.addListener('click', function() {
-            // document.getElementById('content').innerHTML = pos.info;
+            var form = document.getElementById("content-form");
+            form.className = "not-selected";
+            var allpost = document.getElementById("all-post");
+            allpost.className = "not-selected";
+            var contentpost = document.getElementById("content-post");
+            contentpost.className = "selected";
+            document.getElementById('post-title').innerHTML = markers[key].title;
+            document.getElementById('post-status').innerHTML = "Status: " + markers[key].status;
+            document.getElementById('post-item').innerHTML = "Item: " + markers[key].category;
+            document.getElementById('post-date').innerHTML = markers[key].lostDate;
+            document.getElementById('post-author').innerHTML = "Posted by: " + markers[key].postedBy;
+            document.getElementById('post-link').href = "/viewpost?id="+markers[key]._id;
         })
     }
 };
@@ -171,7 +186,6 @@ function initMap() {
 }
 
 function showBurnaby() {
-    setMarkers([])
     map.setOptions({center: burnabyCenter, zoom: burnabyMinZoom, minZoom: burnabyMinZoom, restriction: {latLngBounds: burnabyBounds, strictBounds: false}})
     map.setCenter(burnabyCenter);
     map.setZoom(burnabyMinZoom);
@@ -179,7 +193,6 @@ function showBurnaby() {
 }
 
 function showVancouver() {
-    setMarkers([])
     map.setOptions({center: vancouverCenter, zoom: vancouverMinZoom, minZoom: vancouverMinZoom, restriction: {latLngBounds: vancouverBounds, strictBounds: false}})
     map.setCenter(vancouverCenter);
     map.setZoom(vancouverMinZoom);
@@ -187,7 +200,6 @@ function showVancouver() {
 }
 
 function showSurrey() {
-    setMarkers([])
     map.setOptions({center: surreyCenter, zoom: surreyMinZoom, minZoom: surreyMinZoom, restriction: {latLngBounds: surreyBounds, strictBounds: false}})
     map.setCenter(surreyCenter);
     map.setZoom(surreyMinZoom);

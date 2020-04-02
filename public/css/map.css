@@ -40,14 +40,14 @@ main {
     overflow: scroll;
 }
 
-#content form {
+#content>form div {
     width: 100%;
-}
-
-#content div {
-    margin-top: 5px;
     display: flex;
     flex-direction: column;
+}
+
+#content>div{
+    margin-top: 5px;
 }
 
 input, textarea, select {
@@ -70,6 +70,12 @@ input, textarea, select {
 .not-selected {
     visibility: hidden;
     display: none;
+}
+
+.selected {
+    visibility: visible;
+    display: flex;
+    flex-direction: column;
 }
 
 .grid {
