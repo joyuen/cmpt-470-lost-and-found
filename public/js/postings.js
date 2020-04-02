@@ -4,9 +4,9 @@ function renderPosts(postings) {
         <tbody>
         <% for(var i=0; i<postings.length; i++) { %>
             <tr class="posting <%= postings[i].status %>">
-                <td><%= postings[i].status %></td>
-                <td><a href='/viewpost?id=<%= postings[i]._id %>'><%= postings[i].title %></a></td>
-                <td><%= postings[i].campus %></td>
+                <td><%= postings[i].statusFull %></td>
+                <td><a href='/viewpost?id=<%= postings[i].id %>'><%= postings[i].title %></a></td>
+                <td><%= postings[i].campusFull %></td>
                 <td title="<%= new Date(postings[i].lostDate) %>"><%= moment.duration(new Date(postings[i].lostDate) - now, 'milliseconds').humanize(true); %></td>
             </tr>
         <% } %>

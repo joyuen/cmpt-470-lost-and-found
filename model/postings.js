@@ -94,6 +94,19 @@ posting_schema.virtual('id').get(function() {
     return this._id;        // maybe do something fancy with it later
 })
 
+posting_schema.virtual('campusFull').get(function() {
+    switch (this.campus) {
+        case "surrey": return "Surrey Campus";
+        case "burnaby": return "Burnaby Campus";
+        case "vancouver": return "Vancouver Campus";
+    }
+});
+
+posting_schema.virtual('statusFull').get(function() {
+    // just capitalize the first letter, nothing special yet
+    return this.status[0].toUpperCase() + this.status.slice(1);
+});
+
 // Helper queries
 posting_schema.statics.deleteById = function(id) {
     var database_id = id;

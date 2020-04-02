@@ -182,9 +182,16 @@ router.post('/', multer_image.single('image'), [
 
 /**
  * GET /?(params) - get postings, under search conditions
- * Returns JSON -- {token: string, data: [list of Postings]}
+ * Returns JSON {token: string, data: (array of Postings), [numTotal: ...]}
+ * If no token is specified in the search params, a "numTotal" attribute is added
+ *      with the total number of postings matched by the search.
  * Postings are paginated -- request only returns a few postings (default 10).
  * To continue a search, pass in the returned token as a param along with the same search parameters.
+ * 
+ * Only certain attributes are returned in the Postings:
+ *      id, status, campus, lostDate, title, campusFull, statusFull
+ * for more, run queries to the individual posts /api/posting/:id
+ * or change this function to return more attributes
  * 
  * Parameters:
  *      [if any are not specified, then assume 'all']
@@ -220,9 +227,6 @@ router.get('/', [
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    
-    // maybe there's a pagination library that can do this smarter, but I can't find one
-    // Rollin my own
 
     function createQuery(query) {
         var query = Postings.find();
@@ -264,15 +268,26 @@ router.get('/', [
             query = query.where('lostDate').lt(tokenDate);      // should be fine to have overlapping conditions right?
         }
         query = query.where('lostDate').lte(new Date());
-
         return query;
+    }
 
+    function projectPosting(p) {
+        var x = p.toObject();
+        // put in some virtuals
+        x.id = p.id;
+        x.campusFull = p.campusFull;
+        x.statusFull = p.statusFull;
+        delete x._id;
+        return x;
     }
 
     var results = await createQuery()
+        .select('_id status title campus lostDate')
         .sort({lostDate: -1})
         .limit(req.query.numPostings)
         .exec();
+    
+    results = results.map(projectPosting);
     
     if (results.length == 0) {
         //          |    |         |            |
