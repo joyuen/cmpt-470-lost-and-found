@@ -38,7 +38,9 @@
         width: 100%;
     }
 
-    
+    #pagehud {
+        text-align: center;
+    }
 </style>
   {{/inline}}
 
@@ -125,25 +127,138 @@
             </form>
         </div>
         
+        <div id="pagehud">
+            <button id="pageLeft">&laquo;</button>
+            Page <span id="pageNum">0</span>/<span id="pageTotal">0</span>
+            <button id="pageRight">&raquo;</button>    
+        </div>
+        
         <table id="postings">
-            {{#each postings}}
-            <tr class="posting {{status}}">
-                <td>{{post_status status}}</td>
-                <td><a href={{url}}>{{title}}</a></td>
-                <td>{{post_campus campus}}</td>
-                <td>{{date_humanized}}</td>
-            </tr>
-            {{/each}}
         </table>
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
         <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
         <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+        <script src="https://cdn.jsdelivr.net/npm/ejs@3.0.2/ejs.min.js"></script>
+
         <script>
-            var now = moment();
-            
-            $(document).ready(function(){
+            function renderPosts(postings) {
+                var x = ejs.render(`
+                    <table>
+                    <tbody>
+                    <% for(var i=0; i<postings.length; i++) { %>
+                        <tr class="posting <%= postings[i].status %>">
+                            <td><%= postings[i].status %></td>
+                            <td><a href='/viewpost?id=<%= postings[i]._id %>'><%= postings[i].title %></a></td>
+                            <td><%= postings[i].campus %></td>
+                            <td title="<%= new Date(postings[i].lostDate) %>"><%= moment.duration(new Date(postings[i].lostDate) - now, 'milliseconds').humanize(true); %></td>
+                        </tr>
+                    <% } %>
+                    </tbody>
+                    </table>
+                `, {'postings': postings, 'now': new Date()});
+                document.getElementById('postings').innerHTML = x;
+            }
+
+            function Paginator() {
+            };
+
+            Paginator.prototype.init = async function (searchparams) {
+                this.cache = {};
+                this.POSTS_PER_PAGE = 10;
+                this.numtotal = 0;
+                this.searchparams = searchparams;
+                this.curpost = 0;
+                this.token = "";
+
+                var self = this;
+                return new Promise(function(resolve, reject) {
+                    $.get(`/api/postings?${$.param(searchparams)}`, function(data) {
+                        console.log(data);
+                        self.numtotal = data.numTotal;
+                        self.numpages = Math.ceil(self.numtotal / self.POSTS_PER_PAGE);
+                        self.addToCache(0, data.data);
+                        self.curpost += data.data.length;
+                        self.token = data.token;
+                        resolve();
+                    });
+                });
+            };
+
+            Paginator.prototype.addToCache = function (start, p) {
+                for (var i=0; i<p.length; i++) {
+                    this.cache[start+i] = p[i];
+                }
+            };
+
+            Paginator.prototype.fetchPosts = async function () {
+                var self = this;
+                var asdf = {...this.searchparams, token: this.token};
+                console.log(asdf);
+                return new Promise(function(resolve, reject) {
+                    $.get(`/api/postings?${$.param(asdf)}`, function(data) {
+                        console.log(data);
+                        self.addToCache(self.curpost, data.data);
+                        self.curpost += data.data.length;
+                        self.token = data.token;
+                        resolve();
+                    });
+                });
+            };
+
+            Paginator.prototype.getPage = async function (p) {
+                var startpost = (p-1) * this.POSTS_PER_PAGE;
+                var lastpost = Math.min(this.numtotal, p * this.POSTS_PER_PAGE - 1);
+                while (this.curpost < lastpost) {
+                    console.log(this.curpost, this.numtotal, lastpost);
+                    await this.fetchPosts();
+                }
+
+                console.log(startpost, lastpost);
+
+                var arr = [];
+                for (var i=startpost; i<lastpost; i++) {
+                    arr.push(this.cache[i]);
+                }
+                console.log(arr);
+                return arr;
+            };
+
+            var inator;
+            var currentpage;
+            var totalpages;
+            async function startPagination(searchparams) {
+                inator = new Paginator();
+                await inator.init(searchparams);
+                currentpage = 1;
+                totalpages = inator.numpages;
+                $("#pageNum").text(currentpage);
+                $("#pageTotal").text(inator.numpages);
+                renderPage(currentpage);
+            }
+
+            async function renderPage(i) {
+                renderPosts(await inator.getPage(i));
+            }
+
+            async function prevPage() {
+                if (currentpage > 1)
+                    currentpage--;
+                $("#pageNum").text(currentpage);
+                await renderPage(currentpage);
+            }
+            async function nextPage() {
+                if (currentpage < totalpages)
+                    currentpage++;
+                $("#pageNum").text(currentpage);
+                await renderPage(currentpage);
+            }
+        </script>
+        <script>
+            $(document).ready(function() { 
+                startPagination({});
+
                 $("#search").submit(function(e) {
                     e.preventDefault();
 
@@ -163,11 +278,9 @@
                         if (val == "") {
                             delete formJson[key];
                         }
-                    }                    
+                    }
 
-                    $.get(`/api/postings?${$.param(formJson)}`, function(data) {
-                        console.log(data);
-                    });
+                    startPagination(formJson);
                 });
 
                 $('#showAdvanced').on('click', function(event) {
@@ -202,6 +315,9 @@
                     }
                 };
                 $('input[name="lostDateRange"]').daterangepicker(dateRangeFormat).val('');
+
+                $('#pageLeft').on('click', prevPage);
+                $('#pageRight').on('click', nextPage);
             });
         </script>
   {{/inline}}

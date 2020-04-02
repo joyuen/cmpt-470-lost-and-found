@@ -220,49 +220,56 @@ router.get('/', [
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-
+    
     // maybe there's a pagination library that can do this smarter, but I can't find one
     // Rollin my own
-    var query = Postings.find();
 
-    if (req.query.keywords) {
-        // todo, need a text index
+    function createQuery(query) {
+        var query = Postings.find();
+
+        if (req.query.keywords) {
+            // todo, need a text index
+        }
+
+        if (req.query.status) {
+            query = query.where('status').equals(req.query.status);
+        }
+        if (req.query.category) {
+            query = query.where('category').equals(req.query.category);
+        }
+        if (req.query.campus) {
+            query = query.where('campus').equals(req.query.campus);
+        }
+        if (req.query.building) {
+            // the regex is for substring searching
+            var escapedBuilding = RegexEscape(req.query.building);
+            query = query.where('building').regex(escapedBuilding);
+        }
+        if (req.query.room) {
+            // the regex is for substring searching
+            var escapedRoom = RegexEscape(req.query.room);
+            query = query.where('room').regex(escapedRoom);
+        }
+        
+        if (req.query.lostDateStart) {
+            var lostDateStart = new Date(req.query.lostDateStart);
+            query = query.where('lostDate').gte(lostDateStart);
+        }
+        if (req.query.lostDateEnd) {
+            var lostDateEnd = new Date(req.query.lostDateEnd);
+            query = query.where('lostDate').lte(lostDateEnd);
+        }
+        if (req.query.token) {
+            var tokenDate = new Date(req.query.token);
+            query = query.where('lostDate').lt(tokenDate);      // should be fine to have overlapping conditions right?
+        }
+        query = query.where('lostDate').lte(new Date());
+
+        return query;
+
     }
 
-    if (req.query.status) {
-        query = query.where('status').equals(req.query.status);
-    }
-    if (req.query.category) {
-        query = query.where('category').equals(req.query.category);
-    }
-    if (req.query.campus) {
-        query = query.where('campus').equals(req.query.campus);
-    }
-    if (req.query.building) {
-        // the regex is for substring searching
-        var escapedBuilding = RegexEscape(req.query.building);
-        query = query.where('building').regex(escapedBuilding);
-    }
-    if (req.query.room) {
-        // the regex is for substring searching
-        var escapedRoom = RegexEscape(req.query.room);
-        query = query.where('room').regex(escapedRoom);
-    }
-    
-    if (req.query.lostDateStart) {
-        var lostDateStart = new Date(req.query.lostDateStart);
-        query = query.where('lostDate').gte(lostDateStart);
-    }
-    if (req.query.lostDateEnd) {
-        var lostDateEnd = new Date(req.query.lostDateEnd);
-        query = query.where('lostDate').lte(lostDateEnd);
-    }
-    if (req.query.token) {
-        var tokenDate = new Date(req.query.token);
-        query = query.where('lostDate').lt(tokenDate);      // should be fine to have overlapping conditions right?
-    }
-    
-    var results = await query
+    var results = await createQuery()
         .sort({lostDate: -1})
         .limit(req.query.numPostings)
         .exec();
@@ -274,13 +281,25 @@ router.get('/', [
         function minDate(arr) {
             return arr.filter(x => typeof x != "undefined").reduce((x,y) => ((x>y) ? y : x));
         }
-        var token = minDate([lostDateStart, lostDateEnd, tokenDate, new Date()]);
+        var token = minDate([
+            new Date(req.query.lostDateStart),
+            new Date(req.query.lostDateEnd),
+            new Date(req.query.token),
+            new Date()]);
     } else {
         var token = results[results.length-1].lostDate;
     }
+
+    // return the number of total documents, on the first search
+    var numTotal;
+    if (!req.query.token) { 
+        numTotal = await createQuery().count().exec();
+    }
+
     res.json({
         token: token,
-        data: results
+        data: results,
+        numTotal: numTotal,
     });
 });
 
