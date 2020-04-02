@@ -6,6 +6,9 @@ let existing = {};
 let testMarkers = [{id: 1, lat: 49.278871, lng: -122.916386, info: "Hello"},
                {id: 2, lat: 49.279340, lng: -122.922866, info: "World"}]
 
+// Track current campus
+let campus = "burnaby";
+
 function getMarkers(n, s, w, e) {
     // TODO: Retrieve from DB
     var markers = testMarkers;
@@ -121,30 +124,32 @@ function initMap() {
           map: map,
         });
 
-        var btn = document.createElement("input");
+        var form = document.getElementById("content-form");
+        document.getElementById("campus").value = campus;
+        document.getElementById("lat").value = event.latLng.lat();
+        document.getElementById("lng").value = event.latLng.lng();
         //Set the attributes
-        btn.setAttribute("type","button");
-        btn.value = "Create Post";
-        btn.style.marginLeft = "20px";
-        btn.style.marginTop = "20px";
-        btn.onclick = function() {
+        form.className = "selected";
+        var allpost = document.getElementById("all-post");
+        var contentpost = document.getElementById("content-post");
+        allpost.className = "not-selected";
+        contentpost.className = "not-selected";
+        form.onclick = function() {
+            console.log("hello?");
             var overlay = document.getElementById('overlay')
             overlay.style.display = "block";
             overlay.style.left = document.getElementById('sidebar').offsetWidth + "px";
             overlay.style.width = document.getElementById('map').offsetWidth + "px";
-            console.log(overlay.style.width)
-            console.log(document.getElementById('map').offsetWidth)
             var f = function() {
                 overlay.style.display = "none";
                 overlay.removeEventListener("click", f);
                 marker.setMap(null);
+                form.className = "not-selected";
+                allpost.className = "selected";
             }
             overlay.addEventListener("click", f);
-            alert("WIP: create post form should pop up")
+            form.onclick = function() {};
         };
-        //Add the button to the body
-        document.getElementById('content').innerHTML = "";
-        document.getElementById('content').appendChild(btn);
 
         marker.addListener('click', function() {
             if(marker) {
@@ -163,14 +168,17 @@ function showBurnaby() {
     map.setOptions({center: burnabyCenter, zoom: burnabyMinZoom, minZoom: burnabyMinZoom, restriction: {latLngBounds: burnabyBounds, strictBounds: false}})
     map.setCenter(burnabyCenter);
     map.setZoom(burnabyMinZoom);
+    campus = "burnaby";
 }
 
 function showVancouver() {
     map.setOptions({center: vancouverCenter, zoom: vancouverMinZoom, minZoom: vancouverMinZoom, restriction: {latLngBounds: vancouverBounds, strictBounds: false}})
     map.setCenter(vancouverCenter);
+    campus = "vancouver";
 }
 
 function showSurrey() {
     map.setOptions({center: surreyCenter, zoom: surreyMinZoom, minZoom: surreyMinZoom, restriction: {latLngBounds: surreyBounds, strictBounds: false}})
     map.setCenter(surreyCenter);
+    campus = "surrey";
 }
