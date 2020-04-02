@@ -7,13 +7,16 @@
     height: 2em;
 }
 .lost {
-    background-color: lightgreen;
+    background-color: thistle;
 }
 .stolen {
     background-color: lightpink;
 }
 .found {
     background-color: lightblue;
+}
+.returned {
+  background-color: lightgreen;
 }
 
 /* add 5px padding to .posting */
@@ -38,4 +41,43 @@
 .posting td:nth-child(4) {
   width: 150px;
   text-align: right;
+}
+
+#searchBox {
+    display: block;         /* center form within screen */
+    text-align: center;     /* center form within screen */
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+#search {
+    display: inline-block;  /* center form within screen */
+}
+
+#searchKeywords {
+    min-width: 300px;
+}
+
+#advancedOptions {
+    display: grid;
+    grid-template-columns: 125px 375px;
+    column-gap: 10px;
+    margin: 10px;
+    align-items: center;
+}
+
+.advancedOptionsLabel {
+    text-align: right;
+}
+
+.advancedOptionsObject {
+    text-align: left;
+}
+
+.advancedOptionsObject select, .advancedOptionsObject input {
+    width: 100%;
+}
+
+#pagehud {
+    text-align: center;
 }

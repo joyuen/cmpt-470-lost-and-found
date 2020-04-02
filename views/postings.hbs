@@ -1,324 +1,106 @@
 {{#> layout}}
-  {{#*inline "head"}}
-  <link rel="stylesheet" href="../css/layout.css">
+{{#*inline "head"}}
+<link rel="stylesheet" href="../css/layout.css">
 <link rel="stylesheet" href="../css/postings.css">
-<style>
-    #searchKeywords {
-        min-width: 300px;
-    }
+{{/inline}}
 
-    #searchBox {
-        display: block;
-        text-align: center;
-        margin-top: 50px;
-        margin-bottom: 50px;
-    }
+{{#*inline "content"}}
+<div id="searchBox">
+    <form id="search">
+        <input id="searchKeywords" name="keywords" placeholder="title/description keywords" type="text">
+        <select name="status">
+            <option value="">All</option>
+            <option value="lost">Lost</option>
+            <option value="stolen">Stolen</option>
+            <option value="returned">Returned</option>
+        </select>
 
-    #search {
-        display: inline-block; 
-    }
-
-    #advancedOptions {
-        display: grid;
-        grid-template-columns: 125px 375px;
-        column-gap: 10px;
-        margin: 10px;
-        align-items: center;
-    }
-
-    .advancedOptionsLabel {
-        text-align: right;
-    }
-
-    .advancedOptionsObject {
-        text-align: left;
-    }
-
-    .advancedOptionsObject select, .advancedOptionsObject input {
-        width: 100%;
-    }
-
-    #pagehud {
-        text-align: center;
-    }
-</style>
-  {{/inline}}
-
-  {{#*inline "content"}}
-        <div id="searchBox">
-            <form id="search">
-                <input id="searchKeywords" name="keywords" placeholder="title/description keywords" type="text">
-                <select name="status">
-                    <option value="">All</option>
-                    <option value="lost">Lost</option>
-                    <option value="stolen">Stolen</option>
-                    <option value="returned">Returned</option>
+        <div id="advancedOptions">
+            <div class="advancedOptionsLabel">
+                <label for="category">Category: </label>
+            </div>
+            <div class="advancedOptionsObject">
+                <select name="category">
+                    <option value="">Any</option>
+                    <option value="wallet">Wallet</option>
+                    <option value="phone">Phone</option>
+                    <option value="keys">Keys</option>
+                    <option value="laptop">Laptop</option>
+                    <option value="pencilCase">Pencil Case</option>
+                    <option value="clothing">Clothing</option>
+                    <option value="textbook">Textbook</option>
+                    <option value="other">Other</option>
                 </select>
+            </div>
 
-                <div id="advancedOptions">
-                    <div class="advancedOptionsLabel">
-                        <label for="category">Category: </label>
-                    </div>
-                    <div class="advancedOptionsObject">
-                        <select name="category">
-                            <option value="">Any</option>
-                            <option value = "wallet">Wallet</option>
-                            <option value = "phone">Phone</option>
-                            <option value = "keys">Keys</option>
-                            <option value = "laptop">Laptop</option>
-                            <option value = "pencilCase">Pencil Case</option>
-                            <option value = "clothing">Clothing</option>
-                            <option value = "textbook">Textbook</option>
-                            <option value = "other">Other</option>
-                        </select>
-                    </div>
-                    
-                    <div class="advancedOptionsLabel">
-                        <label for="campus">Campus: </label>
-                    </div>
-                    <div class="advancedOptionsObject">
-                        <select name="campus">
-                            <option value="">Any</option>
-                            <option value="burnaby">Burnaby Mountain Campus</option>
-                            <option value="surrey">Surrey Central Campus</option>
-                            <option value="vancouver">Vancouver Campus</option>
-                        </select>
-                    </div>
-                    <div class="advancedOptionsLabel">
-                        <label for="building">Building: </label>
-                    </div>
-                    <div class="advancedOptionsObject">
-                        <input name="building" placeholder="building" type="text">
-                    </div>
-                
-                
-                    <div class="advancedOptionsLabel">
-                        <label for="room">Room: </label>
-                    </div>
-                    <div class="advancedOptionsObject">
-                        <input name="room" placeholder="room" type="text">
-                    </div>
+            <div class="advancedOptionsLabel">
+                <label for="campus">Campus: </label>
+            </div>
+            <div class="advancedOptionsObject">
+                <select name="campus">
+                    <option value="">Any</option>
+                    <option value="burnaby">Burnaby Mountain Campus</option>
+                    <option value="surrey">Surrey Central Campus</option>
+                    <option value="vancouver">Vancouver Campus</option>
+                </select>
+            </div>
+            <div class="advancedOptionsLabel">
+                <label for="building">Building: </label>
+            </div>
+            <div class="advancedOptionsObject">
+                <input name="building" placeholder="building" type="text">
+            </div>
 
-                    <div class="advancedOptionsLabel">
-                        <label for="lostDate">Lost Date: </label>
-                        {{!-- <select name="dateSelector">
+
+            <div class="advancedOptionsLabel">
+                <label for="room">Room: </label>
+            </div>
+            <div class="advancedOptionsObject">
+                <input name="room" placeholder="room" type="text">
+            </div>
+
+            <div class="advancedOptionsLabel">
+                <label for="lostDate">Lost Date: </label>
+                {{!-- <select name="dateSelector">
                             <option value="lost">Lost Date:</option>
                             <option value="create">Create Date:</option>
                         </select> --}}
-                    </div>
-                    <div class="advancedOptionsObject">
-                        <input name="lostDateRange" type="text">
-                    </div>
-                
-                    {{!-- <div class="advancedOptionsLabel">
+            </div>
+            <div class="advancedOptionsObject">
+                <input name="lostDateRange" type="text">
+            </div>
+
+            {{!-- <div class="advancedOptionsLabel">
                         <label for="creationDate">Creation Date: </label>
                     </div>
                     <div class="advancedOptionsObject">
                         <input name="creationDateRange" type="text">
                     </div>         --}}
-                    </table>
-                </div>
-
-                <div id="formButtons">
-                    <button id="showAdvanced">Show Advanced Options</button>
-                    <button id="hideAdvanced">Hide Advanced Options</button>
-                    <button type="submit">Search</button>
-                </div>
-            </form>
+            </table>
         </div>
-        
-        <div id="pagehud">
-            <button id="pageLeft">&laquo;</button>
-            Page <span id="pageNum">0</span>/<span id="pageTotal">0</span>
-            <button id="pageRight">&raquo;</button>    
+
+        <div id="formButtons">
+            <button id="showAdvanced">Show Advanced Options</button>
+            <button id="hideAdvanced">Hide Advanced Options</button>
+            <button type="submit">Search</button>
         </div>
-        
-        <table id="postings">
-        </table>
+    </form>
+</div>
 
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-        <script src="https://cdn.jsdelivr.net/npm/ejs@3.0.2/ejs.min.js"></script>
+<div id="pagehud">
+    <button id="pageLeft">&laquo;</button>
+    Page <span id="pageNum">0</span>/<span id="pageTotal">0</span>
+    <button id="pageRight">&raquo;</button>
+</div>
 
-        <script>
-            function renderPosts(postings) {
-                var x = ejs.render(`
-                    <table>
-                    <tbody>
-                    <% for(var i=0; i<postings.length; i++) { %>
-                        <tr class="posting <%= postings[i].status %>">
-                            <td><%= postings[i].status %></td>
-                            <td><a href='/viewpost?id=<%= postings[i]._id %>'><%= postings[i].title %></a></td>
-                            <td><%= postings[i].campus %></td>
-                            <td title="<%= new Date(postings[i].lostDate) %>"><%= moment.duration(new Date(postings[i].lostDate) - now, 'milliseconds').humanize(true); %></td>
-                        </tr>
-                    <% } %>
-                    </tbody>
-                    </table>
-                `, {'postings': postings, 'now': new Date()});
-                document.getElementById('postings').innerHTML = x;
-            }
+<table id="postings">
+</table>
 
-            function Paginator() {
-            };
-
-            Paginator.prototype.init = async function (searchparams) {
-                this.cache = {};
-                this.POSTS_PER_PAGE = 10;
-                this.numtotal = 0;
-                this.searchparams = searchparams;
-                this.curpost = 0;
-                this.token = "";
-
-                var self = this;
-                return new Promise(function(resolve, reject) {
-                    $.get(`/api/postings?${$.param(searchparams)}`, function(data) {
-                        console.log(data);
-                        self.numtotal = data.numTotal;
-                        self.numpages = Math.ceil(self.numtotal / self.POSTS_PER_PAGE);
-                        self.addToCache(0, data.data);
-                        self.curpost += data.data.length;
-                        self.token = data.token;
-                        resolve();
-                    });
-                });
-            };
-
-            Paginator.prototype.addToCache = function (start, p) {
-                for (var i=0; i<p.length; i++) {
-                    this.cache[start+i] = p[i];
-                }
-            };
-
-            Paginator.prototype.fetchPosts = async function () {
-                var self = this;
-                var asdf = {...this.searchparams, token: this.token};
-                console.log(asdf);
-                return new Promise(function(resolve, reject) {
-                    $.get(`/api/postings?${$.param(asdf)}`, function(data) {
-                        console.log(data);
-                        self.addToCache(self.curpost, data.data);
-                        self.curpost += data.data.length;
-                        self.token = data.token;
-                        resolve();
-                    });
-                });
-            };
-
-            Paginator.prototype.getPage = async function (p) {
-                var startpost = (p-1) * this.POSTS_PER_PAGE;
-                var lastpost = Math.min(this.numtotal, p * this.POSTS_PER_PAGE - 1);
-                while (this.curpost < lastpost) {
-                    console.log(this.curpost, this.numtotal, lastpost);
-                    await this.fetchPosts();
-                }
-
-                console.log(startpost, lastpost);
-
-                var arr = [];
-                for (var i=startpost; i<lastpost; i++) {
-                    arr.push(this.cache[i]);
-                }
-                console.log(arr);
-                return arr;
-            };
-
-            var inator;
-            var currentpage;
-            var totalpages;
-            async function startPagination(searchparams) {
-                inator = new Paginator();
-                await inator.init(searchparams);
-                currentpage = 1;
-                totalpages = inator.numpages;
-                $("#pageNum").text(currentpage);
-                $("#pageTotal").text(inator.numpages);
-                renderPage(currentpage);
-            }
-
-            async function renderPage(i) {
-                renderPosts(await inator.getPage(i));
-            }
-
-            async function prevPage() {
-                if (currentpage > 1)
-                    currentpage--;
-                $("#pageNum").text(currentpage);
-                await renderPage(currentpage);
-            }
-            async function nextPage() {
-                if (currentpage < totalpages)
-                    currentpage++;
-                $("#pageNum").text(currentpage);
-                await renderPage(currentpage);
-            }
-        </script>
-        <script>
-            $(document).ready(function() { 
-                startPagination({});
-
-                $("#search").submit(function(e) {
-                    e.preventDefault();
-
-                    var form = $(this);
-                    var formJson = {};
-                    for (let obj of form.serializeArray()) {
-                        formJson[obj.name] = obj.value;
-                    }
-                    var [start,end] = formJson["lostDateRange"].split(" - ");
-                    formJson["lostDateStart"] = start ? start : "";
-                    formJson["lostDateEnd"] = end ? end : "";
-                    delete formJson["lostDateRange"];
-                    formJson['numPostings'] = 10;
-
-                    // don't submit any blank fields
-                    for (let [key,val] of Object.entries(formJson)) {
-                        if (val == "") {
-                            delete formJson[key];
-                        }
-                    }
-
-                    startPagination(formJson);
-                });
-
-                $('#showAdvanced').on('click', function(event) {
-                    $('#advancedOptions').toggle();
-                    $('#showAdvanced').hide();
-                    $('#hideAdvanced').show();
-                    event.preventDefault();
-                });
-
-                $('#hideAdvanced').on('click', function(event) {
-                    $('#advancedOptions').toggle();
-                    $('#showAdvanced').show();
-                    $('#hideAdvanced').hide();
-                    event.preventDefault();
-                });
-                
-                // show options by default
-                $('#advancedOptions').hide();
-                $('#hideAdvanced').hide();
-
-                var dateRangeFormat = {
-                    locale: {
-                        format: 'YYYY/MM/DD',
-                        cancelLabel: 'Clear'
-                    },
-                    ranges: {
-                        'Today': [moment().startOf('day'), moment()],
-                        'Last 3 days': [moment().subtract(2, 'days').startOf('day'), moment()],
-                        'Last 7 days': [moment().subtract(6, 'days').startOf('day'), moment()],
-                        'Last 14 days': [moment().subtract(13, 'days').startOf('day'), moment()],
-                        'Last 30 days': [moment().subtract(29, 'days').startOf('day'), moment()],
-                    }
-                };
-                $('input[name="lostDateRange"]').daterangepicker(dateRangeFormat).val('');
-
-                $('#pageLeft').on('click', prevPage);
-                $('#pageRight').on('click', nextPage);
-            });
-        </script>
-  {{/inline}}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<script src="https://cdn.jsdelivr.net/npm/ejs@3.0.2/ejs.min.js"></script>
+<script src="js/postings.js"></script>
+{{/inline}}
 {{/layout}}
