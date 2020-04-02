@@ -54,7 +54,7 @@ const formChecks = [
 const validation_error = function(res, message) {
     res.status(422).send(`
         Error sending posting to server! Reason:
-        <pre>${err.message}</pre>
+        <pre>${message}</pre>
     `);
 }
 

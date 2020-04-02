@@ -89,21 +89,15 @@ posting_schema.path('returnDate').validate(function (v) {
     return (this.status == "returned");
 });
 
-// maybe in the future we want posting ids to be different from database ids
-// these two functions convert between the two
-posting_schema.statics.to_dbid = function(pid) {
-    return pid;
-}
-posting_schema.statics.from_dbid = function(dbid) {
-    return dbid;
-}
+// Virtual attributes
 posting_schema.virtual('id').get(function() {
-    return this.from_dbid(this._id);
+    return this._id;        // maybe do something fancy with it later
 })
 
 // Helper queries
-posting_schema.statics.deleteById = function(posting_id) {
-    return this.deleteOne({_id: this.to_dbid(posting_id)});
+posting_schema.statics.deleteById = function(id) {
+    var database_id = id;
+    return this.deleteOne({_id: database_id});
 };
 
 /**
@@ -131,7 +125,10 @@ posting_schema.statics.getAllPostings = async function() {
  * @returns posting corresponding to the id
  */
 posting_schema.statics.getPostingById = async function(posting_id) {
-    var query = Postings.find({_id: this.to_dbid(posting_id)}).limit(1);
+    // turn posting id -> _id attribute in database
+    // but they're the same right now, so nothing fancy
+    var database_id = posting_id;
+    var query = Postings.find({_id: database_id}).limit(1);
     return query.exec().then(docs => {
         if (docs.length == 0) {
             throw DatabaseException(`no posting with id ${posting_id} found`);
