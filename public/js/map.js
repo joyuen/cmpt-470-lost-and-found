@@ -47,6 +47,7 @@ function setMarkers(markers) {
         existing[key] = m;
 
         m.addListener('click', function() {
+            map.panTo(m.position);
             var form = document.getElementById("content-form");
             form.className = "not-selected";
             var allpost = document.getElementById("all-post");
