@@ -9,17 +9,19 @@ let testMarkers = [{id: 1, lat: 49.278871, lng: -122.916386, info: "Hello"},
 // Track current campus
 let campus = "burnaby";
 
-function getMarkers(n, s, w, e) {
-    // TODO: Retrieve from DB
-    var markers = testMarkers;
-    let m = {}
-    // Below for each loop should be a query to db
-    markers.forEach(function(pos) {
-        if (n > pos.lat && pos.lat > s && w < pos.lng && pos.lng < e) {
-            m[pos.id] = pos;
+function getMarkers(n, s, w, e, callback) {
+    var req = new XMLHttpRequest();
+    req.onreadystatechange = function() {
+        if (req.readyState === 4) {
+            var response = req.responseText;
+            var json = JSON.parse(response);
+            callback(json);
         }
-    });
-    return m;
+    };
+    req.open('POST', location.origin + "/region");
+    req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    var data = "n="+n+"&s="+s+"&w="+w+"&e="+e;
+    req.send(data);
 }
 
 function initMap() {
@@ -94,28 +96,33 @@ function initMap() {
         var bounds = map.getBounds();
         neBounds = bounds.getNorthEast();
         swBounds = bounds.getSouthWest();
-        var markers = getMarkers(neBounds.lat(), swBounds.lat(), swBounds.lng(), neBounds.lng());
-        for(var key in existing) {
-            if(!(key in markers)) {
-                existing[key].setMap(null);
-                delete existing[key];
-            }
-        }
-        for(var key in markers) {
-            if(key in existing) {
-                continue;
-            }
-            let pos = markers[key];
-            let m = new google.maps.Marker({
-                position: new google.maps.LatLng(pos.lat, pos.lng),
-                map: map,
-            })
-            existing[key] = m;
 
-            m.addListener('click', function() {
-                document.getElementById('content').innerHTML = pos.info;
-            })
-        }
+        var f = function(markers) {
+            for(var key in existing) {
+                if(!(key in markers)) {
+                    existing[key].setMap(null);
+                    delete existing[key];
+                }
+            }
+            for(var key in markers) {
+                if(key in existing) {
+                    continue;
+                }
+                let pos = markers[key].coordinates.coordinates;
+                let m = new google.maps.Marker({
+                    position: new google.maps.LatLng(pos[1], pos[0]),
+                    map: map,
+                })
+                existing[key] = m;
+
+                m.addListener('click', function() {
+                    // document.getElementById('content').innerHTML = pos.info;
+                })
+            }
+        };
+
+        getMarkers(neBounds.lat(), swBounds.lat(), swBounds.lng(), neBounds.lng(), f);
+
     });
 
     map.addListener('click', function(event) {
@@ -135,7 +142,6 @@ function initMap() {
         allpost.className = "not-selected";
         contentpost.className = "not-selected";
         form.onclick = function() {
-            console.log("hello?");
             var overlay = document.getElementById('overlay')
             overlay.style.display = "block";
             overlay.style.left = document.getElementById('sidebar').offsetWidth + "px";

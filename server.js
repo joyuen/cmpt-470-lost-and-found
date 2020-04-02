@@ -76,6 +76,7 @@ app.use('/admin', require('./routes/admin'));
 app.use('/postings', require('./routes/postings'));
 app.use('/viewpost', require('./routes/viewpost'));
 app.use('/makepost', require('./routes/makepost'));
+app.use('/region', require('./routes/region'));
 
 // Default page behaviour -- root is landing page
 // Any unrecognized endpoints get redirected to landing page
