@@ -1,10 +1,9 @@
 {{#> layout}}
 {{#*inline "head"}}
-<link rel="stylesheet" href="../css/admin.css">
 {{/inline}}
 {{#*inline "content"}}
 <h1>Registered Users</h1>
-<table class="user-table">
+<table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
   <thead>
     <tr>
       <th>SFU ID</th>
@@ -12,6 +11,7 @@
       <th>Email</th>
       <th>Phone</th>
       <th>Admin</th>
+      <th />
     </tr>
   </thead>
   <tbody>
@@ -23,7 +23,9 @@
       <td>{{phone}}</td>
       <td>{{admin}}</td>
       <td>
-        
+        <span id={{id}} class="button icon is-small">
+          <i class="fas fa-user-edit"></i>
+        </span>
       </td>
     </tr>
     {{/each}}
