@@ -1,36 +1,63 @@
-header {
+main {
+    height: 100%;
+
+}
+
+.title-container {
+    font-size: 30px;
     text-align: left;
-    background-color: teal;
+    background-color: #333;
     color: white;
     margin: 0;
-    padding-left: 5%;
-    font-size: 24px;
-    font-family: "Courier New", Courier, monospace
 }
-b {
-    color: black;
+
+.sfu-title {
+    font-family: inherit;
+    display: flex;
+    margin: 0;
+    padding: 0;
 }
-/* Always set the map height explicitly to define the size of the div
-* element that contains the map. */
+
+.sfu {
+    font-family: inherit;
+    color: #CC0633;
+    margin: 0;
+    padding: 0;
+}
+
 #map {
     height: 100%;
-    width: 100%;
+    width: auto;
 }
 #floating-panel {
     margin: 10px;
 }
 #sidebar {
-    height: 100%;
-    width: 300px;
-}
-.map-container {
+    float: left;
     height: 100%;
     width: 100%;
+    text-align: left;
+    overflow: scroll;
 }
-.flex-container {
+
+#content>form div {
+    width: 100%;
     display: flex;
-    height: 100%;
+    flex-direction: column;
 }
+
+#content>div{
+    margin-top: 5px;
+}
+
+input, textarea, select {
+    margin-left: 5px;
+}
+
+#content label {
+    margin-left: 5px;
+}
+
 #overlay {
     display: none;
     background-color: rgba(0,0,0,0.7);
@@ -39,9 +66,37 @@ b {
     height: 100%;
     width: 100%;
 }
-/* Optional: Makes the page fill the window. */
-html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
+
+.not-selected {
+    visibility: hidden;
+    display: none;
 }
+
+.selected {
+    visibility: visible;
+    display: flex;
+    flex-direction: column;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+    grid-template-rows: min-content 1fr;
+    grid-template-areas:
+        "zero two"
+        "one two"
+}
+
+.grid-zero {
+    grid-area: zero;
+}
+
+.grid-one {
+    grid-area: one;
+
+}
+
+.grid-two {
+    grid-area: two;
+}
+
