@@ -29,13 +29,13 @@ function getMarkers(n, s, w, e) {
 }
 
 function setMarkers(markers) {
-    for(var key in existing) {
+    for(let key in existing) {
         if(!(key in markers)) {
             existing[key].setMap(null);
             delete existing[key];
         }
     }
-    for(var key in markers) {
+    for(let key in markers) {
         if(key in existing) {
             continue;
         }
