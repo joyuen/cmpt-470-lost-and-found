@@ -48,7 +48,6 @@ function panToMarker(key) {
     document.getElementById('post-author').innerHTML = "Posted by: " + p.postedBy;
     document.getElementById('post-link').href = "/viewpost?id="+p._id;
     
-    console.log(m.getIcon);
     m.setIcon("/images/map-marker-blue.png");
     pannedMarker = m;
 }
