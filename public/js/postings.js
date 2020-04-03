@@ -31,7 +31,6 @@ Paginator.prototype.init = async function (searchparams, postsperpage) {
     var self = this;
     return new Promise(function (resolve, reject) {
         $.get(`/api/postings?${$.param(searchparams)}`, function (data) {
-            console.log(data);
             self.numtotal = data.numTotal;
             self.numpages = Math.max(1, Math.ceil(self.numtotal / self.POSTS_PER_PAGE));
             self.addToCache(0, data.data);
@@ -47,7 +46,6 @@ Paginator.prototype.fetchPosts = async function () {
     var paramsWithToken = Object.assign({ token: this.token }, this.searchparams);
     return new Promise(function (resolve, reject) {
         $.get(`/api/postings?${$.param(paramsWithToken)}`, function (data) {
-            console.log(data);
             self.addToCache(self.curpost, data.data);
             self.curpost += data.data.length;
             self.token = data.token;
