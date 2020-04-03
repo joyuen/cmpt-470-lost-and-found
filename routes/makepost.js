@@ -21,12 +21,12 @@ router.get('/', async function(req, res) {
  *  Supported POST values
  *      title -
  *      status -
- *      item - 
- *      date - 
- *      time - 
+ *      item -
+ *      date -
+ *      time -
  *      campus -
- *      location - 
- *      detail - 
+ *      location -
+ *      detail -
  *      a single file [an image] can also be uploaded
  */
 
@@ -76,7 +76,6 @@ router.post('/', upload.single('image'), formChecks, async function(req, res) {
     if (req.user == undefined) {
         return validation_error(res, "login info found to be undefined -- are you logged in?");
     }
-
     var new_post = {
         title: req.body.title,
         category: req.body.item,
@@ -92,7 +91,7 @@ router.post('/', upload.single('image'), formChecks, async function(req, res) {
         imageID: "",           // to be filled in
         coordinates: {              // until the map is finished, default values
             type: "Point",
-            coordinates: [49.277012, -122.918049],    // should be in the middle of burnaby campus
+            coordinates: [req.body.lng, req.body.lat],
         },
     };
 

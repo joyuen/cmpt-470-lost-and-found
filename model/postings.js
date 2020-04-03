@@ -43,7 +43,7 @@ const point_schema = new mongoose.Schema({
       type: [Number],
       required: true
     }
-  });  
+  });
 
 const posting_schema = new mongoose.Schema({
     title: string_not_empty(256),
@@ -51,13 +51,13 @@ const posting_schema = new mongoose.Schema({
     description: string_optional(2000),
     status: {
         type: String,
-        required: true, 
+        required: true,
         enum: ["lost", "found", "stolen", "returned"],
     },
-    
+
     campus: {
         type: String,
-        required: true, 
+        required: true,
         enum: ["surrey", "burnaby", "vancouver"],
     },
     building: string_optional(256),       // todo: add verification on this
@@ -65,11 +65,11 @@ const posting_schema = new mongoose.Schema({
     location: string_optional(256),
     coordinates: {
         type: point_schema,
-        required: true,  
+        required: true,
     },
 
-    creationDate: {type: Date, required: true}, 
-    lostDate: {type: Date, required: true}, 
+    creationDate: {type: Date, required: true},
+    lostDate: {type: Date, required: true},
     returnDate: {type: Date}, // this will be set later when the item is returned
 
     imageID: string_optional(256),
@@ -151,6 +151,14 @@ posting_schema.statics.getPostingById = async function(posting_id) {
         }
         return docs[0];
     });
+};
+
+/**
+ *  @returns cursor to iterate through all postings within coordinates
+ */
+posting_schema.statics.getPostingsWithin = async function(n,s,w,e) {
+    var query = Postings.find({coordinates:{$geoWithin:{$box:[[w,s],[e,n]]}}},{imageID:0, creationDate:0, __v:0});
+    return query.exec();
 };
 
 var Postings = mongoose.model('posting', posting_schema);

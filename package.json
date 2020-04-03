@@ -14,6 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bulma": "^0.8.1",
     "errorhandler": "^1.5.1",
     "esm": "^3.2.25",
     "express": "^4.17.1",
@@ -25,6 +26,7 @@
     "mongodb": "^3.5.4",
     "mongoose": "^5.9.3",
     "multer": "^1.4.2",
+    "node-sass-middleware": "^0.11.0",
     "passport": "^0.4.1",
     "passport-cas2": "0.0.11",
     "regex-escape": "^3.4.9",

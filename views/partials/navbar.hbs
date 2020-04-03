@@ -1,14 +1,51 @@
-<nav>
-    <ul>
-        <a href="/" {{#if (navActivate page "index")}}class="active" {{/if}}>Home</a>
-        <a href="makepost" {{#if (navActivate page "makepost")}}class="active" {{/if}}>Create Post</a>
-        <a href="postings" {{#if (navActivate page "postings")}}class="active" {{/if}}>View Posts</a>
-        <a href="map" {{#if (navActivate page "map")}}class="active" {{/if}}>Map</a>
-        <a href="about" {{#if (navActivate page "about")}}class="active" {{/if}}>About</a>
-        <a href="contact" {{#if (navActivate page "contact")}}class="active" {{/if}}>Contact</a>
-        <a href="account" {{#if (navActivate page "account")}}class="active" {{/if}}>Account</a>
+<script src="../js/navbar.js"></script>
+<nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <img src="https://bulma.io/images/bulma-logo.png" width="112" height="28">
+        </a>
 
-        <!-- Left Justify -->
-        <a href="logout" id="logout">Logout</a>
-    </ul>
+        <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
+            data-target="navbarBasicExample">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+    </div>
+
+    <div id="navbarBasicExample" class="navbar-menu">
+        <div class="navbar-start">
+            <a href="map" {{#if (navActivate page "map")}} class="is-active navbar-item" {{else}} class="navbar-item"
+                {{/if}}>Map</a>
+            <a href="about" {{#if (navActivate page "about")}}class="is-active navbar-item" {{else}} class="navbar-item"
+                {{/if}}>About</a>
+            <a href="contact" {{#if (navActivate page "contact")}}class="is-active navbar-item" {{else}}
+                class="navbar-item" {{/if}}>Contact</a>
+            <a href="account" {{#if (navActivate page "account")}}class="is-active navbar-item" {{else}}
+                class="navbar-item" {{/if}}>Account</a>
+
+            <div class="navbar-item has-dropdown is-hoverable">
+                <a class="navbar-link">
+                    Posts
+                </a>
+                <div class="navbar-dropdown">
+                    <a href="makepost" {{#if (navActivate page "makepost")}} class="is-active navbar-item" {{/if}}
+                        class="navbar-item">
+                        Create Post</a>
+                    <a href="postings" {{#if (navActivate page "postings")}} class="is-active navbar-item" {{/if}}
+                        class="navbar-item">
+                        View Posts</a>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="navbar-end">
+            <div class="navbar-item">
+                <div class="buttons">
+                    <a class="button" href="logout" id="logout">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </nav>

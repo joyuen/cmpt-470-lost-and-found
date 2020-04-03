@@ -8,6 +8,7 @@ const hbs = require('hbs');
 const session = require("express-session");
 const passport = require('passport');
 const errorHandler = require('errorhandler');
+const sassMiddleware = require('node-sass-middleware');
 
 // Constants
 const isProduction = config.isProduction;
@@ -44,6 +45,14 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/css', sassMiddleware({
+    /* Options */
+    src: __dirname + '/sass',
+    dest: path.join(__dirname, 'public/css/generated'),
+    debug: true,
+    outputStyle: 'compressed',
+    prefix:  '/generated'  // Where prefix is at <link rel="stylesheets" href="prefix/style.css"/>
+}));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
@@ -78,6 +87,7 @@ app.use('/admin', require('./routes/admin'));
 app.use('/postings', require('./routes/postings'));
 app.use('/viewpost', require('./routes/viewpost'));
 app.use('/makepost', require('./routes/makepost'));
+app.use('/region', require('./routes/region'));
 
 // Default page behaviour -- root is landing page
 // Any unrecognized endpoints get redirected to landing page

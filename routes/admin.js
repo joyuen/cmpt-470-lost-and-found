@@ -9,12 +9,19 @@ router.get('/', async function (req, res, next) {
         }
         return res.render('admin', { users: users });
     });
-    
 });
 
-router.post('/makeadmin', async function (req, res, next) {
+/* Toggles admin privilege for current user.
+ For demonstration purposes.
+*/
+router.put('/sudo', async function (req, res, next) {
     user = req.user;
-    user.admin = true;
+    if (user.admin === true) {
+        user.admin = false;
+    } else {
+        user.admin = true;
+    }
+
     user.save(function (err) {
         if (err) {
             console.log(err);
@@ -22,7 +29,23 @@ router.post('/makeadmin', async function (req, res, next) {
         }
         res.render('account', { user: user });
     });
-    
+
+});
+
+router.put('/user', function (req, res, next) {
+    user = req.user;
+    if (user.admin != true) {
+        console.log(req);
+        return res.status(401).send();
+    }
+    // user.admin = true;
+    // user.save(function (err) {
+    //     if (err) {
+    //         console.log(err);
+    //         next(err);
+    //     }
+    //     res.render('account', { user: user });
+    // });
 });
 
 module.exports = router;
