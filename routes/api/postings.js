@@ -248,12 +248,14 @@ router.get('/', [
         }
         if (req.query.building) {
             // the regex is for substring searching
-            var escapedBuilding = RegexEscape(req.query.building);
+            // the (?i) makes it case insensitive
+            var escapedBuilding = "(?i)" + RegexEscape(req.query.building);
             query = query.where('building').regex(escapedBuilding);
         }
         if (req.query.room) {
             // the regex is for substring searching
-            var escapedRoom = RegexEscape(req.query.room);
+            // the (?i) makes it case insensitive
+            var escapedRoom = "(?i)" + RegexEscape(req.query.room);
             query = query.where('room').regex(escapedRoom);
         }
         
