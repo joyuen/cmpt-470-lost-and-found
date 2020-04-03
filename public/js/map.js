@@ -8,6 +8,7 @@ let testMarkers = [{id: 1, lat: 49.278871, lng: -122.916386, info: "Hello"},
                {id: 2, lat: 49.279340, lng: -122.922866, info: "World"}]
 
 var currentMarker;
+var pannedMarker;
 
 // Track current campus
 var currentCampus;
@@ -29,6 +30,10 @@ function showPage(id) {
         var overlay = document.getElementById('overlay');
         overlay.style.display = "none";
     }
+
+    if (pannedMarker) {
+        pannedMarker.setIcon(undefined);
+    }
 }
 
 function panToMarker(key) {
@@ -42,6 +47,10 @@ function panToMarker(key) {
     document.getElementById('post-date').innerHTML = p.lostDate;
     document.getElementById('post-author').innerHTML = "Posted by: " + p.postedBy;
     document.getElementById('post-link').href = "/viewpost?id="+p._id;
+    
+    console.log(m.getIcon);
+    m.setIcon("/images/map-marker-blue.png");
+    pannedMarker = m;
 }
 
 async function getMarkers(n, s, w, e) {
@@ -203,6 +212,7 @@ function initMap() {
         var marker = new google.maps.Marker({
           position: event.latLng,
           map: map,
+          icon: "images/map-marker-orange.png",
         });
         currentMarker = marker;
 
@@ -245,7 +255,6 @@ function initMap() {
             google.maps.event.removeListener(listener);
         });
 
-        
         var overlay = document.getElementById('overlay');
         overlay.addEventListener("click", function() {
             overlay.style.display = "none";
