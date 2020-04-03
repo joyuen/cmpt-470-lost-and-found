@@ -14,23 +14,23 @@
     <p id="image_gone">No image available!</p>
     {{/if}}
     <p id="summary">
-        <b>{{post_status status}}</b> at <b>{{post_campus campus}}</b> <br>
-        {{location}} <br>
-        {{post_date lostDate}}
+        <b>{{post.statusFull}}</b> at <b>{{post.campusFull}}</b> <br>
+        {{post.location}} <br>
+        {{post_date post.lostDate}}
     </p>
     <br>
 </div>
 <div class="post">
-    <h2 id="title">{{title}}</h2>
+    <h2 id="title">{{post.title}}</h2>
     <hr>
-    <p id="details">{{description}}</p>
+    <p id="details">{{post.description}}</p>
     <table id="misctable">
         <tr>
             <th>
                 <p>Contact Info:</p>
             </th>
             <td>
-                <p>{{postedBy}} <a href="#cool">(Contact them)</a></p>
+                <p>{{user.name}} <a href="mailto:{{user.email}}">(Contact them)</a></p>
             </td>
         </tr>
         <tr>
@@ -38,7 +38,7 @@
                 <p>Post Created:</p>
             </th>
             <td>
-                <p>{{creationDate}}</p>
+                <p>{{post.creationDate}}</p>
             </td>
         </tr>
         <tr>
@@ -46,7 +46,7 @@
                 <p>Item Type:</p>
             </th>
             <td>
-                <p>{{category}}</p>
+                <p>{{post.category}}</p>
             </td>
         </tr>
     </table>
