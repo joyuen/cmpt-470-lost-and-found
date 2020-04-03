@@ -5,7 +5,7 @@ function renderPosts(postings) {
         <% for(var i=0; i<postings.length; i++) { %>
             <tr class="posting <%= postings[i].status %>">
                 <td><%= postings[i].statusFull %></td>
-                <td><a href='/viewpost?id=<%= postings[i].id %>'><%= postings[i].title %></a></td>
+                <td><a class='postings-link' href='#<%= postings[i].id %>'><%= postings[i].title %></a></td>
                 <td><%= postings[i].campusFull %></td>
                 <td title="<%= new Date(postings[i].lostDate) %>"><%= moment.duration(new Date(postings[i].lostDate) - now, 'milliseconds').humanize(true); %></td>
             </tr>
@@ -14,13 +14,23 @@ function renderPosts(postings) {
         </table>
     `, { 'postings': postings, 'now': new Date() });
     document.getElementById('postings').innerHTML = x;
+    
+    $("a.postings-link").on('click', async function(e) {
+        let key = $(this).attr('href').slice(1);
+        let campus = inator.getPosting(key).campus;
+        if (campus != currentCampus) {
+            await showCampus(campus);
+        }
+        panToMarker(key);
+    });
 }
 
 function Paginator() {
 };
 
 Paginator.prototype.init = async function (searchparams, postsperpage) {
-    this.cache = {};
+    this.cache = {};        // post number -> posting
+    this.idlookup = {};     // key -> posting
     this.POSTS_PER_PAGE = postsperpage;
     this.numtotal = 0;
     this.numpages = 0;
@@ -57,8 +67,14 @@ Paginator.prototype.fetchPosts = async function () {
 Paginator.prototype.addToCache = function (start, p) {
     for (var i = 0; i < p.length; i++) {
         this.cache[start + i] = p[i];
+        var id = p[i].id;
+        this.idlookup[id] = p[i];
     }
 };
+
+Paginator.prototype.getPosting = function (id) {
+    return this.idlookup[id];
+}
 
 Paginator.prototype.getPage = async function (p) {
     var startpost = (p - 1) * this.POSTS_PER_PAGE;

@@ -2,6 +2,7 @@
 let minZoomLevel = 16;
 // Track markers
 let existing = {};
+let postings = {};
 
 let testMarkers = [{id: 1, lat: 49.278871, lng: -122.916386, info: "Hello"},
                {id: 2, lat: 49.279340, lng: -122.922866, info: "World"}]
@@ -9,12 +10,11 @@ let testMarkers = [{id: 1, lat: 49.278871, lng: -122.916386, info: "Hello"},
 var currentMarker;
 
 // Track current campus
-let campus;
+var currentCampus;
 
 function showPage(id) {
     var otherpages = document.getElementById("content").children;
     for (let elem of otherpages) {
-        console.log(elem);
         if (elem.id == id) {
             elem.className = "selected";
         } else {
@@ -31,26 +31,44 @@ function showPage(id) {
     }
 }
 
-function getMarkers(n, s, w, e) {
-    var req = new XMLHttpRequest();
-    req.onreadystatechange = function() {
-        if (req.readyState === 4) {
-            var response = req.responseText;
-            var json = JSON.parse(response);
-            dict = {}
-            for(var r in json) {
-                dict[json[r]._id] = json[r];
+function panToMarker(key) {
+    let m = existing[key];
+    let p = postings[key];
+    map.panTo(m.position);
+    showPage("content-post");
+    document.getElementById('post-title').innerHTML = p.title;
+    document.getElementById('post-status').innerHTML = "Status: " + p.status;
+    document.getElementById('post-item').innerHTML = "Item: " + p.category;
+    document.getElementById('post-date').innerHTML = p.lostDate;
+    document.getElementById('post-author').innerHTML = "Posted by: " + p.postedBy;
+    document.getElementById('post-link').href = "/viewpost?id="+p._id;
+}
+
+async function getMarkers(n, s, w, e) {
+    return new Promise((resolve, reject) => {
+        var req = new XMLHttpRequest();
+        req.onreadystatechange = function() {
+            if (req.readyState === 4) {
+                var response = req.responseText;
+                var json = JSON.parse(response);
+                dict = {}
+                for(var r in json) {
+                    dict[json[r]._id] = json[r];
+                }
+                setMarkers(dict);
+                resolve();
             }
-            setMarkers(dict);
-        }
-    };
-    req.open('POST', location.origin + "/region");
-    req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    var data = "n="+n+"&s="+s+"&w="+w+"&e="+e;
-    req.send(data);
+        };
+        req.open('POST', location.origin + "/region");
+        req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        var data = "n="+n+"&s="+s+"&w="+w+"&e="+e;
+        req.send(data);
+    });
 }
 
 function setMarkers(markers) {
+    postings = markers;
+
     for(let key in existing) {
         if(!(key in markers)) {
             existing[key].setMap(null);
@@ -69,14 +87,15 @@ function setMarkers(markers) {
         existing[key] = m;
 
         m.addListener('click', function() {
-            map.panTo(m.position);
-            showPage("content-post");
-            document.getElementById('post-title').innerHTML = markers[key].title;
-            document.getElementById('post-status').innerHTML = "Status: " + markers[key].status;
-            document.getElementById('post-item').innerHTML = "Item: " + markers[key].category;
-            document.getElementById('post-date').innerHTML = markers[key].lostDate;
-            document.getElementById('post-author').innerHTML = "Posted by: " + markers[key].postedBy;
-            document.getElementById('post-link').href = "/viewpost?id="+markers[key]._id;
+            panToMarker(key);
+            // map.panTo(m.position);
+            // showPage("content-post");
+            // document.getElementById('post-title').innerHTML = markers[key].title;
+            // document.getElementById('post-status').innerHTML = "Status: " + markers[key].status;
+            // document.getElementById('post-item').innerHTML = "Item: " + markers[key].category;
+            // document.getElementById('post-date').innerHTML = markers[key].lostDate;
+            // document.getElementById('post-author').innerHTML = "Posted by: " + markers[key].postedBy;
+            // document.getElementById('post-link').href = "/viewpost?id="+markers[key]._id;
         })
     }
 };
@@ -172,7 +191,6 @@ function initMap() {
 
     // map.addListener('idle', function() {
     //     // This is only for testing, need to grab new coords from db from idle listener below
-    //     console.log('idle');
     //     var bounds = map.getBounds();
     //     neBounds = bounds.getNorthEast();
     //     swBounds = bounds.getSouthWest();
@@ -189,7 +207,7 @@ function initMap() {
         currentMarker = marker;
 
         showPage("content-form");
-        document.getElementById("campus").value = campus;
+        document.getElementById("campus").value = currentCampus;
         document.getElementById("lat").value = event.latLng.lat();
         document.getElementById("lng").value = event.latLng.lng();
         //Set the attributes
@@ -239,7 +257,7 @@ function initMap() {
     showCampus('burnaby');
 }
 
-function showCampus(c) {
+async function showCampus(c) {
     map.setOptions({
         center: campuses[c].center,
         zoom: campuses[c].minZoom,
@@ -248,13 +266,13 @@ function showCampus(c) {
     );
     map.setCenter(campuses[c].center);
     map.setZoom(campuses[c].minZoom);
-    campus = c;
+    currentCampus = c;
 
     var bounds = campuses[c].bounds;
     var neBounds = bounds.getNorthEast();
     var swBounds = bounds.getSouthWest();
 
-    getMarkers(neBounds.lat(), swBounds.lat(), swBounds.lng(), neBounds.lng());
+    await getMarkers(neBounds.lat(), swBounds.lat(), swBounds.lng(), neBounds.lng());
 }
 
 function showBurnaby() {
