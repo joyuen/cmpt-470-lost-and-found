@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="has-navbar-fixed-bottom">
 
 <head>
     <title>SFU Lost and Found</title>
@@ -12,11 +12,9 @@
 </head>
 
 <body>
-    <div style="display:grid; grid-template-areas:'__navbar' '__content'; grid-template-rows: min-content minmax(0, 1fr); height: 100vh;">
-        <div style="grid-area: __navbar">{{> navbar}}</div>
-        <div style="grid-area: __content">{{> content}}</div>
-    </div>
+    {{> navbar}}
+    {{> content}}
+    {{> footer}}
 </body>
-
 
 </html>

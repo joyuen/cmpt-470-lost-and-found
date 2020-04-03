@@ -63,11 +63,10 @@ function isAuthenticated(req, res, next) {
 
 module.exports = function (app) {
     app.all('/auth/cas',
-        passport.authenticate('cas', { failureRedirect: '/auth/cas' }),
-        function (req, res) {
-            // Successful authentication, redirect home.
-            res.redirect('/');
-        });
+        passport.authenticate('cas', {
+            successRedirect: '/',
+            failureRedirect: '/auth/cas'
+        }));
 
     app.get('/logout', function (req, res) {
         var returnURL = 'https://www.sfu.ca';

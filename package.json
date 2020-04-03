@@ -34,8 +34,11 @@
     "uuid": "^7.0.2"
   },
   "nodemonConfig": {
-    "ignore": ["test/*", "docs/*"],
+    "ignore": [
+      "test/*",
+      "docs/*"
+    ],
     "delay": "2500",
-    "ext": "js,json,hbs,scss"
+    "ext": "js,json"
   }
 }
