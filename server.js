@@ -29,6 +29,7 @@ if (!isProduction) {
         });
     });
     mongoose.set('debug', true);
+    mongoose.set('useCreateIndex', true);
 } else {
     // Put production options here if we have any
 }
