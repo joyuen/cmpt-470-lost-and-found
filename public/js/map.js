@@ -67,7 +67,7 @@ async function getMarkers(n, s, w, e) {
                 resolve();
             }
         };
-        req.open('POST', location.origin + "/region");
+        req.open('POST', location.origin + "/api/region");
         req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         var data = "n="+n+"&s="+s+"&w="+w+"&e="+e;
         req.send(data);
