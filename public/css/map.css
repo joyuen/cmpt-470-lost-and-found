@@ -100,3 +100,8 @@ input, textarea, select {
     grid-area: two;
 }
 
+.cancel-button {
+    position: absolute;
+    right: 10px;
+    top: 0px;
+}

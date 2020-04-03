@@ -1,17 +1,20 @@
 {{#> layout}}
 {{#*inline "head"}}
-<link rel="stylesheet" href="/css/map.css">
-<link rel="stylesheet" href="../css/postings.css">
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-<script type="text/javascript" src="/js/map.js"></script>
-<script type="text/javascript"
-    src="https://maps.googleapis.com/maps/api/js?sensor=false&callback=initMap"async defer>
-</script>
-                <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-                <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-                <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-                <script src="https://cdn.jsdelivr.net/npm/ejs@3.0.2/ejs.min.js"></script>
-                <script src="js/postings.js"></script>
+    <link rel="stylesheet" href="/css/map.css">
+    <link rel="stylesheet" href="../css/postings.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ejs@3.0.2/ejs.min.js"></script>
+    
+    <script type="text/javascript" src="/js/map.js"></script>
+    <script type="text/javascript"
+        src="https://maps.googleapis.com/maps/api/js?sensor=false&callback=initMap"async defer>
+    </script>
+    
+    <script type="text/javascript" src="/js/postings.js"></script>
 {{/inline}}
 
 {{#*inline "content"}}
@@ -126,6 +129,7 @@
                 </table>
             </div>
             <div id="content-post" class="not-selected">
+                <div style="position: relative;"><a class="cancel-button">X</a></div>
                 <!-- Insert post layout here, prob "jump" to marker -->
                 <h2 id="post-title"></h2>
                 <label id="post-status"></label>
@@ -133,9 +137,9 @@
                 <label id="post-date"></label>
                 <label id="post-author"></label>
                 <a id="post-link" href="">See more</a>
-
             </div>
             <form id="content-form" class="not-selected" action="makepost" method="POST" enctype="multipart/form-data">
+                <div style="position: relative;"><a class="cancel-button">X</a></div>
                 <!-- FormSet serialize -->
                 <!-- If going with Ajax, remember to remove temp marker -->
                 <input type="hidden" id="lng" name="lng"/>

@@ -107,7 +107,7 @@ router.post('/', upload.single('image'), formChecks, async function(req, res) {
     } catch (err) {
         return validation_error(res, err.message);
     }
-    return res.redirect('postings');
+    return res.redirect(`viewpost?id=${id}`);
 });
 
 module.exports = router;

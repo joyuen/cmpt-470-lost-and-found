@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "startd": "nodemon server.js --ignore public/ --watch views/partials/*.*",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
