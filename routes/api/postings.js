@@ -232,7 +232,9 @@ router.get('/', [
         var query = Postings.find();
 
         if (req.query.keywords) {
-            // todo, need a text index
+            query = query.find({$text: {$search: req.query.keywords}});
+            // add textscore as attribute in documents, if we want to sort or filter by it later
+            // query = query.select({score: {$meta: "textScore"}});     
         }
 
         if (req.query.status) {

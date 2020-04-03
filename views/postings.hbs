@@ -7,10 +7,12 @@
 {{#*inline "content"}}
 <div id="searchBox">
     <form id="search">
+        {{!-- <span title="Use quotes &quot;text&quot; to force text to appear in search. Use minus -text to exclude text."><u>?</u></span> --}}
         <input id="searchKeywords" name="keywords" placeholder="title/description keywords" type="text">
         <select name="status">
             <option value="">All</option>
             <option value="lost">Lost</option>
+            <option value="found">Found</option>
             <option value="stolen">Stolen</option>
             <option value="returned">Returned</option>
         </select>
