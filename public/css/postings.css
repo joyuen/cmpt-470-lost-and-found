@@ -46,8 +46,6 @@
 #searchBox {
     display: block;         /* center form within screen */
     text-align: center;     /* center form within screen */
-    margin-top: 50px;
-    margin-bottom: 50px;
 }
 
 #search {
@@ -55,7 +53,7 @@
 }
 
 #searchKeywords {
-    min-width: 300px;
+    min-width: 60%;
 }
 
 #advancedOptions {

@@ -80,11 +80,11 @@ input, textarea, select {
 
 .grid {
     display: grid;
-    grid-template-columns: 1fr 4fr;
     grid-template-rows: min-content 1fr;
+    grid-template-columns: 400px minmax(0, 1fr);
     grid-template-areas:
         "zero two"
-        "one two"
+        "one two";
 }
 
 .grid-zero {
@@ -93,7 +93,7 @@ input, textarea, select {
 
 .grid-one {
     grid-area: one;
-
+    overflow: scroll;
 }
 
 .grid-two {

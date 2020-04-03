@@ -62,13 +62,13 @@ Paginator.prototype.addToCache = function (start, p) {
 
 Paginator.prototype.getPage = async function (p) {
     var startpost = (p - 1) * this.POSTS_PER_PAGE;
-    var lastpost = Math.min(this.numtotal, p * this.POSTS_PER_PAGE - 1);
-    while (this.curpost < lastpost) {
+    var lastpost = Math.min(this.numtotal-1, p * this.POSTS_PER_PAGE - 1);
+    while (this.curpost <= lastpost) {
         await this.fetchPosts();
     }
 
     var arr = [];
-    for (var i = startpost; i < lastpost; i++) {
+    for (var i = startpost; i <= lastpost; i++) {
         arr.push(this.cache[i]);
     }
     return arr;
@@ -140,7 +140,7 @@ function initDatePicker() {
 }
 
 function getPostsPerPage() {
-    return 20;
+    return 10;
 }
 
 function initSearch() {
