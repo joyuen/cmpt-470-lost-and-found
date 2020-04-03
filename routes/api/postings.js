@@ -2,6 +2,7 @@ var express = require('express');
 var RegexEscape = require("regex-escape");
 var multer = require('multer');
 var path = require('path');
+var mongo_sanitize = require("mongo-sanitize");
 const { check, query, validationResult } = require('express-validator');
 
 var Postings = require('../../model/postings');
@@ -12,6 +13,16 @@ var router = express.Router();
 //-------------------------------
 //   Helper functions
 //-------------------------------
+function mongoSanitizeQuery(req, res, next) {
+    req.query = mongo_sanitize(req.query);
+    next();
+}
+
+function mongoSanitizeBody(req, res, next) {
+    req.body = mongo_sanitize(req.body);
+    next();
+}
+
 const multer_image = multer({
     dest: './uploads',
     limits: {fileSize: 10*1024*1024},
@@ -52,6 +63,8 @@ async function processImage(file) {
  * Can only delete if user created the posting or if user is an admin
  */
 router.delete('/:id', async function(req, res) {
+    req.params.id = req.params.id.toString();
+
     try {
         var post = await Postings.getPostingById(req.params.id);
     } catch (e) {
@@ -81,6 +94,8 @@ router.delete('/:id', async function(req, res) {
  *      can also upload an image, which will change the image ID
  */
 router.put('/:id', multer_image.single('image'), async function(req, res) {
+    req.params.id = req.params.id.toString();
+
     try {
         var post = await Postings.getPostingById(req.params.id);
     } catch (e) {
@@ -109,6 +124,7 @@ router.put('/:id', multer_image.single('image'), async function(req, res) {
  * GET api/postings/:id - get a certain posting
  */
 router.get('/:id', async function(req, res) {
+    req.params.id = req.params.id.toString();
     var postid = req.params.id;
     try {
         var posting = await Postings.getPostingById(postid);
@@ -133,14 +149,14 @@ router.get('/:id', async function(req, res) {
  *      detail - 
  *      a single file [an image] can also be uploaded (max 10 MB)
  */
-router.post('/', multer_image.single('image'), [
-    check('title').isLength({min:1, max:256}),
-    check('status').isIn(['lost', 'found', 'stolen', 'returned']),
-    check('item').isLength({min:1, max:256}),
-    check('date').custom(beforeNow),
-    check('campus').isIn(['burnaby', 'surrey', 'vancouver']),
-    check('location').isLength({max: 256}),
-    check('detail').isLength({max: 2500}),
+router.post('/', mongoSanitizeBody, multer_image.single('image'), [
+    check('title').isString().isLength({min:1, max:256}),
+    check('status').isString().isIn(['lost', 'found', 'stolen', 'returned']),
+    check('item').isString().isLength({min:1, max:256}),
+    check('date').custom(isDate).custom(beforeNow),
+    check('campus').isString().isIn(['burnaby', 'surrey', 'vancouver']),
+    check('location').isString().isLength({max: 256}),
+    check('detail').isString().isLength({max: 2500}),
 ], async function(req, res) {
     // turn separate date and time values into a combined datetime
     req.body.date = new Date(`${req.body.date} ${req.body.time}`);
@@ -207,17 +223,17 @@ router.post('/', multer_image.single('image'), [
         [token]
  */
 
-router.get('/', [
-    query('keywords').optional().isLength({min:0, max:256}),
-    query('status').optional().isLength({min:0, max:256}),
-    query('category').optional().isLength({min:0, max:256}),
-    query('campus').optional().isLength({min:0, max:256}),
-    query('building').optional().isLength({min:0, max:256}),
-    query('room').optional().isLength({min:0, max:256}),
-    query('lostDateStart').optional().custom(isDate),
-    query('lostDateEnd').optional().custom(isDate),
+router.get('/', mongoSanitizeQuery, [
+    query('keywords').optional().isString().isLength({min:0, max:256}),
+    query('status').optional().isString().isLength({min:0, max:256}),
+    query('category').optional().isString().isLength({min:0, max:256}),
+    query('campus').optional().isString().isLength({min:0, max:256}),
+    query('building').optional().isString().isLength({min:0, max:256}),
+    query('room').optional().isString().isLength({min:0, max:256}),
+    query('lostDateStart').optional().isString().custom(isDate),
+    query('lostDateEnd').optional().isString().custom(isDate),
     query('numPostings').optional().isInt({min:0, max:50}).toInt(),      // possibly make the min/max check a sanitizer
-    query('token').optional().custom(isDate),     // while the token is still a date
+    query('token').optional().isString().custom(isDate),     // while the token is still a date
 ], async function (req, res, next) {
     if (req.query.numPostings === undefined) {
         req.query.numPostings = 10;
