@@ -290,7 +290,7 @@ function generateRandomPosition(campus) {
     var boundsLng = [bounds[campus][0][1], bounds[campus][1][1]];
     var randomLat = randfloat(boundsLat[0], boundsLat[1]);
     var randomLng = randfloat(boundsLng[0], boundsLng[1]);
-    return [randomLat, randomLng];
+    return [randomLng, randomLat];
 }
 
 const ONE_MINUTE = 60 * 1000;
@@ -302,7 +302,7 @@ function makeRandomPosting(args) {
     var images = images_model.getIds();
     images.push("");    // no image
 
-    var time_lost = randint(0, 24 * 60 * ONE_MINUTE);
+    var time_lost = randint(0, 3 * 24 * 60 * ONE_MINUTE);
     var lost_date = new Date(creation_date - time_lost);
     var [building, room] = generateRandomRoom(campus);
 

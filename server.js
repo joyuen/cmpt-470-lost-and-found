@@ -29,6 +29,7 @@ if (!isProduction) {
         });
     });
     mongoose.set('debug', true);
+    mongoose.set('useCreateIndex', true);
 } else {
     // Put production options here if we have any
 }
@@ -68,6 +69,8 @@ require('./routes/auth.js')(app);
 if (!isProduction) {
     app.use('/dev', require('./routes/dev'));
 }
+
+app.use('/api', require('./routes/api'));
 
 // Public stuff
 app.use(express.static(path.join(__dirname, 'public')));

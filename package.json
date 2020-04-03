@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "startd": "nodemon server.js --ignore public/ --watch views/partials/*.*",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -29,6 +30,7 @@
     "node-sass-middleware": "^0.11.0",
     "passport": "^0.4.1",
     "passport-cas2": "0.0.11",
+    "regex-escape": "^3.4.9",
     "uuid": "^7.0.2"
   },
   "nodemonConfig": {

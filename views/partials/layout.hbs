@@ -12,8 +12,10 @@
 </head>
 
 <body>
-    {{> navbar}}
-    {{> content}}
+    <div style="display:grid; grid-template-areas:'__navbar' '__content'; grid-template-rows: min-content minmax(0, 1fr); height: 100vh;">
+        <div style="grid-area: __navbar">{{> navbar}}</div>
+        <div style="grid-area: __content">{{> content}}</div>
+    </div>
 </body>
 
 
