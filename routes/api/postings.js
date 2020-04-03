@@ -4,6 +4,7 @@ var multer = require('multer');
 var path = require('path');
 var mongo_sanitize = require("mongo-sanitize");
 const { check, query, validationResult } = require('express-validator');
+const config = require('../../config.js');
 
 var Postings = require('../../model/postings');
 var Images = require('../../model/images');
@@ -25,7 +26,7 @@ function mongoSanitizeBody(req, res, next) {
 
 const multer_image = multer({
     dest: './uploads',
-    limits: {fileSize: 10*1024*1024},
+    limits: {fileSize: config.MAX_IMAGE_SIZE},
     fileFilter: function(req, file, cb) {
         cb(null, file.mimetype == 'image/jpeg' || file.mimetype == 'image/png');
     }
