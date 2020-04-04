@@ -7,18 +7,11 @@
     <label for="bmenub" class="burger pseudo button">&#8801;</label>
 
     <div class="menu">
-        <a href="map" {{#if (navActivate page "map")}} class="is-active navbar-item" {{else}} class="navbar-item"
-            {{/if}}>Map</a>
-        <a href="account" {{#if (navActivate page "account")}}class="is-active navbar-item" {{else}} class="navbar-item"
-            {{/if}}>Account</a>
-        <a href="#" class="button icon-puzzle">Plugins</a>
-        <a href="makepost" {{#if (navActivate page "makepost")}} class="is-active navbar-item" {{/if}}
-            class="navbar-item">
-            Create Post</a>
-        <a href="postings" {{#if (navActivate page "postings")}} class="is-active navbar-item" {{/if}}
-            class="navbar-item">
-            View Posts</a>
-        <a class="button is-small is-text is-light" href="logout" id="logout">Logout</a>
+        <a href="map">Map</a>
+        <a href="account">Account</a>
+        <a href="makepost">Create Post</a>
+        <a href="postings">View Posts</a>
+        <a class="button" href="logout" id="logout">Logout</a>
     </div>
 
 </nav>
