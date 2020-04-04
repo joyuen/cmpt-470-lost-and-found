@@ -63,8 +63,9 @@ async function processImage(file) {
  * DELETE api/postings/:id - delete a posting
  * Can only delete if user created the posting or if user is an admin
  */
-router.delete('/:id', async function(req, res) {
-    req.params.id= req.params.id.slice(1,);
+// router.delete('/:id', async function(req, res) {
+router.post('/:id', async function(req, res) {
+    req.params.id = req.params.id.slice(1,);
     // req.params.id = req.params.id.toString();
 
     try {
@@ -79,7 +80,7 @@ router.delete('/:id', async function(req, res) {
 
     var result = await Postings.deleteById(req.params.id);
     if (result.ok == 1) {
-        return res.status(200).json(result);
+        return res.redirect("/map")
     } else {
         return res.status(500).json(result);
     }
@@ -239,7 +240,6 @@ router.get('/', mongoSanitizeQuery, [
     query('numPostings').optional().isInt({min:0, max:50}).toInt(),      // possibly make the min/max check a sanitizer
     query('token').optional().isString().custom(isDate),     // while the token is still a date
 ], async function (req, res, next) {
-    console.log("5")
     if (req.query.numPostings === undefined) {
         req.query.numPostings = 10;
     }

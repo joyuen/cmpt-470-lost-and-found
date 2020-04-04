@@ -50,8 +50,10 @@
             </td>
         </tr>
     </table>
-    <button onclick="window.location.href='/editmap/:{{post.id}}'">Edit item</button>
-    <button onclick="window.location.href='/api/postings/:{{post.id}}'">Delete Item</button>
+    <button onclick="window.location.href='/map'">Edit item</button>
+    <form action="/api/postings/:{{post.id}}" id="deleteForm" method="post">
+        <button type="submit" form="deleteForm" onClick="return confirm('Are you sure?')">Delete</button>
+    </form>
 
 </div>
 {{/inline}}

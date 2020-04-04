@@ -251,7 +251,6 @@ function initMap() {
 
         var listener = map.addListener('click', function() {
             marker.setMap(null);
-            console.log(marker);
             google.maps.event.removeListener(listener);
         });
 
