@@ -6,7 +6,7 @@ function DatabaseException(message) {
     this.name = 'DatabaseException';
 }
 
-// Make the exception convert to a pretty string when used as a string 
+// Make the exception convert to a pretty string when used as a string
 // (e.g., by the error console)
 DatabaseException.prototype.toString = function() {
     return `${this.name}: "${this.message}"`;
@@ -97,56 +97,6 @@ posting_schema.virtual('id').get(function() {
     return this._id;        // maybe do something fancy with it later
 })
 
-<<<<<<< HEAD
-var Postings = mongoose.model('posting', posting_schema);
-//---------------------------------------
-//  Controller
-//---------------------------------------
-var PostingController = {
-    /**
-     *  Add a posting to the database
-     *  @param {object} posting - attributes to construct the posting document with (see schema)
-     *  @returns id of the posting just created
-     *  @throws validation error if posting is invalid
-     */
-    addPosting : async function(posting) {
-        return Postings.create(posting).then(doc => {
-            return doc.id;
-        });
-    },
-
-    updatePosting : async function(posting, posting_id) {
-        var query = Postings.updateOne(
-            { _id: posting_id },
-            {
-                $set:
-                    {
-                        title: posting.title,
-                        category: posting.category,
-                        description: posting.description,
-                        status: posting.status,
-                        campus: posting.campus,
-                        building: posting.building,
-                        room: posting.room,
-                        location: posting.location,
-                        creationDate: posting.creationDate,
-                        lostDate: posting.lostDate,
-                        postedBy: posting.postedBy,
-                        imageID: posting.imageID,
-                        coordinates: posting.coordinates
-                    }
-            });
-        return query.exec();
-    },
-
-    /**
-     *  @returns cursor to iterate through all postings
-     */
-    getAllPostings : async function() {
-        var query = Postings.find();
-        return query.exec();
-    },
-=======
 posting_schema.virtual('campusFull').get(function() {
     switch (this.campus) {
         case "surrey": return "Surrey Campus";
@@ -159,7 +109,6 @@ posting_schema.virtual('statusFull').get(function() {
     // just capitalize the first letter, nothing special yet
     return this.status[0].toUpperCase() + this.status.slice(1);
 });
->>>>>>> c29e894bbd9e52f1352d4d1a80ca59daf34b531f
 
 // Helper queries
 posting_schema.statics.deleteById = function(id) {
@@ -167,15 +116,12 @@ posting_schema.statics.deleteById = function(id) {
     return this.deleteOne({_id: database_id});
 };
 
-<<<<<<< HEAD
-module.exports = PostingController;
-=======
 /**
  *  Add a posting to the database
  *  @param {object} posting - attributes to construct the posting document with (see schema)
  *  @returns id of the posting just created
  *  @throws validation error if posting is invalid
- */ 
+ */
 posting_schema.statics.addPosting = async function(posting) {
     return this.create(posting).then(doc => {
         return doc.id;
@@ -217,4 +163,3 @@ posting_schema.statics.getPostingsWithin = async function(n,s,w,e) {
 
 var Postings = mongoose.model('posting', posting_schema);
 module.exports = Postings;
->>>>>>> c29e894bbd9e52f1352d4d1a80ca59daf34b531f
