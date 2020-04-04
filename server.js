@@ -30,6 +30,7 @@ if (!isProduction) {
     });
     mongoose.set('debug', true);
     mongoose.set('useCreateIndex', true);
+    mongoose.set('useFindAndModify', false);
 } else {
     // Put production options here if we have any
 }
