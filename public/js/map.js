@@ -22,7 +22,7 @@ function showPage(id) {
             elem.className = "not-selected";
         }
     }
-    
+
     if (id != "content-form") {
         if (currentMarker) {
             currentMarker.setMap(null);
@@ -47,7 +47,7 @@ function panToMarker(key) {
     document.getElementById('post-date').innerHTML = p.lostDate;
     document.getElementById('post-author').innerHTML = "Posted by: " + p.postedBy;
     document.getElementById('post-link').href = "/viewpost?id="+p._id;
-    
+
     m.setIcon("/images/map-marker-blue.png");
     pannedMarker = m;
 }
@@ -251,6 +251,7 @@ function initMap() {
 
         var listener = map.addListener('click', function() {
             marker.setMap(null);
+            console.log(marker);
             google.maps.event.removeListener(listener);
         });
 

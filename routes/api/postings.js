@@ -64,7 +64,8 @@ async function processImage(file) {
  * Can only delete if user created the posting or if user is an admin
  */
 router.delete('/:id', async function(req, res) {
-    req.params.id = req.params.id.toString();
+    req.params.id= req.params.id.slice(1,);
+    // req.params.id = req.params.id.toString();
 
     try {
         var post = await Postings.getPostingById(req.params.id);
@@ -88,14 +89,15 @@ router.delete('/:id', async function(req, res) {
  * PUT api/postings/:id - replace attributes in a posting
  * Will only modify posting values that are specified in the request body
  * Can only update if user created the posting or if user is an admin
- * 
- * Parameters: 
+ *
+ * Parameters:
  *      most attributes in the Postings model, except:
  *          _id
  *      can also upload an image, which will change the image ID
  */
 router.put('/:id', multer_image.single('image'), async function(req, res) {
-    req.params.id = req.params.id.toString();
+    // req.params.id = req.params.id.toString();
+    req.params.id= req.params.id.slice(1,);
 
     try {
         var post = await Postings.getPostingById(req.params.id);
@@ -125,7 +127,8 @@ router.put('/:id', multer_image.single('image'), async function(req, res) {
  * GET api/postings/:id - get a certain posting
  */
 router.get('/:id', async function(req, res) {
-    req.params.id = req.params.id.toString();
+    req.params.id= req.params.id.slice(1,);
+    // req.params.id = req.params.id.toString();
     var postid = req.params.id;
     try {
         var posting = await Postings.getPostingById(postid);
@@ -138,16 +141,16 @@ router.get('/:id', async function(req, res) {
 /**
  * POST api/postings - upload posting to the server
  * returns the :id of the uploaded posting
- * 
+ *
  * Parameters:
  *      title -
  *      status -
- *      item - 
- *      date - 
- *      time - 
+ *      item -
+ *      date -
+ *      time -
  *      campus -
- *      location - 
- *      detail - 
+ *      location -
+ *      detail -
  *      a single file [an image] can also be uploaded (max 10 MB)
  */
 router.post('/', mongoSanitizeBody, multer_image.single('image'), [
@@ -204,12 +207,12 @@ router.post('/', mongoSanitizeBody, multer_image.single('image'), [
  *      with the total number of postings matched by the search.
  * Postings are paginated -- request only returns a few postings (default 10).
  * To continue a search, pass in the returned token as a param along with the same search parameters.
- * 
+ *
  * Only certain attributes are returned in the Postings:
  *      id, status, campus, lostDate, title, campusFull, statusFull
  * for more, run queries to the individual posts /api/posting/:id
  * or change this function to return more attributes
- * 
+ *
  * Parameters:
  *      [if any are not specified, then assume 'all']
         keywords        - text search through the posting
@@ -236,6 +239,7 @@ router.get('/', mongoSanitizeQuery, [
     query('numPostings').optional().isInt({min:0, max:50}).toInt(),      // possibly make the min/max check a sanitizer
     query('token').optional().isString().custom(isDate),     // while the token is still a date
 ], async function (req, res, next) {
+    console.log("5")
     if (req.query.numPostings === undefined) {
         req.query.numPostings = 10;
     }
@@ -251,7 +255,7 @@ router.get('/', mongoSanitizeQuery, [
         if (req.query.keywords) {
             query = query.find({$text: {$search: req.query.keywords}});
             // add textscore as attribute in documents, if we want to sort or filter by it later
-            // query = query.select({score: {$meta: "textScore"}});     
+            // query = query.select({score: {$meta: "textScore"}});
         }
 
         if (req.query.status) {
@@ -275,7 +279,7 @@ router.get('/', mongoSanitizeQuery, [
             var escapedRoom = "(?i)" + RegexEscape(req.query.room);
             query = query.where('room').regex(escapedRoom);
         }
-        
+
         if (req.query.lostDateStart) {
             var lostDateStart = new Date(req.query.lostDateStart);
             query = query.where('lostDate').gte(lostDateStart);
@@ -307,9 +311,9 @@ router.get('/', mongoSanitizeQuery, [
         .sort({lostDate: -1})
         .limit(req.query.numPostings)
         .exec();
-    
+
     results = results.map(projectPosting);
-    
+
     if (results.length == 0) {
         //          |    |         |            |
         //  lostStart   token      lostEnd      now
@@ -328,7 +332,7 @@ router.get('/', mongoSanitizeQuery, [
 
     // return the number of total documents, on the first search
     var numTotal;
-    if (!req.query.token) { 
+    if (!req.query.token) {
         numTotal = await createQuery().count().exec();
     }
 
