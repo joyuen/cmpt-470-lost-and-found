@@ -52,8 +52,8 @@ function hasEditPermissions(user, posting) {
 
 async function processImage(file) {
     if (file) {
-        const fileExt = path.extname(req.file.originalname).toLowerCase();
-        return await Images.saveImageFromFile(req.file.path, fileExt);
+        const fileExt = path.extname(file.originalname).toLowerCase();
+        return await Images.saveImageFromFile(file.path, fileExt);
     } else {
         return "";
     }
@@ -90,11 +90,30 @@ router.delete('/:id', async function(req, res) {
  * Can only update if user created the posting or if user is an admin
  * 
  * Parameters: 
- *      most attributes in the Postings model, except:
- *          _id
+ *      same as POST api/postings
  *      can also upload an image, which will change the image ID
  */
-router.put('/:id', multer_image.single('image'), async function(req, res) {
+router.put('/:id', mongoSanitizeBody, multer_image.single('image'), [
+    check('title').optional().isString().isLength({min:1, max:256}),
+    check('status').optional().isString().isIn(['lost', 'found', 'stolen', 'returned']),
+    check('item').optional().isString().isLength({min:1, max:256}),
+    check('date').optional().custom(isDate).custom(beforeNow),
+    check('campus').optional().isString().isIn(['burnaby', 'surrey', 'vancouver']),
+    check('location').optional().isString().isLength({max: 256}),
+    check('detail').optional().isString().isLength({max: 2500}),
+], async function(req, res) {
+    // turn separate date and time values into a combined datetime
+    if (typeof req.body.date !== 'undefined') {
+        req.body.date = new Date(`${req.body.date} ${req.body.time}`);
+        delete req.body.time;
+    }
+
+    // validate the form inputs
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json(errors.array());
+    }
+
     req.params.id = req.params.id.toString();
 
     try {
@@ -108,13 +127,40 @@ router.put('/:id', multer_image.single('image'), async function(req, res) {
         return res.status(403);
     }
 
+    // AAAA why is it so hard to do validation on updates
+    // hack hack hack
+
+    var new_post_entries = {
+        title: req.body.title,
+        category: req.body.item,
+        description: req.body.detail,
+        status: req.body.status,
+        campus: req.body.campus,
+        location: req.body.location,
+        lostDate: req.body.date,
+    };
+
     if (req.file) {
-        req.body.imageID = await processImage(req.file);
+        new_post_entries.imageID = await processImage(req.file);
+    }
+    
+    for (let [key,val] of Object.entries(new_post_entries)) {
+        if (typeof val !== "undefined") {
+            post[key] = val;
+        }
     }
 
+    var err = post.validateSync();
+    if (err) {
+        return res.status(400).json(err.message);
+    }
+    
     var result;
     try {
-        result = await Postings.findOneAndUpdate({_id: req.params.id}, req.body, {runValidators: true}).exec();
+        result = await Postings.findOneAndUpdate(
+            {_id: req.params.id},
+            post
+        ).exec();
     } catch (err) {
         return res.status(400).json(err.message);
     }
