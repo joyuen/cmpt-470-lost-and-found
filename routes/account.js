@@ -3,7 +3,7 @@ var User = require('../model/user');
 
 var router = express.Router();
 router.get('/', async function (req, res) {
-    return res.render('account', { user: req.user });
+    return res.render('account', { page: 'account', user: req.user });
 });
 
 router.post('/', async function (req, res, next) {
@@ -22,7 +22,7 @@ router.post('/', async function (req, res, next) {
             console.log(err);
             next(err);
         }
-        res.render('account', { user: user });
+        res.render('account', { page: 'account', user: user });
     });
 });
 

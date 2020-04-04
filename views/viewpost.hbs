@@ -1,20 +1,14 @@
-<!doctype html>
-<html lang="en">
-    <head>
-        <title>SFU Lost and Found</title>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, inital-scale=1">
-        <link rel="stylesheet" href="../css/layout.css">
-        <link rel="stylesheet" href="../css/viewpost.css">
-    </head>
+{{#> layout}}
+{{#*inline "head"}}
+<link rel="stylesheet" href="../css/viewpost.css">
+{{/inline}}
 
-    <body>
-        {{> navbar}}
-
-        <div class="sidebar">
-            {{!-- <div style="height: 300px; background-color: lightgreen;">
+{{#*inline "content"}}
+<div class="sidebar">
+    {{!-- <div style="height: 300px; background-color: lightgreen;">
                 Small map goes here
             </div> --}}
+<<<<<<< HEAD
             {{#if image_url}}
                 <img id="image" src="{{image_url}}"></img>
             {{else}}
@@ -52,3 +46,50 @@
 
     </body>
 </html>
+=======
+    {{#if image_url}}
+    <img id="image" src="{{image_url}}"></img>
+    {{else}}
+    <p id="image_gone">No image available!</p>
+    {{/if}}
+    <p id="summary">
+        <b>{{post.statusFull}}</b> at <b>{{post.campusFull}}</b> <br>
+        {{post.location}} <br>
+        {{post_date post.lostDate}}
+    </p>
+    <br>
+</div>
+<div class="post">
+    <h2 id="title">{{post.title}}</h2>
+    <hr>
+    <p id="details">{{post.description}}</p>
+    <table id="misctable">
+        <tr>
+            <th>
+                <p>Contact Info:</p>
+            </th>
+            <td>
+                <p>{{user.name}} <a href="mailto:{{user.email}}">(Contact them)</a></p>
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <p>Post Created:</p>
+            </th>
+            <td>
+                <p>{{post.creationDate}}</p>
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <p>Item Type:</p>
+            </th>
+            <td>
+                <p>{{post.category}}</p>
+            </td>
+        </tr>
+    </table>
+</div>
+{{/inline}}
+{{/layout}}
+>>>>>>> c29e894bbd9e52f1352d4d1a80ca59daf34b531f

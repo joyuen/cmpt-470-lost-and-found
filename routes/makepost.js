@@ -54,7 +54,7 @@ const formChecks = [
 const validation_error = function(res, message) {
     res.status(422).send(`
         Error sending posting to server! Reason:
-        <pre>${err.message}</pre>
+        <pre>${message}</pre>
     `);
 }
 
@@ -76,7 +76,6 @@ router.post('/', upload.single('image'), formChecks, async function(req, res) {
     if (req.user == undefined) {
         return validation_error(res, "login info found to be undefined -- are you logged in?");
     }
-
     var new_post = {
         title: req.body.title,
         category: req.body.item,
@@ -92,7 +91,7 @@ router.post('/', upload.single('image'), formChecks, async function(req, res) {
         imageID: "",           // to be filled in
         coordinates: {              // until the map is finished, default values
             type: "Point",
-            coordinates: [49.277012, -122.918049],    // should be in the middle of burnaby campus
+            coordinates: [req.body.lng, req.body.lat],
         },
     };
 
@@ -108,7 +107,7 @@ router.post('/', upload.single('image'), formChecks, async function(req, res) {
     } catch (err) {
         return validation_error(res, err.message);
     }
-    return res.redirect('postings');
+    return res.redirect(`viewpost?id=${id}`);
 });
 
 module.exports = router;

@@ -8,6 +8,7 @@ const hbs = require('hbs');
 const session = require("express-session");
 const passport = require('passport');
 const errorHandler = require('errorhandler');
+const sassMiddleware = require('node-sass-middleware');
 
 // Constants
 const isProduction = config.isProduction;
@@ -28,6 +29,7 @@ if (!isProduction) {
         });
     });
     mongoose.set('debug', true);
+    mongoose.set('useCreateIndex', true);
 } else {
     // Put production options here if we have any
 }
@@ -44,6 +46,14 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/css', sassMiddleware({
+    /* Options */
+    src: __dirname + '/sass',
+    dest: path.join(__dirname, 'public/css/generated'),
+    debug: true,
+    outputStyle: 'compressed',
+    prefix:  '/generated'  // Where prefix is at <link rel="stylesheets" href="prefix/style.css"/>
+}));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
@@ -59,6 +69,8 @@ require('./routes/auth.js')(app);
 if (!isProduction) {
     app.use('/dev', require('./routes/dev'));
 }
+
+app.use('/api', require('./routes/api'));
 
 // Public stuff
 app.use(express.static(path.join(__dirname, 'public')));

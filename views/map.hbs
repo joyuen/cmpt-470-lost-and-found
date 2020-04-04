@@ -1,37 +1,209 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-    <title>SFU Lost and Found</title>
+{{#> layout}}
+{{#*inline "head"}}
+    <link rel="stylesheet" href="/css/map.css">
+    <link rel="stylesheet" href="../css/postings.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ejs@3.0.2/ejs.min.js"></script>
+
+    <script type="text/javascript" src="/js/map.js"></script>
     <script type="text/javascript"
         src="https://maps.googleapis.com/maps/api/js?sensor=false&callback=initMap"async defer>
     </script>
-    <script type="text/javascript" src="/js/map.js"></script>
-    <link rel="stylesheet" href="../css/layout.css">
-    <link rel="stylesheet" href="/css/map.css">
-</head>
-<body>
-    {{> navbar}}
+    
+    <script type="text/javascript" src="/js/postings.js"></script>
+{{/inline}}
 
-    <div id="overlay"></div>
-    <main class="flex-container">
-        <aside id="sidebar">
-            <header>
-                <b>S</b>omething<br>
-                <b>F</b>ound at<br>
-                <b>U</b>niversity<br>
-            </header>
-            <div id="content"></div>
-        </aside>
-        <div class="map-container">
-            <div id="floating-panel">
-                <input onclick="showBurnaby();" type=button value="Burnaby">
-                <input onclick="showVancouver();" type=button value="Vancouver">
-                <input onclick="showSurrey();" type=button value="Surrey">
+{{#*inline "content"}}
+<div id="overlay"></div>
+<div class="grid">
+    <aside class="grid-zero">
+        <header class="title-container">
+            <div class="sfu-title"><p class="sfu">S</p>omething</div>
+            <div class="sfu-title"><p class="sfu">F</p>ound at</div>
+            <div class="sfu-title"><p class="sfu">U</p>niversity</div>
+        </header>
+    </aside>
+    <aside id="sidebar" class="grid-one">
+
+        <div id="content">
+            <div id="all-post" class="selected">
+                <!-- Add pagination https://codepen.io/harangue/pen/VeJowz -->
+                <!-- Display all posts -->
+                <!-- Make this a flexbox columns -->
+                <!-- Make items inside a flexbox -->
+                <div id="searchBox">
+                <form id="search">
+                    {{!-- <span title="Use quotes &quot;text&quot; to force text to appear in search. Use minus -text to exclude text."><u>?</u></span> --}}
+                    <input id="searchKeywords" name="keywords" placeholder="title/description keywords" type="text">
+                    <select name="status">
+                        <option value="">All</option>
+                        <option value="lost">Lost</option>
+                        <option value="found">Found</option>
+                        <option value="stolen">Stolen</option>
+                        <option value="returned">Returned</option>
+                    </select>
+
+                    <div id="advancedOptions">
+                        <div class="advancedOptionsLabel">
+                            <label for="category">Category: </label>
+                        </div>
+                        <div class="advancedOptionsObject">
+                            <select name="category">
+                                <option value="">Any</option>
+                                <option value="wallet">Wallet</option>
+                                <option value="phone">Phone</option>
+                                <option value="keys">Keys</option>
+                                <option value="laptop">Laptop</option>
+                                <option value="pencilCase">Pencil Case</option>
+                                <option value="clothing">Clothing</option>
+                                <option value="textbook">Textbook</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="advancedOptionsLabel">
+                            <label for="campus">Campus: </label>
+                        </div>
+                        <div class="advancedOptionsObject">
+                            <select name="campus">
+                                <option value="">Any</option>
+                                <option value="burnaby">Burnaby Mountain Campus</option>
+                                <option value="surrey">Surrey Central Campus</option>
+                                <option value="vancouver">Vancouver Campus</option>
+                            </select>
+                        </div>
+                        <div class="advancedOptionsLabel">
+                            <label for="building">Building: </label>
+                        </div>
+                        <div class="advancedOptionsObject">
+                            <input name="building" placeholder="building" type="text">
+                        </div>
+
+
+                        <div class="advancedOptionsLabel">
+                            <label for="room">Room: </label>
+                        </div>
+                        <div class="advancedOptionsObject">
+                            <input name="room" placeholder="room" type="text">
+                        </div>
+
+                        <div class="advancedOptionsLabel">
+                            <label for="lostDate">Lost Date: </label>
+                            {{!-- <select name="dateSelector">
+                                        <option value="lost">Lost Date:</option>
+                                        <option value="create">Create Date:</option>
+                                    </select> --}}
+                        </div>
+                        <div class="advancedOptionsObject">
+                            <input name="lostDateRange" type="text">
+                        </div>
+
+                        {{!-- <div class="advancedOptionsLabel">
+                                    <label for="creationDate">Creation Date: </label>
+                                </div>
+                                <div class="advancedOptionsObject">
+                                    <input name="creationDateRange" type="text">
+                                </div>         --}}
+                        </table>
+                    </div>
+
+                    <div id="formButtons">
+                        <button id="showAdvanced">Show Advanced Options</button>
+                        <button id="hideAdvanced">Hide Advanced Options</button>
+                        <button type="submit">Search</button>
+                    </div>
+                </form>
+                </div>
+
+                <div id="pagehud">
+                    <button id="pageLeft">&laquo;</button>
+                    Page <span id="pageNum">0</span>/<span id="pageTotal">0</span>
+                    <button id="pageRight">&raquo;</button>
+                </div>
+
+                <table id="postings">
+                </table>
             </div>
-            <div id="map"></div>
-        </div>
-    </main>
+            <div id="content-post" class="not-selected">
+                <div style="position: relative;"><a class="cancel-button">X</a></div>
+                <!-- Insert post layout here, prob "jump" to marker -->
+                <h2 id="post-title"></h2>
+                <label id="post-status"></label>
+                <label id="post-item"></label>
+                <label id="post-date"></label>
+                <label id="post-author"></label>
+                <a id="post-link" href="" target="_blank">See more</a>
+            </div>
+            <form id="content-form" class="not-selected" action="makepost" method="POST" enctype="multipart/form-data">
+                <div style="position: relative;"><a class="cancel-button">X</a></div>
+                <!-- FormSet serialize -->
+                <!-- If going with Ajax, remember to remove temp marker -->
+                <input type="hidden" id="lng" name="lng"/>
+                <input type="hidden" id="lat" name="lat"/>
+                <input type="hidden" id="campus" name="campus"/>
+                <div>
+                    <label for="title">Report title:</label>
+                    <input type="text" id="title" name="title" maxlength="255" required />
+                </div>
+                <div>
+                    <label>Report Status:</label>
+                        <label>
+                            <input type="radio" id="lost" name="status" value="lost" checked required/>Lost
+                        </label>
+                        <label>
+                            <input type="radio" id="stolen" name="status" value="stolen"/>Stolen
+                        </label>
+                        <label>
+                            <input type="radio" id="found" name="status" value="found"/>Found
+                        </label>
+                </div>
+                <div>
+                    <label for="item">Type of item:</label> <br>
+                    <select id="item" name="item" required>
+                        <option value = "wallet">Wallet</option>
+                        <option value = "phone">Phone</option>
+                        <option value = "keys">Keys</option>
+                        <option value = "laptop">Laptop</option>
+                        <option value = "pencilCase">Pencil Case</option>
+                        <option value = "clothing">Clothing</option>
+                        <option value = "textbook">Textbook</option>
+                        <option value = "other">Other</option>
+                    </select>
+                </div>
 
-</body>
-</html>
+                <div>
+                    <label for="date">Approximate time:</label><br>
+                    <input type="date" id="date" name="date" required>
+                    <input type="time" id="time" name="time" required>
+                </div>
+                <div>
+                    <label for="location">Extra location details:</label><br>
+                    <input type="text" id="location" name="location" maxlength="255">
+                </div>
+                <div>
+                    <label for="detail">Item Description:</label><br>
+                    <textarea id="detail" name="detail" maxlength="2000"></textarea>
+                </div>
+                <div>
+                    <label for="image">Photo (optional):</label><br>
+                    <input type="file" id="image" name="image" accept="image/png, image/jpeg" />
+                </div>
+                <input type="submit" value="Submit Report">
+            </form>
+        </div>
+    </aside>
+    <div class="grid-two">
+        <div id="floating-panel">
+            <input onclick="showBurnaby();" type=button value="Burnaby">
+            <input onclick="showVancouver();" type=button value="Vancouver">
+            <input onclick="showSurrey();" type=button value="Surrey">
+        </div>
+        <div id="map"></div>
+    </div>
+</div>
+{{/inline}}
+{{/layout}}
