@@ -1,0 +1,55 @@
+<form id="content-form" class="not-selected" action="makepost" method="POST" enctype="multipart/form-data">
+  <div style="position: relative;"><a class="cancel-button">X</a></div>
+  <!-- FormSet serialize -->
+  <!-- If going with Ajax, remember to remove temp marker -->
+  <input type="hidden" id="lng" name="lng" />
+  <input type="hidden" id="lat" name="lat" />
+  <input type="hidden" id="campus" name="campus" />
+  <div>
+    <label for="title">Report title:</label>
+    <input type="text" id="title" name="title" maxlength="255" required />
+  </div>
+  <div>
+    <label>Report Status:</label>
+    <label>
+      <input type="radio" id="lost" name="status" value="lost" checked required />Lost
+    </label>
+    <label>
+      <input type="radio" id="stolen" name="status" value="stolen" />Stolen
+    </label>
+    <label>
+      <input type="radio" id="found" name="status" value="found" />Found
+    </label>
+  </div>
+  <div>
+    <label for="item">Type of item:</label> <br>
+    <select id="item" name="item" required>
+      <option value="wallet">Wallet</option>
+      <option value="phone">Phone</option>
+      <option value="keys">Keys</option>
+      <option value="laptop">Laptop</option>
+      <option value="pencilCase">Pencil Case</option>
+      <option value="clothing">Clothing</option>
+      <option value="textbook">Textbook</option>
+      <option value="other">Other</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="date">Approximate time:</label><br>
+    <input type="date" id="date" name="date" required>
+    <input type="time" id="time" name="time" required>
+  </div>
+  <div>
+    <label for="location">Extra location details:</label><br>
+    <input type="text" id="location" name="location" maxlength="255">
+  </div>
+  <div>
+    <label for="detail">Item Description:</label><br>
+    <textarea id="detail" name="detail" maxlength="2000"></textarea>
+  </div>
+  <div>
+    {{> image}}
+  </div>
+  <input id="submit-btn" type="submit" value="Submit Report">
+</form>
