@@ -40,6 +40,10 @@ function isDate(v) {
     return !isNaN(new Date(v).getTime());
 }
 
+function clamp(v, min, max) {
+    return Math.min(Math.max(v, min), max);
+}
+
 function hasEditPermissions(user, posting) {
     if (user.admin) {
         return true;
@@ -104,69 +108,57 @@ router.put('/:id', mongoSanitizeBody, multer_image.single('image'), [
     check('location').optional().isString().isLength({max: 256}),
     check('detail').optional().isString().isLength({max: 2500}),
 ], async function(req, res) {
+    return res.status(400).send("Temporarily deprecated, use POST /api/postings with {id} passed in the body instead");
     // turn separate date and time values into a combined datetime
-    if (typeof req.body.date !== 'undefined') {
-        req.body.date = new Date(`${req.body.date} ${req.body.time}`);
-        delete req.body.time;
-    }
+    // if (typeof req.body.date !== 'undefined') {
+    //     req.body.date = new Date(`${req.body.date} ${req.body.time}`);
+    //     delete req.body.time;
+    // }
 
-    // validate the form inputs
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json(errors.array());
-    }
+    // // validate the form inputs
+    // const errors = validationResult(req);
+    // if (!errors.isEmpty()) {
+    //     return res.status(400).json(errors.array());
+    // }
 
-    req.params.id = req.params.id.toString();
+    // req.params.id = req.params.id.toString();
 
-    try {
-        var post = await Postings.getPostingById(req.params.id);
-    } catch (e) {
-        // don't allow PUTting postings to a specific ID
-        return res.status(404).send(`Post with id ${req.params.id} not found`);
-    }
+    // try {
+    //     var post = await Postings.getPostingById(req.params.id);
+    // } catch (e) {
+    //     // don't allow PUTting postings to a specific ID
+    //     return res.status(404).send(`Post with id ${req.params.id} not found`);
+    // }
 
-    if (!hasEditPermissions(req.user, post)) {
-        return res.status(403);
-    }
+    // if (!hasEditPermissions(req.user, post)) {
+    //     return res.status(403);
+    // }
 
-    // AAAA why is it so hard to do validation on updates
-    // hack hack hack
-
-    var new_post_entries = {
-        title: req.body.title,
-        category: req.body.item,
-        description: req.body.detail,
-        status: req.body.status,
-        campus: req.body.campus,
-        location: req.body.location,
-        lostDate: req.body.date,
-    };
-
-    if (req.file) {
-        new_post_entries.imageID = await processImage(req.file);
-    }
-
-    for (let [key,val] of Object.entries(new_post_entries)) {
-        if (typeof val !== "undefined") {
-            post[key] = val;
-        }
-    }
-
-    var err = post.validateSync();
-    if (err) {
-        return res.status(400).json(err.message);
-    }
-
-    var result;
-    try {
-        result = await Postings.findOneAndUpdate(
-            {_id: req.params.id},
-            post
-        ).exec();
-    } catch (err) {
-        return res.status(400).json(err.message);
-    }
-    return res.status(200);
+    // var new_post_entries = {
+    //     title: req.body.title,
+    //     category: req.body.item,
+    //     description: req.body.detail,
+    //     status: req.body.status,
+    //     campus: req.body.campus,
+    //     location: req.body.location,
+    //     lostDate: req.body.date,
+    // };
+    // if (req.file) {
+    //     new_post_entries.imageID = await processImage(req.file);
+    // }
+    
+    // for (let [key,val] of Object.entries(new_post_entries)) {
+    //     if (typeof val === "undefined") {
+    //         delete new_post_entries[key];
+    //     }
+    // }
+    
+    // try {
+    //     var result = await Postings.updatePosting(req.params.id, new_post_entries);
+    //     return res.status(200);
+    // } catch (err) {
+    //     return res.status(400).json(err.message);
+    // }
 });
 
 /**
@@ -189,14 +181,17 @@ router.get('/:id', async function(req, res) {
  * returns the :id of the uploaded posting
  *
  * Parameters:
+ *      id
  *      title -
  *      status -
  *      item -
  *      date -
  *      time -
  *      campus -
- *      location -
- *      detail -
+ *      location - 
+ *      detail - 
+ *      lat
+ *      lng
  *      a single file [an image] can also be uploaded (max 10 MB)
  */
 router.post('/', mongoSanitizeBody, multer_image.single('image'), [
@@ -207,6 +202,9 @@ router.post('/', mongoSanitizeBody, multer_image.single('image'), [
     check('campus').isString().isIn(['burnaby', 'surrey', 'vancouver']),
     check('location').isString().isLength({max: 256}),
     check('detail').isString().isLength({max: 2500}),
+    check('id').optional().isString(),
+    check('lat').toFloat().customSanitizer(v => clamp(v, -90, 90)),
+    check('lng').toFloat().customSanitizer(v => clamp(v, -180, 180)),
 ], async function(req, res) {
     // turn separate date and time values into a combined datetime
     req.body.date = new Date(`${req.body.date} ${req.body.time}`);
@@ -218,32 +216,90 @@ router.post('/', mongoSanitizeBody, multer_image.single('image'), [
         return res.status(400).json(errors.array());
     }
 
-    if (req.user == undefined) {
-        return res.status(400).send("login info is undefined -- are you logged in?");
+    // two possible actions
+    if (typeof req.body.id === 'undefined') {
+        return await postCreate();
+    } else {
+        return await postUpdate();
     }
 
-    var new_post = {
-        title: req.body.title,
-        category: req.body.item,
-        description: req.body.detail,
-        status: req.body.status,
-        campus: req.body.campus,
-        building: "",
-        room: "",
-        location: req.body.location,
-        creationDate: new Date(),
-        lostDate: req.body.date,
-        postedBy: req.user.id,
-        imageID: "",                // to be filled in
-        coordinates: {              // until the map is finished, default values
-            type: "Point",
-            coordinates: [49.277012, -122.918049],    // should be in the middle of burnaby campus
-        },
-    };
-    new_post.imageID = await processImage(req.file);
+    async function postCreate() {
+        if (req.user == undefined) {
+            return res.status(400).send("login info is undefined -- are you logged in?");
+        }
+    
+        var new_post = {
+            title: req.body.title,
+            category: req.body.item,
+            description: req.body.detail,
+            status: req.body.status,
+            campus: req.body.campus,
+            building: "",
+            room: "",
+            location: req.body.location,
+            creationDate: new Date(),
+            lostDate: req.body.date,
+            postedBy: req.user.id,
+            imageID: "",                // to be filled in
+            coordinates: {
+                type: "Point",
+                coordinates: [req.body.lat, req.body.lng],
+            },
+        };
+        new_post.imageID = await processImage(req.file);
+    
+        var id = await Postings.addPosting(new_post);
+        return res.json(id);
+    }
 
-    var id = await Postings.addPosting(new_post);
-    return res.json(id);
+    async function postUpdate() {
+        req.body.id = req.body.id.toString();
+
+        try {
+            var post = await Postings.getPostingById(req.body.id);
+        } catch (e) {
+            return res.status(404).send(`Post with id ${req.body.id} not found`);
+        }
+
+        if (!hasEditPermissions(req.user, post)) {
+            return res.status(403);
+        }
+
+        var new_post_entries = {
+            title: req.body.title,
+            category: req.body.item,
+            description: req.body.detail,
+            status: req.body.status,
+            campus: req.body.campus,
+            location: req.body.location,
+            lostDate: req.body.date,
+            coordinates: {
+                type: "Point",
+                coordinates: [req.body.lat, req.body.lng],
+            },
+        };
+        if (req.file) {
+            new_post_entries.imageID = await processImage(req.file);
+        }
+        
+        // don't update any empty keys
+        for (let [key,val] of Object.entries(new_post_entries)) {
+            if (typeof val === "undefined") {
+                delete new_post_entries[key];
+            }
+        }
+        if (req.body.lat == undefined || req.body.lng == undefined) {
+            delete new_post_entries['coordinates'];
+        }
+        
+        try {
+            var result = await Postings.updatePosting(req.params.id, new_post_entries);
+            return res.status(200).json(req.body.id);
+        } catch (err) {
+            return res.status(400).json(err.message);
+        }
+    }
+
 });
 
 /**

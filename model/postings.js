@@ -161,5 +161,24 @@ posting_schema.statics.getPostingsWithin = async function(n,s,w,e) {
     return query.exec();
 };
 
+posting_schema.statics.updatePosting = async function(id, attrs) {
+    // I can't figure out mongoose's update validators, so we're doing it manually and turning off validation
+    var post = await Postings.getPostingById(id);
+    for (let [key,val] of Object.entries(attrs)) {
+        post[key] = val;
+    }
+
+    var err = post.validateSync();
+    if (err) {
+        throw err;
+    }
+
+    return await Postings.findOneAndUpdate(
+        {_id: id},
+        post
+    ).exec();
+
+};
+
 var Postings = mongoose.model('posting', posting_schema);
 module.exports = Postings;
