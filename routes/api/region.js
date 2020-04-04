@@ -1,5 +1,5 @@
 var express = require('express');
-var postings = require('../model/postings');
+var postings = require('../../model/postings');
 
 var router = express.Router();
 router.post('/', async function(req, res) {
