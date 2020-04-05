@@ -321,17 +321,18 @@ $(document).ready(function() {
         var post = postings[currentPosting];
         showPage("content-form");
         document.getElementById("campus").value = currentCampus;
-        document.getElementById("lat").value = post.coordinates.coordinates[0]
-        document.getElementById("lng").value = post.coordinates.coordinates[1]
+        document.getElementById("lng").value = post.coordinates.coordinates[0];
+        document.getElementById("lat").value = post.coordinates.coordinates[1];
         document.getElementById("postid").value = currentPosting;
         document.getElementById("title").value = post.title;
         document.getElementById("location").value = post.location;
         document.getElementById("detail").value = post.description;
         document.getElementById("item").value = post.category;
-        document.getElementById("date").valueAsDate = new Date(new Date(post.lostDate).toLocaleDateString());
 
-        // post.lostDate is 8 hours ahead of timezone user submits. 12:00 turns into 20:00 in 24 hour clock
-        // document.getElementById("time").valueAsDate = new Date(post.lostDate);
+        var lostdate = moment(post.lostDate);
+        document.getElementById("date").value = lostdate.format('YYYY-MM-DD');
+        document.getElementById("time").value = lostdate.format('hh:mm');
+        document.getElementById("timezone-offset").value = moment().format('ZZ');
 
         e.stopPropagation();    // otherwise it'll propagate to the form and show the overlay
     });

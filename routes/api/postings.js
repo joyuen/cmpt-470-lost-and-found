@@ -3,6 +3,7 @@ var RegexEscape = require("regex-escape");
 var multer = require('multer');
 var path = require('path');
 var mongo_sanitize = require("mongo-sanitize");
+var moment = require('moment');
 const { check, query, validationResult } = require('express-validator');
 const config = require('../../config.js');
 
@@ -198,18 +199,21 @@ router.post('/', mongoSanitizeBody, multer_image.single('image'), [
     check('title').isString().isLength({min:1, max:256}),
     check('status').isString().isIn(['lost', 'found', 'stolen', 'returned']),
     check('item').isString().isLength({min:1, max:256}),
-    check('date').custom(isDate).custom(beforeNow),
+    // date, time, and timezone-offset will all be checked below
+    check('date').customSanitizer((date, {req}) => {
+        // hopefully this is safe
+        var parsed_date = moment(`${date} ${req.body.time}`).utcOffset(req.body["timezone-offset"]).toDate();
+        delete req.body.time;
+        delete req.body["timezone-offset"];
+        return parsed_date;
+    }),
     check('campus').isString().isIn(['burnaby', 'surrey', 'vancouver']),
     check('location').isString().isLength({max: 256}),
     check('detail').isString().isLength({max: 2500}),
-    check('id').optional().isString(),
+    check('postid').optional().isString(),
     check('lat').toFloat().customSanitizer(v => clamp(v, -90, 90)),
     check('lng').toFloat().customSanitizer(v => clamp(v, -180, 180)),
 ], async function(req, res) {
-    // turn separate date and time values into a combined datetime
-    req.body.date = new Date(`${req.body.date} ${req.body.time}`);
-    delete req.body.time;
-
     // validate the form inputs
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -217,7 +221,7 @@ router.post('/', mongoSanitizeBody, multer_image.single('image'), [
     }
 
     // two possible actions
-    if (typeof req.body.id === 'undefined') {
+    if (typeof req.body.postid === 'undefined') {
         return await postCreate();
     } else {
         return await postUpdate();
@@ -243,7 +247,7 @@ router.post('/', mongoSanitizeBody, multer_image.single('image'), [
             imageID: "",                // to be filled in
             coordinates: {
                 type: "Point",
-                coordinates: [req.body.lat, req.body.lng],
+                coordinates: [req.body.lng, req.body.lat],
             },
         };
         new_post.imageID = await processImage(req.file);
@@ -253,12 +257,12 @@ router.post('/', mongoSanitizeBody, multer_image.single('image'), [
     }
 
     async function postUpdate() {
-        req.body.id = req.body.id.toString();
+        req.body.postid = req.body.postid.toString();
 
         try {
-            var post = await Postings.getPostingById(req.body.id);
+            var post = await Postings.getPostingById(req.body.postid);
         } catch (e) {
-            return res.status(404).send(`Post with id ${req.body.id} not found`);
+            return res.status(404).send(`Post with id ${req.body.postid} not found`);
         }
 
         if (!hasEditPermissions(req.user, post)) {
@@ -275,7 +279,7 @@ router.post('/', mongoSanitizeBody, multer_image.single('image'), [
             lostDate: req.body.date,
             coordinates: {
                 type: "Point",
-                coordinates: [req.body.lat, req.body.lng],
+                coordinates: [req.body.lng, req.body.lat],
             },
         };
         if (req.file) {
@@ -294,8 +298,8 @@ router.post('/', mongoSanitizeBody, multer_image.single('image'), [
 
 
         try {
-            var result = await Postings.updatePosting(req.params.id, new_post_entries);
-            return res.status(200).json(req.body.id);
+            var result = await Postings.updatePosting(req.body.postid, new_post_entries);
+            return res.status(200).json(req.body.postid);
         } catch (err) {
             return res.status(400).json(err.message);
         }
