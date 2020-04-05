@@ -1,5 +1,10 @@
+var globals = {
+    currentUser: null,
+};
+
 // This is the minimum zoom level that we'll allow
 let minZoomLevel = 16;
+
 // Track markers
 let existing = {};
 let postings = {};
@@ -16,7 +21,6 @@ var currentCampus;
 
 function showPage(id) {
     for (let elem of $("#sidebar").children()) {
-        console.log(elem);
         $(elem).hide();
     }
     $(`#${id}`).show();
@@ -26,6 +30,11 @@ function showPage(id) {
             currentMarker.setMap(null);
         }
     }
+    
+    if (id == "content-form") {
+        $('#content-form')[0].reset();
+    }
+
 
     if (pannedMarker) {
         pannedMarker.setIcon(undefined);
@@ -44,6 +53,7 @@ function panToMarker(key) {
     document.getElementById('post-date').innerHTML = p.lostDate;
     document.getElementById('post-author').innerHTML = "Posted by: " + p.postedBy;
     document.getElementById('post-link').href = "/viewpost?id="+p._id;
+    $("#edit-button").toggle((globals.currentUser == p.postedBy) && (p.status != "returned"));
 
     m.setIcon("/images/map-marker-blue.png");
     pannedMarker = m;
@@ -304,7 +314,11 @@ function showSurrey() {
     showCampus('surrey');
 }
 
-$(document).ready(function() {
+$(document).ready(function() {    
+    $.get(`/api/postings`, function(res) {
+        globals.currentUser = res.user;
+    });
+
     $(".cancel-button").on('click', function(e) {
         showPage("all-post");
     });
@@ -327,5 +341,11 @@ $(document).ready(function() {
         document.getElementById("timezone-offset").value = moment().format('ZZ');
 
         e.stopPropagation();    // otherwise it'll propagate to the form and show the overlay
+    });
+
+    $("#submit-btn").on('click', function(e) {
+        $.post("api/postings", $('#content-form').serialize(), function(data) {
+            showPage("all-post");
+        });
     });
 });

@@ -81,11 +81,11 @@ posting_schema.index({ title: "text", category: "text", description: "text"}, {n
 
 // Custom validators
 posting_schema.path('lostDate').validate(function (v) {
-    return (this.lostDate <= this.creationDate);
+    return (new Date(this.lostDate) <= new Date(this.creationDate));
 });
 
 posting_schema.path('returnDate').validate(function (v) {
-    return (this.lostDate <= this.returnDate);
+    return (new Date(this.lostDate) <= new Date(this.returnDate));
 });
 
 posting_schema.path('returnDate').validate(function (v) {

@@ -49,7 +49,7 @@ function hasEditPermissions(user, posting) {
     if (user.admin) {
         return true;
     }
-    if (posting.postedBy == user.id) {
+    if (posting.postedBy == user.id && posting.status != "returned") {
         return true;
     }
     return false;
@@ -443,6 +443,7 @@ router.get('/', mongoSanitizeQuery, [
     }
 
     res.json({
+        user: req.user.id,
         token: token,
         data: results,
         numTotal: numTotal,

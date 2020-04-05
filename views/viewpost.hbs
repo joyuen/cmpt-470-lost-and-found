@@ -50,9 +50,11 @@
             </td>
         </tr>
     </table>
+    {{#if caneditpermissions}}
     <form action="/api/postings/:{{post.id}}" id="deleteForm" method="post">
         <button type="submit" form="deleteForm" onClick="return confirm('Are you sure?')">Delete</button>
     </form>
+    {{/if}}
 
 </div>
 {{/inline}}
