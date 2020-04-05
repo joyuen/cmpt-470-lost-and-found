@@ -5,6 +5,27 @@
 
 #floating-panel {
     margin: 10px;
+    width: 40%;
+    height: 30px;
+}
+
+#floating-panel button {
+    width: 100%;
+    background-color: white;
+    color: #646464;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+#floating-panel button:hover {
+    color: #303030;
+}
+
+
+#sidebar {
+    height: 100%;
+    text-align: left;
+    overflow: scroll;
 }
 
 /* .title-container {
@@ -29,15 +50,6 @@
     padding: 0;
 }
 
-
-
-#sidebar {
-    float: left;
-    height: 100%;
-    width: 100%;
-    text-align: left;
-    overflow: scroll;
-}
 
 #content>form div {
     width: 100%;
