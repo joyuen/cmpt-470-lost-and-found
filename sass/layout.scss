@@ -18,6 +18,7 @@ nav .show:checked ~ .menu {
 }
 
 main {
+  display: flex;
   padding-top: 3em;
   padding-left: 1em;
   height: 100%;

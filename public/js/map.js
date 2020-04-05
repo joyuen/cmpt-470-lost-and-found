@@ -30,7 +30,7 @@ function showPage(id) {
             currentMarker.setMap(null);
         }
     }
-    
+
     if (id == "content-form") {
         $('#content-form')[0].reset();
     }
@@ -314,7 +314,7 @@ function showSurrey() {
     showCampus('surrey');
 }
 
-$(document).ready(function() {    
+$(document).ready(function() {
     $.get(`/api/postings`, function(res) {
         globals.currentUser = res.user;
     });
@@ -347,5 +347,8 @@ $(document).ready(function() {
         $.post("api/postings", $('#content-form').serialize(), function(data) {
             showPage("all-post");
         });
+        showCampus(currentCampus);
+        panToMarker(currentPosting);
+        startPagination({}, getPostsPerPage());
     });
 });
