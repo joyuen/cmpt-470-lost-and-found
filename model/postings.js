@@ -6,7 +6,7 @@ function DatabaseException(message) {
     this.name = 'DatabaseException';
 }
 
-// Make the exception convert to a pretty string when used as a string 
+// Make the exception convert to a pretty string when used as a string
 // (e.g., by the error console)
 DatabaseException.prototype.toString = function() {
     return `${this.name}: "${this.message}"`;
@@ -81,11 +81,11 @@ posting_schema.index({ title: "text", category: "text", description: "text"}, {n
 
 // Custom validators
 posting_schema.path('lostDate').validate(function (v) {
-    return (this.lostDate <= this.creationDate);
+    return (new Date(this.lostDate) <= new Date(this.creationDate));
 });
 
 posting_schema.path('returnDate').validate(function (v) {
-    return (this.lostDate <= this.returnDate);
+    return (new Date(this.lostDate) <= new Date(this.returnDate));
 });
 
 posting_schema.path('returnDate').validate(function (v) {
@@ -121,7 +121,7 @@ posting_schema.statics.deleteById = function(id) {
  *  @param {object} posting - attributes to construct the posting document with (see schema)
  *  @returns id of the posting just created
  *  @throws validation error if posting is invalid
- */ 
+ */
 posting_schema.statics.addPosting = async function(posting) {
     return this.create(posting).then(doc => {
         return doc.id;
@@ -159,6 +159,25 @@ posting_schema.statics.getPostingById = async function(posting_id) {
 posting_schema.statics.getPostingsWithin = async function(n,s,w,e) {
     var query = Postings.find({coordinates:{$geoWithin:{$box:[[w,s],[e,n]]}}},{imageID:0, creationDate:0, __v:0});
     return query.exec();
+};
+
+posting_schema.statics.updatePosting = async function(id, attrs) {
+    // I can't figure out mongoose's update validators, so we're doing it manually and turning off validation
+    var post = await Postings.getPostingById(id);
+    for (let [key,val] of Object.entries(attrs)) {
+        post[key] = val;
+    }
+
+    var err = post.validateSync();
+    if (err) {
+        throw err;
+    }
+
+    return await Postings.findOneAndUpdate(
+        {_id: id},
+        post
+    ).exec();
+
 };
 
 var Postings = mongoose.model('posting', posting_schema);

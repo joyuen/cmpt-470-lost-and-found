@@ -3,6 +3,7 @@ var RegexEscape = require("regex-escape");
 var multer = require('multer');
 var path = require('path');
 var mongo_sanitize = require("mongo-sanitize");
+var moment = require('moment');
 const { check, query, validationResult } = require('express-validator');
 const config = require('../../config.js');
 
@@ -40,6 +41,10 @@ function isDate(v) {
     return !isNaN(new Date(v).getTime());
 }
 
+function clamp(v, min, max) {
+    return Math.min(Math.max(v, min), max);
+}
+
 function hasEditPermissions(user, posting) {
     if (user.admin) {
         return true;
@@ -63,8 +68,10 @@ async function processImage(file) {
  * DELETE api/postings/:id - delete a posting
  * Can only delete if user created the posting or if user is an admin
  */
-router.delete('/:id', async function(req, res) {
-    req.params.id = req.params.id.toString();
+// router.delete('/:id', async function(req, res) {
+router.post('/:id', async function(req, res) {
+    req.params.id = req.params.id.slice(1,);
+    // req.params.id = req.params.id.toString();
 
     try {
         var post = await Postings.getPostingById(req.params.id);
@@ -78,9 +85,40 @@ router.delete('/:id', async function(req, res) {
 
     var result = await Postings.deleteById(req.params.id);
     if (result.ok == 1) {
-        return res.status(200).json(result);
+        return res.redirect("/map")
     } else {
         return res.status(500).json(result);
+    }
+});
+
+/**
+ * POST api/postings/:id/return - mark a posting as being returned
+ */
+router.post('/:id/return', async function(req, res) {
+    req.params.id = req.params.id.toString();
+
+    try {
+        var post = await Postings.getPostingById(req.params.id);
+    } catch (e) {
+        return res.status(404).send(`Post with id ${req.params.id} not found`);
+    }
+
+    if (!hasEditPermissions(req.user, post)) {
+        return res.status(403);
+    }
+
+    if (post.status == 'returned') {
+        return res.status(200).send("ok");
+    }
+
+    try {
+        var result = await Postings.updatePosting(req.params.id, {
+            status: 'returned',
+            returnDate: new Date(),   
+        });
+        return res.status(200).send("ok");
+    } catch (err) {
+        return res.status(400).json(err.message);
     }
 });
 
@@ -88,8 +126,8 @@ router.delete('/:id', async function(req, res) {
  * PUT api/postings/:id - replace attributes in a posting
  * Will only modify posting values that are specified in the request body
  * Can only update if user created the posting or if user is an admin
- * 
- * Parameters: 
+ *
+ * Parameters:
  *      same as POST api/postings
  *      can also upload an image, which will change the image ID
  */
@@ -102,76 +140,65 @@ router.put('/:id', mongoSanitizeBody, multer_image.single('image'), [
     check('location').optional().isString().isLength({max: 256}),
     check('detail').optional().isString().isLength({max: 2500}),
 ], async function(req, res) {
+    return res.status(400).send("Temporarily deprecated, use POST /api/postings with {id} passed in the body instead");
     // turn separate date and time values into a combined datetime
-    if (typeof req.body.date !== 'undefined') {
-        req.body.date = new Date(`${req.body.date} ${req.body.time}`);
-        delete req.body.time;
-    }
+    // if (typeof req.body.date !== 'undefined') {
+    //     req.body.date = new Date(`${req.body.date} ${req.body.time}`);
+    //     delete req.body.time;
+    // }
 
-    // validate the form inputs
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json(errors.array());
-    }
+    // // validate the form inputs
+    // const errors = validationResult(req);
+    // if (!errors.isEmpty()) {
+    //     return res.status(400).json(errors.array());
+    // }
 
-    req.params.id = req.params.id.toString();
+    // req.params.id = req.params.id.toString();
 
-    try {
-        var post = await Postings.getPostingById(req.params.id);
-    } catch (e) {
-        // don't allow PUTting postings to a specific ID
-        return res.status(404).send(`Post with id ${req.params.id} not found`);
-    }
+    // try {
+    //     var post = await Postings.getPostingById(req.params.id);
+    // } catch (e) {
+    //     // don't allow PUTting postings to a specific ID
+    //     return res.status(404).send(`Post with id ${req.params.id} not found`);
+    // }
 
-    if (!hasEditPermissions(req.user, post)) {
-        return res.status(403);
-    }
+    // if (!hasEditPermissions(req.user, post)) {
+    //     return res.status(403);
+    // }
 
-    // AAAA why is it so hard to do validation on updates
-    // hack hack hack
+    // var new_post_entries = {
+    //     title: req.body.title,
+    //     category: req.body.item,
+    //     description: req.body.detail,
+    //     status: req.body.status,
+    //     campus: req.body.campus,
+    //     location: req.body.location,
+    //     lostDate: req.body.date,
+    // };
+    // if (req.file) {
+    //     new_post_entries.imageID = await processImage(req.file);
+    // }
 
-    var new_post_entries = {
-        title: req.body.title,
-        category: req.body.item,
-        description: req.body.detail,
-        status: req.body.status,
-        campus: req.body.campus,
-        location: req.body.location,
-        lostDate: req.body.date,
-    };
+    // for (let [key,val] of Object.entries(new_post_entries)) {
+    //     if (typeof val === "undefined") {
+    //         delete new_post_entries[key];
+    //     }
+    // }
 
-    if (req.file) {
-        new_post_entries.imageID = await processImage(req.file);
-    }
-    
-    for (let [key,val] of Object.entries(new_post_entries)) {
-        if (typeof val !== "undefined") {
-            post[key] = val;
-        }
-    }
-
-    var err = post.validateSync();
-    if (err) {
-        return res.status(400).json(err.message);
-    }
-    
-    var result;
-    try {
-        result = await Postings.findOneAndUpdate(
-            {_id: req.params.id},
-            post
-        ).exec();
-    } catch (err) {
-        return res.status(400).json(err.message);
-    }
-    return res.status(200);
+    // try {
+    //     var result = await Postings.updatePosting(req.params.id, new_post_entries);
+    //     return res.status(200);
+    // } catch (err) {
+    //     return res.status(400).json(err.message);
+    // }
 });
 
 /**
  * GET api/postings/:id - get a certain posting
  */
 router.get('/:id', async function(req, res) {
-    req.params.id = req.params.id.toString();
+    req.params.id= req.params.id.slice(1,);
+    // req.params.id = req.params.id.toString();
     var postid = req.params.id;
     try {
         var posting = await Postings.getPostingById(postid);
@@ -184,63 +211,131 @@ router.get('/:id', async function(req, res) {
 /**
  * POST api/postings - upload posting to the server
  * returns the :id of the uploaded posting
- * 
+ *
  * Parameters:
+ *      id
  *      title -
  *      status -
- *      item - 
- *      date - 
- *      time - 
+ *      item -
+ *      date -
+ *      time -
  *      campus -
- *      location - 
- *      detail - 
+ *      location -
+ *      detail -
+ *      lat
+ *      lng
  *      a single file [an image] can also be uploaded (max 10 MB)
  */
 router.post('/', mongoSanitizeBody, multer_image.single('image'), [
     check('title').isString().isLength({min:1, max:256}),
     check('status').isString().isIn(['lost', 'found', 'stolen', 'returned']),
     check('item').isString().isLength({min:1, max:256}),
-    check('date').custom(isDate).custom(beforeNow),
+    // date, time, and timezone-offset will all be checked below
+    check('date').customSanitizer((date, {req}) => {
+        // hopefully this is safe
+        var parsed_date = moment(`${date} ${req.body.time}`).utcOffset(req.body["timezone-offset"]).toDate();
+        delete req.body.time;
+        delete req.body["timezone-offset"];
+        return parsed_date;
+    }),
     check('campus').isString().isIn(['burnaby', 'surrey', 'vancouver']),
     check('location').isString().isLength({max: 256}),
     check('detail').isString().isLength({max: 2500}),
+    check('postid').optional().isString(),
+    check('lat').toFloat().customSanitizer(v => clamp(v, -90, 90)),
+    check('lng').toFloat().customSanitizer(v => clamp(v, -180, 180)),
 ], async function(req, res) {
-    // turn separate date and time values into a combined datetime
-    req.body.date = new Date(`${req.body.date} ${req.body.time}`);
-    delete req.body.time;
-
     // validate the form inputs
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json(errors.array());
     }
 
-    if (req.user == undefined) {
-        return res.status(400).send("login info is undefined -- are you logged in?");
+    // two possible actions
+    if (typeof req.body.postid === 'undefined' || req.body.postid == "") {
+        return await postCreate();
+    } else {
+        return await postUpdate();
     }
 
-    var new_post = {
-        title: req.body.title,
-        category: req.body.item,
-        description: req.body.detail,
-        status: req.body.status,
-        campus: req.body.campus,
-        building: "",
-        room: "",
-        location: req.body.location,
-        creationDate: new Date(),
-        lostDate: req.body.date,
-        postedBy: req.user.id,
-        imageID: "",                // to be filled in
-        coordinates: {              // until the map is finished, default values
-            type: "Point",
-            coordinates: [49.277012, -122.918049],    // should be in the middle of burnaby campus
-        },
-    };
-    new_post.imageID = await processImage(req.file);
+    async function postCreate() {
+        if (req.user == undefined) {
+            return res.status(400).send("login info is undefined -- are you logged in?");
+        }
 
-    var id = await Postings.addPosting(new_post);
-    return res.json(id);
+        var new_post = {
+            title: req.body.title,
+            category: req.body.item,
+            description: req.body.detail,
+            status: req.body.status,
+            campus: req.body.campus,
+            building: "",
+            room: "",
+            location: req.body.location,
+            creationDate: new Date(),
+            lostDate: req.body.date,
+            postedBy: req.user.id,
+            imageID: "",                // to be filled in
+            coordinates: {
+                type: "Point",
+                coordinates: [req.body.lng, req.body.lat],
+            },
+        };
+        new_post.imageID = await processImage(req.file);
+
+        var id = await Postings.addPosting(new_post);
+        return res.json(id);
+    }
+
+    async function postUpdate() {
+        req.body.postid = req.body.postid.toString();
+
+        try {
+            var post = await Postings.getPostingById(req.body.postid);
+        } catch (e) {
+            return res.status(404).send(`Post with id ${req.body.postid} not found`);
+        }
+
+        if (!hasEditPermissions(req.user, post)) {
+            return res.status(403);
+        }
+
+        var new_post_entries = {
+            title: req.body.title,
+            category: req.body.item,
+            description: req.body.detail,
+            status: req.body.status,
+            campus: req.body.campus,
+            location: req.body.location,
+            lostDate: req.body.date,
+            coordinates: {
+                type: "Point",
+                coordinates: [req.body.lng, req.body.lat],
+            },
+        };
+        if (req.file) {
+            new_post_entries.imageID = await processImage(req.file);
+        }
+
+        // don't update any empty keys
+        for (let [key,val] of Object.entries(new_post_entries)) {
+            if (typeof val === "undefined") {
+                delete new_post_entries[key];
+            }
+        }
+        if (req.body.lat == undefined || req.body.lng == undefined) {
+            delete new_post_entries['coordinates'];
+        }
+
+
+        try {
+            var result = await Postings.updatePosting(req.body.postid, new_post_entries);
+            return res.status(200).json(req.body.postid);
+        } catch (err) {
+            return res.status(400).json(err.message);
+        }
+    }
+
 });
 
 /**
@@ -250,12 +345,12 @@ router.post('/', mongoSanitizeBody, multer_image.single('image'), [
  *      with the total number of postings matched by the search.
  * Postings are paginated -- request only returns a few postings (default 10).
  * To continue a search, pass in the returned token as a param along with the same search parameters.
- * 
+ *
  * Only certain attributes are returned in the Postings:
  *      id, status, campus, lostDate, title, campusFull, statusFull
  * for more, run queries to the individual posts /api/posting/:id
  * or change this function to return more attributes
- * 
+ *
  * Parameters:
  *      [if any are not specified, then assume 'all']
         keywords        - text search through the posting
@@ -297,7 +392,7 @@ router.get('/', mongoSanitizeQuery, [
         if (req.query.keywords) {
             query = query.find({$text: {$search: req.query.keywords}});
             // add textscore as attribute in documents, if we want to sort or filter by it later
-            // query = query.select({score: {$meta: "textScore"}});     
+            // query = query.select({score: {$meta: "textScore"}});
         }
 
         if (req.query.status) {
@@ -321,7 +416,7 @@ router.get('/', mongoSanitizeQuery, [
             var escapedRoom = "(?i)" + RegexEscape(req.query.room);
             query = query.where('room').regex(escapedRoom);
         }
-        
+
         if (req.query.lostDateStart) {
             var lostDateStart = new Date(req.query.lostDateStart);
             query = query.where('lostDate').gte(lostDateStart);
@@ -353,9 +448,9 @@ router.get('/', mongoSanitizeQuery, [
         .sort({lostDate: -1})
         .limit(req.query.numPostings)
         .exec();
-    
+
     results = results.map(projectPosting);
-    
+
     if (results.length == 0) {
         //          |    |         |            |
         //  lostStart   token      lostEnd      now
@@ -374,11 +469,12 @@ router.get('/', mongoSanitizeQuery, [
 
     // return the number of total documents, on the first search
     var numTotal;
-    if (!req.query.token) { 
+    if (!req.query.token) {
         numTotal = await createQuery().count().exec();
     }
 
     res.json({
+        user: req.user.id,
         token: token,
         data: results,
         numTotal: numTotal,

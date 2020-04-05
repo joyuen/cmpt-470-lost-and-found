@@ -1,10 +1,12 @@
-<form id="content-form" class="not-selected" action="makepost" method="POST" enctype="multipart/form-data">
+<form hidden id="content-form" action="api/postings" method="POST" enctype="multipart/form-data">
   <div style="position: relative;"><a class="cancel-button">X</a></div>
   <!-- FormSet serialize -->
   <!-- If going with Ajax, remember to remove temp marker -->
   <input type="hidden" id="lng" name="lng" />
   <input type="hidden" id="lat" name="lat" />
   <input type="hidden" id="campus" name="campus" />
+  <input type="hidden" id="postid" name="postid" />
+  <input type="hidden" id="timezone-offset" name="timezone-offset" />
   <div>
     <label for="title">Report title:</label>
     <input type="text" id="title" name="title" maxlength="255" required />
@@ -51,5 +53,5 @@
   <div>
     {{> image}}
   </div>
-  <input id="submit-btn" type="submit" value="Submit Report">
+  <input id="submit-btn" type="button" value="Submit Report">
 </form>

@@ -14,7 +14,7 @@ function renderPosts(postings) {
         </table>
     `, { 'postings': postings, 'now': new Date() });
     document.getElementById('postings').innerHTML = x;
-    
+
     $("a.postings-link").on('click', async function(e) {
         let key = $(this).attr('href').slice(1);
         let campus = inator.getPosting(key).campus;

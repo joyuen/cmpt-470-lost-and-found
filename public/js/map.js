@@ -1,5 +1,10 @@
+var globals = {
+    currentUser: null,
+};
+
 // This is the minimum zoom level that we'll allow
 let minZoomLevel = 16;
+
 // Track markers
 let existing = {};
 let postings = {};
@@ -9,27 +14,27 @@ let testMarkers = [{id: 1, lat: 49.278871, lng: -122.916386, info: "Hello"},
 
 var currentMarker;
 var pannedMarker;
+var currentPosting;
 
 // Track current campus
 var currentCampus;
 
 function showPage(id) {
-    var otherpages = document.getElementById("content").children;
-    for (let elem of otherpages) {
-        if (elem.id == id) {
-            elem.className = "selected";
-        } else {
-            elem.className = "not-selected";
-        }
+    for (let elem of $("#sidebar").children()) {
+        $(elem).hide();
     }
-    
+    $(`#${id}`).show();
+
     if (id != "content-form") {
         if (currentMarker) {
             currentMarker.setMap(null);
         }
-        var overlay = document.getElementById('overlay');
-        overlay.style.display = "none";
     }
+    
+    if (id == "content-form") {
+        $('#content-form')[0].reset();
+    }
+
 
     if (pannedMarker) {
         pannedMarker.setIcon(undefined);
@@ -39,6 +44,7 @@ function showPage(id) {
 function panToMarker(key) {
     let m = existing[key];
     let p = postings[key];
+    currentPosting = key
     map.panTo(m.position);
     showPage("content-post");
     document.getElementById('post-title').innerHTML = p.title;
@@ -47,7 +53,8 @@ function panToMarker(key) {
     document.getElementById('post-date').innerHTML = p.lostDate;
     document.getElementById('post-author').innerHTML = "Posted by: " + p.postedBy;
     document.getElementById('post-link').href = "/viewpost?id="+p._id;
-    
+    $("#edit-button").toggle((globals.currentUser == p.postedBy) && (p.status != "returned"));
+
     m.setIcon("/images/map-marker-blue.png");
     pannedMarker = m;
 }
@@ -226,11 +233,11 @@ function initMap() {
         // allpost.className = "not-selected";
         // contentpost.className = "not-selected";
         var form = document.getElementById("content-form");
-        form.onclick = function() {
-            var overlay = document.getElementById('overlay')
-            overlay.style.display = "block";
-            overlay.style.left = document.getElementById('sidebar').offsetWidth + "px";
-            overlay.style.width = document.getElementById('map').offsetWidth + "px";
+        // form.onclick = function() {
+            // var overlay = document.getElementById('overlay')
+            // overlay.style.display = "block";
+            // overlay.style.left = document.getElementById('sidebar').offsetWidth + "px";
+            // overlay.style.width = document.getElementById('map').offsetWidth + "px";
             // var f = function() {
             //     overlay.style.display = "none";
             //     overlay.removeEventListener("click", f);
@@ -240,8 +247,8 @@ function initMap() {
             //     // allpost.className = "selected";
             // }
             // overlay.addEventListener("click", f);
-            form.onclick = function() {};
-        };
+        //     form.onclick = function() {};
+        // };
 
         marker.addListener('click', function() {
             if(marker) {
@@ -254,12 +261,12 @@ function initMap() {
             google.maps.event.removeListener(listener);
         });
 
-        var overlay = document.getElementById('overlay');
-        overlay.addEventListener("click", function() {
-            overlay.style.display = "none";
-            marker.setMap(null);
-            showPage("all-post");
-        });
+        // var overlay = document.getElementById('overlay');
+        // overlay.addEventListener("click", function() {
+        //     overlay.style.display = "none";
+        //     marker.setMap(null);
+        //     showPage("all-post");
+        // });
     });
 
     showCampus('burnaby');
@@ -307,10 +314,38 @@ function showSurrey() {
     showCampus('surrey');
 }
 
-$(document).ready(function() {
+$(document).ready(function() {    
+    $.get(`/api/postings`, function(res) {
+        globals.currentUser = res.user;
+    });
+
     $(".cancel-button").on('click', function(e) {
         showPage("all-post");
+    });
+
+    $(".edit-button").on('click', function(e) {
+        var post = postings[currentPosting];
+        showPage("content-form");
+        document.getElementById("campus").value = currentCampus;
+        document.getElementById("lng").value = post.coordinates.coordinates[0];
+        document.getElementById("lat").value = post.coordinates.coordinates[1];
+        document.getElementById("postid").value = currentPosting;
+        document.getElementById("title").value = post.title;
+        document.getElementById("location").value = post.location;
+        document.getElementById("detail").value = post.description;
+        document.getElementById("item").value = post.category;
+
+        var lostdate = moment(post.lostDate);
+        document.getElementById("date").value = lostdate.format('YYYY-MM-DD');
+        document.getElementById("time").value = lostdate.format('hh:mm');
+        document.getElementById("timezone-offset").value = moment().format('ZZ');
+
         e.stopPropagation();    // otherwise it'll propagate to the form and show the overlay
     });
-});
 
+    $("#submit-btn").on('click', function(e) {
+        $.post("api/postings", $('#content-form').serialize(), function(data) {
+            showPage("all-post");
+        });
+    });
+});
