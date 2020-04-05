@@ -19,13 +19,22 @@ router.get('/read', asyncHandler(async function(req, res) {
 
 router.post('/removeAll', asyncHandler(async function(req, res) {
     await Notifs.removeAll(req.user.id);
-    res.status(204);
+    res.status(200).send({});
 }));
 
 router.post('/remove', asyncHandler(async function(req, res) {
     req.body = mongo_sanitize(req.body);
-    await Notifs.removeMany(req.user.id, req.body.notifids);
-    res.status(204);
+    var notifids;
+    if (typeof req.body.notifids === "string") {
+        notifids = [req.body.notifids];
+    } else if (Array.isArray(req.body.notifids)) {
+        notifids = req.body.notifids;
+    } else {
+        throw `Invalid argument -- ${req.body.notifids}`;
+    }
+
+    await Notifs.removeMany(req.user.id, notifids);
+    res.status(200).send({});
 }));
 
 module.exports = router;

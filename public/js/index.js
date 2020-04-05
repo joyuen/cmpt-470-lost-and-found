@@ -4,14 +4,22 @@ function humanizeRelative(now, date) {
 
 function removeNotif(notifid, button) {
     var target = $(button).closest(".notif");
-    target.remove();
-    // target.animate({ 'left': "-=200px" }, 4000, function () { target.remove(); });
+    target.css("opacity", "0.25");
+    $.post("/api/notifications/remove", {notifids: notifid}, function(data) {
+        target.remove();
+    });
 }
 
 function removeAllNotif() {
-    for (let target of $("#notifs-table").children()) {
-        target.remove();
+    var allTargets = $("#notifs-table").children();
+    for (let target of allTargets) {
+        $(target).css("opacity", "0.25");
     }
+    $.post("/api/notifications/removeAll", {}, function(data) {
+        for (let target of allTargets) {
+            $(target).remove();
+        }
+    });
 }
 
 function createNotifElement(notif) {

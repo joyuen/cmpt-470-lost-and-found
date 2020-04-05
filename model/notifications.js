@@ -31,7 +31,7 @@ notifSchema.statics.remove = function(userid, notifid) {
     );
 };
 
-notifSchema.statics.removeMultiple = function(userid, notifids) {
+notifSchema.statics.removeMany = function(userid, notifids) {
     return this.updateMany(
         {_id: {$in: notifids}},
         { $pull: {recipients: userid}}
