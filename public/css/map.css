@@ -100,3 +100,7 @@ input, textarea, select {
     right: 10px;
     top: 0px;
 }
+
+.edit-button {
+    width: 20%;
+}

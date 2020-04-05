@@ -146,13 +146,13 @@ router.put('/:id', mongoSanitizeBody, multer_image.single('image'), [
     // if (req.file) {
     //     new_post_entries.imageID = await processImage(req.file);
     // }
-    
+
     // for (let [key,val] of Object.entries(new_post_entries)) {
     //     if (typeof val === "undefined") {
     //         delete new_post_entries[key];
     //     }
     // }
-    
+
     // try {
     //     var result = await Postings.updatePosting(req.params.id, new_post_entries);
     //     return res.status(200);
@@ -188,8 +188,8 @@ router.get('/:id', async function(req, res) {
  *      date -
  *      time -
  *      campus -
- *      location - 
- *      detail - 
+ *      location -
+ *      detail -
  *      lat
  *      lng
  *      a single file [an image] can also be uploaded (max 10 MB)
@@ -227,7 +227,7 @@ router.post('/', mongoSanitizeBody, multer_image.single('image'), [
         if (req.user == undefined) {
             return res.status(400).send("login info is undefined -- are you logged in?");
         }
-    
+
         var new_post = {
             title: req.body.title,
             category: req.body.item,
@@ -247,7 +247,7 @@ router.post('/', mongoSanitizeBody, multer_image.single('image'), [
             },
         };
         new_post.imageID = await processImage(req.file);
-    
+
         var id = await Postings.addPosting(new_post);
         return res.json(id);
     }
@@ -281,7 +281,7 @@ router.post('/', mongoSanitizeBody, multer_image.single('image'), [
         if (req.file) {
             new_post_entries.imageID = await processImage(req.file);
         }
-        
+
         // don't update any empty keys
         for (let [key,val] of Object.entries(new_post_entries)) {
             if (typeof val === "undefined") {
@@ -291,7 +291,8 @@ router.post('/', mongoSanitizeBody, multer_image.single('image'), [
         if (req.body.lat == undefined || req.body.lng == undefined) {
             delete new_post_entries['coordinates'];
         }
-        
+
+
         try {
             var result = await Postings.updatePosting(req.params.id, new_post_entries);
             return res.status(200).json(req.body.id);

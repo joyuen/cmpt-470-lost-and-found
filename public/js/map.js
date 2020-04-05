@@ -9,6 +9,7 @@ let testMarkers = [{id: 1, lat: 49.278871, lng: -122.916386, info: "Hello"},
 
 var currentMarker;
 var pannedMarker;
+var currentPosting;
 
 // Track current campus
 var currentCampus;
@@ -39,6 +40,7 @@ function showPage(id) {
 function panToMarker(key) {
     let m = existing[key];
     let p = postings[key];
+    currentPosting = key
     map.panTo(m.position);
     showPage("content-post");
     document.getElementById('post-title').innerHTML = p.title;
@@ -310,6 +312,27 @@ function showSurrey() {
 $(document).ready(function() {
     $(".cancel-button").on('click', function(e) {
         showPage("all-post");
+        e.stopPropagation();    // otherwise it'll propagate to the form and show the overlay
+    });
+});
+
+$(document).ready(function() {
+    $(".edit-button").on('click', function(e) {
+        var post = postings[currentPosting];
+        showPage("content-form");
+        document.getElementById("campus").value = currentCampus;
+        document.getElementById("lat").value = post.coordinates.coordinates[0]
+        document.getElementById("lng").value = post.coordinates.coordinates[1]
+        document.getElementById("postid").value = currentPosting;
+        document.getElementById("title").value = post.title;
+        document.getElementById("location").value = post.location;
+        document.getElementById("detail").value = post.description;
+        document.getElementById("item").value = post.category;
+        document.getElementById("date").valueAsDate = new Date(new Date(post.lostDate).toLocaleDateString());
+
+        // post.lostDate is 8 hours ahead of timezone user submits. 12:00 turns into 20:00 in 24 hour clock
+        // document.getElementById("time").valueAsDate = new Date(post.lostDate);
+
         e.stopPropagation();    // otherwise it'll propagate to the form and show the overlay
     });
 });
