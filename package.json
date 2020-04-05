@@ -15,7 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bulma": "^0.8.1",
+    "@google-cloud/vision": "^1.11.0",
     "errorhandler": "^1.5.1",
     "esm": "^3.2.25",
     "express": "^4.17.1",
@@ -31,6 +31,7 @@
     "node-sass-middleware": "^0.11.0",
     "passport": "^0.4.1",
     "passport-cas2": "0.0.11",
+    "picnic": "^6.5.2",
     "regex-escape": "^3.4.9",
     "uuid": "^7.0.2"
   },
