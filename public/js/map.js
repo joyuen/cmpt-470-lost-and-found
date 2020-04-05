@@ -15,21 +15,16 @@ var currentPosting;
 var currentCampus;
 
 function showPage(id) {
-    var otherpages = document.getElementById("content").children;
-    for (let elem of otherpages) {
-        if (elem.id == id) {
-            elem.className = "selected";
-        } else {
-            elem.className = "not-selected";
-        }
+    for (let elem of $("#sidebar").children()) {
+        console.log(elem);
+        $(elem).hide();
     }
+    $(`#${id}`).show();
 
     if (id != "content-form") {
         if (currentMarker) {
             currentMarker.setMap(null);
         }
-        var overlay = document.getElementById('overlay');
-        overlay.style.display = "none";
     }
 
     if (pannedMarker) {
@@ -228,11 +223,11 @@ function initMap() {
         // allpost.className = "not-selected";
         // contentpost.className = "not-selected";
         var form = document.getElementById("content-form");
-        form.onclick = function() {
-            var overlay = document.getElementById('overlay')
-            overlay.style.display = "block";
-            overlay.style.left = document.getElementById('sidebar').offsetWidth + "px";
-            overlay.style.width = document.getElementById('map').offsetWidth + "px";
+        // form.onclick = function() {
+            // var overlay = document.getElementById('overlay')
+            // overlay.style.display = "block";
+            // overlay.style.left = document.getElementById('sidebar').offsetWidth + "px";
+            // overlay.style.width = document.getElementById('map').offsetWidth + "px";
             // var f = function() {
             //     overlay.style.display = "none";
             //     overlay.removeEventListener("click", f);
@@ -242,8 +237,8 @@ function initMap() {
             //     // allpost.className = "selected";
             // }
             // overlay.addEventListener("click", f);
-            form.onclick = function() {};
-        };
+        //     form.onclick = function() {};
+        // };
 
         marker.addListener('click', function() {
             if(marker) {
@@ -256,12 +251,12 @@ function initMap() {
             google.maps.event.removeListener(listener);
         });
 
-        var overlay = document.getElementById('overlay');
-        overlay.addEventListener("click", function() {
-            overlay.style.display = "none";
-            marker.setMap(null);
-            showPage("all-post");
-        });
+        // var overlay = document.getElementById('overlay');
+        // overlay.addEventListener("click", function() {
+        //     overlay.style.display = "none";
+        //     marker.setMap(null);
+        //     showPage("all-post");
+        // });
     });
 
     showCampus('burnaby');
@@ -312,11 +307,8 @@ function showSurrey() {
 $(document).ready(function() {
     $(".cancel-button").on('click', function(e) {
         showPage("all-post");
-        e.stopPropagation();    // otherwise it'll propagate to the form and show the overlay
     });
-});
 
-$(document).ready(function() {
     $(".edit-button").on('click', function(e) {
         var post = postings[currentPosting];
         showPage("content-form");
