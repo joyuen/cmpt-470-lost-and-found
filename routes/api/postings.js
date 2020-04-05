@@ -252,7 +252,7 @@ router.post('/', mongoSanitizeBody, multer_image.single('image'), [
     }
 
     // two possible actions
-    if (typeof req.body.postid === 'undefined') {
+    if (typeof req.body.postid === 'undefined' || req.body.postid == "") {
         return await postCreate();
     } else {
         return await postUpdate();
