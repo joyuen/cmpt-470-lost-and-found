@@ -4,5 +4,6 @@ var router = express.Router();
 router.use('/postings', require('./postings'));
 router.use('/region', require('./region'));
 router.use('/vision', require('./vision'));
+router.use('/notifications', require('./notifications'));
 
 module.exports = router;
