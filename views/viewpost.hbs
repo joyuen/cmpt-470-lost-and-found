@@ -1,6 +1,7 @@
 {{#> layout}}
 {{#*inline "head"}}
 <link rel="stylesheet" href="../css/viewpost.css">
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 {{/inline}}
 
 {{#*inline "content"}}
@@ -50,12 +51,25 @@
             </td>
         </tr>
     </table>
+    {{#if canreturn}}
+    <button id="returnButton" type="button">Mark As Returned</button>
+    <script>
+        document.getElementById("returnButton").onclick = function(e) {
+            var c = confirm('Confirm: the item has been returned? This action cannot be undone.');
+            if (c) {
+                $.post("/api/postings/{{post.id}}/return", {}, function(data, status, xhr) {
+                    window.location.reload(true);
+                });
+            }
+        };
+    </script>
+    {{/if}}
+
     {{#if caneditpermissions}}
     <form action="/api/postings/:{{post.id}}" id="deleteForm" method="post">
         <button type="submit" form="deleteForm" onClick="return confirm('Are you sure?')">Delete</button>
     </form>
     {{/if}}
-
 </div>
 {{/inline}}
 {{/layout}}

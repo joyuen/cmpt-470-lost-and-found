@@ -49,7 +49,7 @@ function hasEditPermissions(user, posting) {
     if (user.admin) {
         return true;
     }
-    if (posting.postedBy == user.id && posting.status != "returned") {
+    if (posting.postedBy == user.id) {
         return true;
     }
     return false;
@@ -88,6 +88,37 @@ router.post('/:id', async function(req, res) {
         return res.redirect("/map")
     } else {
         return res.status(500).json(result);
+    }
+});
+
+/**
+ * POST api/postings/:id/return - mark a posting as being returned
+ */
+router.post('/:id/return', async function(req, res) {
+    req.params.id = req.params.id.toString();
+
+    try {
+        var post = await Postings.getPostingById(req.params.id);
+    } catch (e) {
+        return res.status(404).send(`Post with id ${req.params.id} not found`);
+    }
+
+    if (!hasEditPermissions(req.user, post)) {
+        return res.status(403);
+    }
+
+    if (post.status == 'returned') {
+        return res.status(200).send("ok");
+    }
+
+    try {
+        var result = await Postings.updatePosting(req.params.id, {
+            status: 'returned',
+            returnDate: new Date(),   
+        });
+        return res.status(200).send("ok");
+    } catch (err) {
+        return res.status(400).json(err.message);
     }
 });
 

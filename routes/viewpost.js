@@ -25,7 +25,8 @@ router.get('/', async function(req, res) {
     res.render('viewpost', {
         "post": posting,
         "user": user,
-        "caneditpermissions": hasEditPermissions(user, posting)
+        "caneditpermissions": hasEditPermissions(user, posting),
+        "canreturn": hasEditPermissions(user, posting) && posting.status != "returned",
     });
 });
 
