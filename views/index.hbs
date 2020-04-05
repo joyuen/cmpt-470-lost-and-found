@@ -1,11 +1,27 @@
 {{#> layout}}
 {{#*inline "head"}}
+<link rel="stylesheet" href="/css/index.css">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ejs@3.0.2/ejs.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 {{/inline}}
+
 {{#*inline "content"}}
-<section>
-  <button class="button" type="button" onclick="">Burnaby Campus</button>
-  <button class="button" type="button" onclick="">Surrey Campus</button>
-  <button class="button" type="button" onclick="">Vancouver Campus</button>
-</section>
+<div class="flex fourth demo">
+  <div class="three-fourth">
+    <h3>Dashboard</h3>
+    asasddaadad
+  </div>
+  <div class="fourth" id="notifs-bar">
+    <div id="notifs-header">
+      <h3>Notifications</h3>
+      <button id="notif-remove-all" class="pseudo">Remove All</button>
+    </div>
+    <div id="notifs-table" class="flex">
+      {{!-- notifications go in here --}}
+    </div>
+  </div>
+</div>
+<script type="text/javascript" src="js/index.js"></script>
 {{/inline}}
 {{/layout}}
