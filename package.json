@@ -38,7 +38,9 @@
   "nodemonConfig": {
     "ignore": [
       "test/*",
-      "docs/*"
+      "docs/*",
+      "views/*.*",
+      "public/*"
     ],
     "delay": "10",
     "ext": "js,json,hbs"

@@ -57,17 +57,30 @@
         document.getElementById("returnButton").onclick = function(e) {
             var c = confirm('Confirm: the item has been returned? This action cannot be undone.');
             if (c) {
-                $.post("/api/postings/{{post.id}}/return", {}, function(data, status, xhr) {
+                $.post("/api/postings/{{post.id}}/return", {}, function(data) {
                     window.location.reload(true);
                 });
             }
         };
     </script>
     {{/if}}
+    
+    {{#if cannotifyfound}}
+    <button id="foundButton" type="button">Notify Found</button>
+    <script>
+        document.getElementById("foundButton").onclick = function(e) {
+            $.post("/api/postings/{{post.id}}/found", {}, function(data) {
+                alert("A notification has been sent to the user who made this posting.");
+            }).fail(function(xhr, status, error) {
+                alert(`Something went wrong: ${xhr.status} ${xhr.statusText}: ${xhr.responseText}`);
+            });
+        };
+    </script>
+    {{/if}}
 
     {{#if caneditpermissions}}
     <form action="/api/postings/:{{post.id}}" id="deleteForm" method="post">
-        <button type="submit" form="deleteForm" onClick="return confirm('Are you sure?')">Delete</button>
+        <button class="error" type="submit" form="deleteForm" onClick="return confirm('Are you sure?')">Delete</button>
     </form>
     {{/if}}
 </div>

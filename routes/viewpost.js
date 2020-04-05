@@ -2,16 +2,7 @@ var express = require('express');
 var Postings = require('../model/postings');
 var Images = require('../model/images');
 var User = require('../model/user');
-
-function hasEditPermissions(user, posting) {
-    if (user.admin) {
-        return true;
-    }
-    if (posting.postedBy == user.id) {
-        return true;
-    }
-    return false;
-}
+var permissions = require('../model/permissions');
 
 var router = express.Router();
 router.get('/', async function(req, res) {
@@ -25,8 +16,9 @@ router.get('/', async function(req, res) {
     res.render('viewpost', {
         "post": posting,
         "user": user,
-        "caneditpermissions": hasEditPermissions(user, posting),
-        "canreturn": hasEditPermissions(user, posting) && posting.status != "returned",
+        "caneditpermissions": permissions.canEdit(user, posting),
+        "cannotifyfound": permissions.canNotifyFound(user, posting),
+        "canreturn": permissions.canReturn(user, posting),
     });
 });
 

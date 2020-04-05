@@ -9,6 +9,8 @@ const config = require('../../config.js');
 
 var Postings = require('../../model/postings');
 var Images = require('../../model/images');
+var Notifs = require('../../model/notifications');
+var permissions = require('../../model/permissions');
 
 var router = express.Router();
 
@@ -46,13 +48,7 @@ function clamp(v, min, max) {
 }
 
 function hasEditPermissions(user, posting) {
-    if (user.admin) {
-        return true;
-    }
-    if (posting.postedBy == user.id) {
-        return true;
-    }
-    return false;
+    return permissions.canEdit(user, posting);
 }
 
 async function processImage(file) {
@@ -117,6 +113,30 @@ router.post('/:id/return', async function(req, res) {
             returnDate: new Date(),   
         });
         return res.status(200).send("ok");
+    } catch (err) {
+        return res.status(400).json(err.message);
+    }
+});
+
+/**
+ * POST api/postings/:id/found - notify user who created post that their item was found
+ */
+router.post('/:id/found', async function(req, res) {
+    req.params.id = req.params.id.toString();
+
+    try {
+        var post = await Postings.getPostingById(req.params.id);
+    } catch (e) {
+        return res.status(404).send(`Post with id ${req.params.id} not found`);
+    }
+
+    if (!permissions.canNotifyFound(req.user, post)) {
+        return res.status(403);
+    }
+
+    try {
+        await Notifs.sendFoundMessage(post);
+        return res.status(200).send({});
     } catch (err) {
         return res.status(400).json(err.message);
     }

@@ -180,5 +180,9 @@ posting_schema.statics.updatePosting = async function(id, attrs) {
 
 };
 
+posting_schema.methods.getLink = function() {
+    return `/viewpost/?id=${this.id}`;
+};
+
 var Postings = mongoose.model('posting', posting_schema);
 module.exports = Postings;
