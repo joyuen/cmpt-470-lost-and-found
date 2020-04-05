@@ -119,7 +119,7 @@ router.post('/:id/return', async function(req, res) {
 });
 
 /**
- * POST api/postings/:id/found - mark a posting as being found
+ * POST api/postings/:id/found - notify user who created post that their item was found
  */
 router.post('/:id/found', async function(req, res) {
     req.params.id = req.params.id.toString();
@@ -129,10 +129,6 @@ router.post('/:id/found', async function(req, res) {
     } catch (e) {
         return res.status(404).send(`Post with id ${req.params.id} not found`);
     }
-    
-    if (post.status == 'found') {
-        return res.status(200).send({});
-    }
 
     if (!permissions.canNotifyFound(req.user, post)) {
         return res.status(403);
@@ -140,7 +136,7 @@ router.post('/:id/found', async function(req, res) {
 
     try {
         await Notifs.sendFoundMessage(post);
-        return res.status(200).send("ok");
+        return res.status(200).send({});
     } catch (err) {
         return res.status(400).json(err.message);
     }
