@@ -3,7 +3,7 @@
 {{/inline}}
 {{#*inline "content"}}
 <h1>Registered Users</h1>
-<table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+<table class="primary">
   <thead>
     <tr>
       <th>SFU ID</th>
@@ -22,10 +22,8 @@
       <td>{{email}}</td>
       <td>{{phone}}</td>
       <td>{{admin}}</td>
-      <td>
-        <span id={{id}} class="button icon is-small">
-          <i class="fas fa-user-edit"></i>
-        </span>
+      <td class="button pseudo tooltip-right" data-tooltip="Edit user">
+        <span id={{id}} class="fas fa-user-edit"></span>
       </td>
     </tr>
     {{/each}}

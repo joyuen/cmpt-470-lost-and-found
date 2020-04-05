@@ -46,7 +46,8 @@ var b64 =
                     }
 
                     var $tmp_string = e.target.result,
-                        $endOf_File = 'data:' + $file.type + ';base64,' + b64.b64_enc($tmp_string);
+                        encodedData = b64.b64_enc($tmp_string),
+                        $endOf_File = 'data:' + $file.type + ';base64,' + encodedData;
 
                     $('#b64name').text($file.name);
 
@@ -61,6 +62,7 @@ var b64 =
 
                     $('#b64result_image').attr('src', $endOf_File);
                     $('#b64reset').attr('hidden', false);
+                    labelImage(encodedData);
                 }
                 $handler.readAsBinaryString($file);
             }
@@ -70,3 +72,36 @@ var b64 =
         return btoa(input);
     },
 };
+
+
+
+/*
+Below is code written by us (the students)
+*/
+function labelImage(data) {
+    'use strict';
+    let req = new XMLHttpRequest();
+    function reqListener(e) {
+        let span = document.getElementById('labelres');
+        span.textContent = '';
+        req.response.labels.concat(req.response.logos).forEach(label => {
+            let i = document.createElement('input');
+            let s = document.createElement('span');
+            let l = document.createElement('label');
+            i.type = 'checkbox';
+            i.value = label.description;
+            i.name = 'tag';
+            s.classList.add('toggle', 'pseudo', 'button', 'smalllabel');
+            s.innerText = label.description;
+            l.append(i, s);
+            span.append(l);
+        });
+        span.hidden = false;
+    }
+
+    req.responseType = "json";
+    req.addEventListener("load", reqListener);
+    req.open('POST', '/api/vision', true);
+    req.setRequestHeader("Content-Type", "text/plain");
+    req.send(data);
+}
