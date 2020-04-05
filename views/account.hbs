@@ -3,35 +3,23 @@
 <link rel="stylesheet" href="/css/account.css">
 {{/inline}}
 {{#*inline "content"}}
-<section class="section">
-  <form method="POST" class="field">
-    <fieldset disabled>
-      <div class="control">
-        <label class="label">Username
-          <input class="input" type="text" value="{{user.id}}" />
-        </label>
-      </div>
-      <div class="control">
-        <label class="label">Email
-          <input class="input" type="text" value="{{user.email}}" />
-        </label>
-      </div>
-    </fieldset>
-    <div class="control" <label class="label">Display Name
-      <input class="input" type="text" name="name" id="name" value="{{user.name}}" />
-      </label>
-    </div>
-    <div class="control">
-      <label class="label">Phone Number (Optional)
-        <input class="input" type="tel" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
-          value="{{user.phone}}">
-        <span class="validity"></span>
-        <small>Format: 123-456-7890</small>
-      </label>
-    </div>
-    <div class="control">
-      <button type="submit">Save</button>
-    </div>
+<section>
+  <form method="POST" class="flex one center">
+    <label>Username
+      <input type="text" value="{{user.id}}" disabled />
+    </label>
+    <label>Email
+      <input type="text" value="{{user.email}}" disabled />
+    </label>
+    <label>Display Name
+      <input type="text" name="name" id="name" value="{{user.name}}" />
+    </label>
+    <label>Phone Number (Optional)
+      <input type="tel" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" value="{{user.phone}}">
+      <span class="validity"></span>
+      <small>Format: 123-456-7890</small>
+    </label>
+    <button type="submit">Save</button>
   </form>
 </section>
 {{/inline}}

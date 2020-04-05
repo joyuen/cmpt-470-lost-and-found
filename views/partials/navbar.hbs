@@ -1,45 +1,31 @@
 <script src="../js/navbar.js"></script>
-<nav class="navbar" role="navigation" aria-label="main navigation">
-    <div class="navbar-brand">
-        <a class="navbar-item" href="/">
-            <img src="../images/SFU_block_colour_rgb.png">
+<nav role="navigation" aria-label="main navigation">
+    <a class="brand" href="/">
+        <img class="logo" src="../images/SFU_block_colour_rgb.png">
+    </a>
+    <input id="bmenub" type="checkbox" class="show">
+    <label for="bmenub" class="burger pseudo button">&#8801;</label>
+
+    <div class="menu">
+        <a href="map">
+            <span class="fas fa-map-marked-alt"></span>
+            Map</a>
+        <a href="account">
+            <span class="fas fa-user"></span>
+            Account
         </a>
-
-        <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
-            data-target="navbarBasicExample">
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
+        <a href="about">
+            <span class="fas fa-info"></span>
+            About
         </a>
-    </div>
-
-    <div id="navbarBasicExample" class="navbar-menu">
-        <div class="navbar-start">
-            <a href="map" {{#if (navActivate page "map")}} class="is-active navbar-item" {{else}} class="navbar-item"
-                {{/if}}>Map</a>
-            <a href="account" {{#if (navActivate page "account")}}class="is-active navbar-item" {{else}}
-                class="navbar-item" {{/if}}>Account</a>
-
-            <div class="navbar-item has-dropdown is-hoverable">
-                <a class="navbar-link">
-                    Posts
-                </a>
-                <div class="navbar-dropdown">
-                    <a href="makepost" {{#if (navActivate page "makepost")}} class="is-active navbar-item" {{/if}}
-                        class="navbar-item">
-                        Create Post</a>
-                    <a href="postings" {{#if (navActivate page "postings")}} class="is-active navbar-item" {{/if}}
-                        class="navbar-item">
-                        View Posts</a>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <div class="navbar-end">
-            <div class="navbar-item">
-                <a class="button is-small is-text is-light" href="logout" id="logout">Logout</a>
-            </div>
-        </div>
+        <a href="contact">
+            <span class="fas fa-paper-plane"></span>
+            Contact
+        </a>
+        <a href="postings">View Posts</a>
+        <a class="button logout" href="logout" id="logout">
+            <span class="fas fa-sign-out-alt"></span>
+            Logout
+        </a>
     </div>
 </nav>

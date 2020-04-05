@@ -1,4 +1,13 @@
-.title-container {
+#map {
+    height: 100%;
+    width: auto;
+}
+
+#floating-panel {
+    margin: 10px;
+}
+
+/* .title-container {
     font-size: 30px;
     text-align: left;
     background-color: #333;
@@ -20,13 +29,8 @@
     padding: 0;
 }
 
-#map {
-    height: 100%;
-    width: auto;
-}
-#floating-panel {
-    margin: 10px;
-}
+
+
 #sidebar {
     float: left;
     height: 100%;
@@ -99,8 +103,8 @@ input, textarea, select {
     position: absolute;
     right: 10px;
     top: 0px;
-}
 
 .edit-button {
     width: 20%;
 }
+*/
