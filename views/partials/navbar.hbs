@@ -1,5 +1,5 @@
 <script src="../js/navbar.js"></script>
-<nav class="demo" role="navigation" aria-label="main navigation">
+<nav role="navigation" aria-label="main navigation">
     <a class="brand" href="/">
         <img class="logo" src="../images/SFU_block_colour_rgb.png">
     </a>
@@ -7,11 +7,25 @@
     <label for="bmenub" class="burger pseudo button">&#8801;</label>
 
     <div class="menu">
-        <a href="map">Map</a>
-        <a href="account">Account</a>
-        <a href="makepost">Create Post</a>
+        <a href="map">
+            <span class="fas fa-map-marked-alt"></span>
+            Map</a>
+        <a href="account">
+            <span class="fas fa-user"></span>
+            Account
+        </a>
+        <a href="about">
+            <span class="fas fa-info"></span>
+            About
+        </a>
+        <a href="contact">
+            <span class="fas fa-paper-plane"></span>
+            Contact
+        </a>
         <a href="postings">View Posts</a>
-        <a class="button" href="logout" id="logout">Logout</a>
+        <a class="button logout" href="logout" id="logout">
+            <span class="fas fa-sign-out-alt"></span>
+            Logout
+        </a>
     </div>
-
 </nav>
