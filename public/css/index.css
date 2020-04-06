@@ -46,4 +46,5 @@
 #stats {
   margin-top: 20%;
   flex-direction: row;
+  text-align: center;
 }
