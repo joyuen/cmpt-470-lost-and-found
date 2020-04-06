@@ -51,15 +51,6 @@ function hasEditPermissions(user, posting) {
     return permissions.canEdit(user, posting);
 }
 
-async function processImage(file) {
-    if (file) {
-        const fileExt = path.extname(file.originalname).toLowerCase();
-        return await Images.saveImageFromFile(file.path, fileExt);
-    } else {
-        return "";
-    }
-}
-
 /**
  * DELETE api/postings/:id - delete a posting
  * Can only delete if user created the posting or if user is an admin
@@ -300,7 +291,9 @@ router.post('/', mongoSanitizeBody, multer_image.single('image'), [
             },
             tags: [],
         };
-        new_post.imageID = await processImage(req.file);
+        if (req.body.b64image) {
+            new_post.imageID = await Images.saveImageFromB64(req.body.b64image);
+        }
         if (req.body.tags) {
             new_post.tags = req.body.tags;
         }
@@ -335,8 +328,8 @@ router.post('/', mongoSanitizeBody, multer_image.single('image'), [
                 coordinates: [req.body.lng, req.body.lat],
             },
         };
-        if (req.file) {
-            new_post_entries.imageID = await processImage(req.file);
+        if (req.body.b64image) {
+            new_post_entries.imageID = await Images.saveImageFromB64(req.body.b64image);
         }
         if (req.body.tags) {
             new_post_entries.tags = req.body.tags;
@@ -351,7 +344,6 @@ router.post('/', mongoSanitizeBody, multer_image.single('image'), [
         if (req.body.lat == undefined || req.body.lng == undefined) {
             delete new_post_entries['coordinates'];
         }
-
 
         try {
             var result = await Postings.updatePosting(req.body.postid, new_post_entries);

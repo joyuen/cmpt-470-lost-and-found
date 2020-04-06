@@ -9,8 +9,8 @@
     {{!-- <div style="height: 300px; background-color: lightgreen;">
                 Small map goes here
             </div> --}}
-    {{#if image_url}}
-    <img id="image" src="{{image_url}}"></img>
+    {{#if post.image_data}}
+    <img id="image" src="{{post.image_data}}"></img>
     {{else}}
     <p id="image_gone">No image available!</p>
     {{/if}}
