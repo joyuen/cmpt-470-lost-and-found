@@ -29,7 +29,7 @@
     overflow: scroll;
 }
 
-#post-img {
+#post-img, #b64result_image {
     max-width:100%;
     max-height:100%;
 }
