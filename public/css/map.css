@@ -5,8 +5,8 @@
 
 #floating-panel {
     margin: 10px;
-    width: 40%;
     height: 30px;
+    width: 50%;
 }
 
 #floating-panel button {

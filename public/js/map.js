@@ -9,6 +9,8 @@ var currentCampus;      // the campus the map is currently on
 var currentMarker;      // when the create form is open, set to the marker
 var pannedMarker;       // the marker of the posting that is currently being viewed
 var pannedKey;          // the key of the posting that is currently being viewed
+var heatmap;
+var heatmapLocations;
 
 //              currentMarker       pannedMarker        pannedKey   form                page
 // all posts:   null                null                null        ??                  all-posts
@@ -61,6 +63,7 @@ function panToMarker(key) {
 }
 
 async function getPostingsAndCreateMarkers(n, s, w, e) {
+    heatmapLocations = [];
     return new Promise((resolve, reject) => {
         var req = new XMLHttpRequest();
         req.onreadystatechange = function() {
@@ -70,6 +73,11 @@ async function getPostingsAndCreateMarkers(n, s, w, e) {
                 dict = {}
                 for(var r in json) {
                     dict[json[r]._id] = json[r];
+                    if(json[r].status == "stolen") {
+                        var pos = json[r].coordinates.coordinates;
+                        var latlng = new google.maps.LatLng(pos[1], pos[0]);
+                        heatmapLocations.push(latlng);
+                    }
                 }
                 processPostings(dict);
                 resolve();
@@ -200,7 +208,12 @@ function initMap() {
         }
         currentMarker = marker;
 
-        $('#content-form')[0].reset();
+        if($("#postid")[0].value) {
+            $('#content-form')[0].reset();
+            $('#postid')[0].value = '';
+        }
+
+        showPage('content-form');
         document.getElementById("campus").value = currentCampus;
         document.getElementById("lat").value = event.latLng.lat();
         document.getElementById("lng").value = event.latLng.lng();
@@ -211,11 +224,23 @@ function initMap() {
         document.getElementById("datetime").value = snow;
         document.getElementById("datetime").max = snow;
         document.getElementById("datetime").min = smin;
-        
-        showPage('content-form');
+
+        marker.addListener('click', function() {
+            if(marker) {
+                marker.setMap(null);
+                showPage("all-post");
+            }
+        });
+
+        var listener = map.addListener('click', function() {
+            marker.setMap(null);
+            google.maps.event.removeListener(listener);
+        });
     });
 
     showCampus('burnaby');
+    init();
+    initPostings();
 }
 
 async function showCampus(c) {
@@ -234,6 +259,12 @@ async function showCampus(c) {
     var swBounds = bounds.getSouthWest();
 
     await getPostingsAndCreateMarkers(neBounds.lat(), swBounds.lat(), swBounds.lng(), neBounds.lng());
+    if($("#heatmap")[0].checked) {
+        if(heatmap) {
+            heatmap.setMap(null);
+        }
+        toggleHeatmap();
+    }
 }
 
 function showBurnaby() {
@@ -247,6 +278,7 @@ function showVancouver() {
 function showSurrey() {
     showCampus('surrey');
 }
+
 
 async function refreshPosting(postid) {
     return new Promise((resolve, reject) => {
@@ -267,6 +299,27 @@ async function refreshPosting(postid) {
     });
 }
 
+function toggleHeatmap() {
+    var heatmapElement = $('#heatmap')[0]
+    if(heatmapElement.checked) {
+        heatmap = new google.maps.visualization.HeatmapLayer({
+          data: heatmapLocations,
+          radius: 50,
+          opacity: 0.3,
+        });
+        heatmap.setMap(map);
+    }
+    else {
+        heatmap.setMap(null);
+    }
+}
+
+function init(){
+    $.get(`/api/postings`, function(res) {
+        globals.currentUser = res.user;
+    });
+}
+
 $(document).ready(function() {
     /* setup callbacks */
     $(".cancel-button").on('click', function(e) {
@@ -280,6 +333,8 @@ $(document).ready(function() {
         }
         pannedMarker = null;
         pannedKey = null;
+        $('#content-form')[0].reset();
+        $('#postid')[0].value = '';
     });
 
     $(".edit-button").on('click', function(e) {
@@ -293,6 +348,7 @@ $(document).ready(function() {
         document.getElementById("lat").value = post.coordinates.coordinates[1];
         document.getElementById("postid").value = pannedKey;
         document.getElementById("title").value = post.title;
+        document.getElementById(post.status).checked = true;
         document.getElementById("location").value = post.location;
         document.getElementById("detail").value = post.description;
         document.getElementById("item").value = post.category;
@@ -314,12 +370,21 @@ $(document).ready(function() {
             refreshPosting(postid).then(() => {
                 panToMarker(postid);
                 startPagination({}, getPostsPerPage());
+                $('#content-form')[0].reset();
+                $('#postid')[0].value = '';
             });
         });
+
+        // $.post("api/postings", $('#content-form').serialize(), function(data) {
+        //     showPage("all-post");
+        //     currentPosting = data;
+        //     showCampus(currentCampus);
+        //     map.panTo(existing[currentPosting].position);
+        //     startPagination({}, getPostsPerPage());
+        //     $('#content-form')[0].reset();
+        //     $('#postid')[0].value = '';
+        // });
     });
 
-    /* get current user */
-    $.get(`/api/postings`, function(res) {
-        globals.currentUser = res.user;
-    });
+    $("#heatmap").on('click',toggleHeatmap);
 });

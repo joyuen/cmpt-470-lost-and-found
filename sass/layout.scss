@@ -28,13 +28,6 @@ main {
   background: $sfu-red;
 }
 
-input:disabled {
-  font-style: italic;
-  background-color: $sfu-grey;
-}
-
-.smalllabel:active,
-.smalllabel:focus,
-.smalllabel:hover {
-  background: limegreen;
+.submitbtn {
+    background-color: $sfu-red;
 }
