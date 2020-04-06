@@ -98,17 +98,17 @@ app.get('/about', (req, res) => res.render('about', { 'page': 'about' }));
 app.get('/contact', (req, res) => res.render('contact', { 'page': 'contact' }));
 app.get('/map', (req, res) => res.render('map', { 'page': 'map' }));
 
+app.use('/index', require('./routes/index'));
 app.use('/account', require('./routes/account'));
 app.use('/admin', require('./routes/admin'));
-
+console.log("endpoints run")
 // Posting endpoints
 app.use('/viewpost', require('./routes/viewpost'));
 
 // Default page behaviour -- root is landing page
 // Any unrecognized endpoints get redirected to landing page
-app.get('/', (req, res) => res.render('index', { 'page': 'index' }));
 app.get('*', (req, res) => {
-    res.redirect('/');
+    res.redirect('/index');
 });
 app.listen(port, () => console.log(`Listening on port ${port}!`));
 

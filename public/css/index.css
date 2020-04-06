@@ -38,3 +38,12 @@
   bottom: 0;
   right: 0;
 }
+
+#container {
+  flex-direction: column;
+}
+
+#stats {
+  margin-top: 20%;
+  flex-direction: row;
+}
