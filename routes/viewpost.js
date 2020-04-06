@@ -11,7 +11,7 @@ router.get('/', async function(req, res) {
     var username = posting.postedBy;
     var user = await User.findOne({ id: username }).exec();
 
-    posting.image_url = (posting.imageID) ? Images.getImageUrl(posting.imageID) : "";
+    posting.image_data = (posting.imageID) ? (await Images.getImageB64(posting.imageID)) : "";
 
     res.render('viewpost', {
         "post": posting,

@@ -3,7 +3,7 @@ function renderPosts(postings) {
         <table>
         <tbody>
         <% for(var i=0; i<postings.length; i++) { %>
-            <tr class="posting <%= postings[i].status %>">
+            <tr class="posting <%= postings[i].status %> flex">
                 <td><%= postings[i].statusFull %></td>
                 <td><a class='postings-link' href='#<%= postings[i].id %>'><%= postings[i].title %></a></td>
                 <td><%= postings[i].campusFull %></td>
@@ -187,9 +187,9 @@ function initSearch() {
     $('#pageRight').on('click', nextPage);
 }
 
-$(document).ready(function () {
+function initPostings() {
     initAdvButtons();
     initDatePicker();
     initSearch();
     startPagination({}, getPostsPerPage());        // by default, search with no params
-});
+};

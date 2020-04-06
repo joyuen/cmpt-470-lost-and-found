@@ -42,8 +42,7 @@
 
   <div>
     <label for="date">Approximate time:</label><br>
-    <input type="date" id="date" name="date" required>
-    <input type="time" id="time" name="time" required>
+    <input type="datetime-local" id="datetime" name="date" required>
   </div>
   <div>
     <label for="location">Extra location details:</label><br>
@@ -56,5 +55,5 @@
   <div>
     {{> image}}
   </div>
-  <input id="submit-btn" type="button" value="Submit Report">
+  <button class="submitbtn" id="submit-btn" type="button">Submit Report</button>
 </form>

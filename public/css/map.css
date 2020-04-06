@@ -5,8 +5,8 @@
 
 #floating-panel {
     margin: 10px;
-    width: 40%;
     height: 30px;
+    width: 50%;
 }
 
 #floating-panel button {
@@ -15,6 +15,7 @@
     color: #646464;
     font-size: 14px;
     font-weight: bold;
+    box-shadow: 0 2px 6px;
 }
 
 #floating-panel button:hover {
