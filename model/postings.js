@@ -71,7 +71,7 @@ const posting_schema = new mongoose.Schema({
     creationDate: {type: Date, required: true},
     lostDate: {type: Date, required: true},
     returnDate: {type: Date}, // this will be set later when the item is returned
-
+    tags: [String],           // ML tags based on the image, can be empty
     imageID: string_optional(256),
     postedBy: string_not_empty(256),
 });
