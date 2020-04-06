@@ -85,7 +85,7 @@ tr.posting:first-child {
 
 #advancedOptions {
     display: grid;
-    grid-template-columns: 20% 50%;
+    grid-template-columns: 25% 70%;
     column-gap: 10px;
     margin: 10px;
     align-items: center;
