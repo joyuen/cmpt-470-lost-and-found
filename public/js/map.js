@@ -416,3 +416,12 @@ function init() {
 
     $("#heatmap").on('click',toggleHeatmap);
 };
+
+function loadScript() {
+ var script = document.createElement('script');
+ script.type = 'text/javascript';
+ script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyCbW2Hw8v1WrPy0VUWt8KYIGjh8BUhlh-0&libraries=visualization&callback=initMap';
+ document.body.appendChild(script);
+}
+
+window.onload = loadScript;
