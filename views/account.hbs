@@ -4,7 +4,7 @@
 {{/inline}}
 {{#*inline "content"}}
 <section>
-  <form method="POST" class="flex one center">
+  <form method="POST" class="flex one center" id="account-form">
     <label>Username
       <input type="text" value="{{user.id}}" disabled />
     </label>
@@ -19,7 +19,7 @@
       <span class="validity"></span>
       <small>Format: 123-456-7890</small>
     </label>
-    <button type="submit">Save</button>
+    <button type="submit" id="save">Save</button>
   </form>
 </section>
 {{/inline}}
