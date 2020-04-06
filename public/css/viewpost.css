@@ -1,7 +1,6 @@
 .sidebar {
-    float: right;
-    width: 300px;
-    margin: 5px;
+    padding-top: 10px;
+    padding-right: 10px;
 }
 
 .post {
@@ -49,10 +48,6 @@ hr +p {
     margin-bottom: 0px;
 }
 
-#details {
-    height: 200px;
-}
-
 #summary {
     text-align: center;
     width: 100%;
@@ -61,16 +56,34 @@ hr +p {
 }
 
 #image {
-    max-width: 300px;
-    max-height: 200px;
+    max-width: 100%;
+    max-height: 50vh;
     margin-bottom: 0px;
 }
 
 #image_gone {
-    width: 300px;
-    height: 200px;
-    line-height: 200px;
+    width: 100%;
+    /* this sets the aspect ratio */
+    /* evenly split between top and bottom to center text */
+    padding-top: 25%;
+    padding-bottom: 25%;
+
     text-align: center;
     background: lightgray;
     margin-bottom: 2px;
+
+    /* centers the text within */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#details {
+    min-height: 200px;
+    font-size: 14px;
+}
+
+.no-description {
+    font-style: italic;
+    color: darkgrey;
 }

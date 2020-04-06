@@ -5,26 +5,16 @@
 {{/inline}}
 
 {{#*inline "content"}}
-<div class="sidebar">
-    {{!-- <div style="height: 300px; background-color: lightgreen;">
-                Small map goes here
-            </div> --}}
-    {{#if post.image_data}}
-    <img id="image" src="{{post.image_data}}"></img>
-    {{else}}
-    <p id="image_gone">No image available!</p>
-    {{/if}}
-    <p id="summary">
-        <b>{{post.statusFull}}</b> at <b>{{post.campusFull}}</b> <br>
-        {{post.location}} <br>
-        {{post_date post.lostDate}}
-    </p>
-    <br>
-</div>
-<div class="post">
+<div class="flex">
+<div class="two-third">
     <h2 id="title">{{post.title}}</h2>
     <hr>
-    <p id="details">{{post.description}}</p>
+    {{#if post.description}}
+        <p id="details" class="description">{{post.description}}</p>
+    {{else}}
+        <p id="details" class="no-description">No description provided</p>
+    {{/if}}
+    </p>
     <table id="misctable">
         <tr>
             <th>
@@ -92,5 +82,24 @@
     </form>
     {{/if}}
 </div>
+<div class="third sidebar">
+    {{!-- <div style="height: 300px; background-color: lightgreen;">
+                Small map goes here
+            </div> --}}
+    {{#if post.image_data}}
+    <center><img id="image" src="{{post.image_data}}"></img></center>
+    {{else}}
+    <div id="image_gone"><p>No image available!</p></div>
+    {{/if}}
+    <p id="summary">
+        <b>{{post.statusFull}}</b> at <b>{{post.campusFull}}</b> <br>
+        {{post.location}} <br>
+        {{post_date post.lostDate}}
+    </p>
+    <br>
+</div>
+
+</div>
+
 {{/inline}}
 {{/layout}}
