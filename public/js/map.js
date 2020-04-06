@@ -47,7 +47,7 @@ function panToMarker(key) {
     let p = allPostings[key];
     map.panTo(m.position);
     showPage("content-post");
-    var altpic = `https://picsum.photos/800`;
+    var altpic = `https://picsum.photos/420`;
     $('#post-img')[0].src="";
     if(p.imageID) {
         getImage(p.imageID);
