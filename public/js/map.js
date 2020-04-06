@@ -2,49 +2,42 @@ var globals = {
     currentUser: null,
 };
 
-// This is the minimum zoom level that we'll allow
-let minZoomLevel = 16;
+var map;
+let allMarkers = {};    // cache of (posting id) -> gmap marker
+let allPostings = {};   // cache of (posting id) -> posting
+var currentCampus;      // the campus the map is currently on
+var currentMarker;      // when the create form is open, set to the marker
+var pannedMarker;       // the marker of the posting that is currently being viewed
+var pannedKey;          // the key of the posting that is currently being viewed
 
-// Track markers
-let existing = {};
-let postings = {};
+//              currentMarker       pannedMarker        pannedKey   form                page
+// all posts:   null                null                null        ??                  all-posts
+// view posts:  null                something(blue)     something   ??                  content-post
+// create:      something(orange)   null                null        init(null)          content-form
+// edit:        null                something(orange)   something   init(currentMarker) content-form
+// edit,create,view posts -> all posts  are tracked in the "X" callback
+// all posts,view posts,edit -> create  are tracked in the map click callback
+// create,edit,all posts -> view        are tracked in the marker click callback
+// view post -> edit is in the edit button callback
+// all post -> edit is impossible
+// create -> edit is impossible
+// when changing currentMarker, must delete it if it exists
+// when changing pannedMarker, reset its logo first
 
-let testMarkers = [{id: 1, lat: 49.278871, lng: -122.916386, info: "Hello"},
-               {id: 2, lat: 49.279340, lng: -122.922866, info: "World"}]
-
-var currentMarker;
-var pannedMarker;
-var currentPosting;
-
-// Track current campus
-var currentCampus;
-
+function jsDateToDatetime(date) {
+    return moment(date).format('YYYY-MM-DDTHH:mm');
+}
 function showPage(id) {
+    // show the page
     for (let elem of $("#sidebar").children()) {
         $(elem).hide();
     }
     $(`#${id}`).show();
-
-    if (id != "content-form") {
-        if (currentMarker) {
-            currentMarker.setMap(null);
-        }
-    }
-
-    if (id == "content-form") {
-        $('#content-form')[0].reset();
-    }
-
-
-    if (pannedMarker) {
-        pannedMarker.setIcon(undefined);
-    }
 }
 
 function panToMarker(key) {
-    let m = existing[key];
-    let p = postings[key];
-    currentPosting = key
+    let m = allMarkers[key];
+    let p = allPostings[key];
     map.panTo(m.position);
     showPage("content-post");
     document.getElementById('post-title').innerHTML = p.title;
@@ -55,11 +48,19 @@ function panToMarker(key) {
     document.getElementById('post-link').href = "/viewpost?id="+p._id;
     $("#edit-button").toggle((globals.currentUser == p.postedBy) && (p.status != "returned"));
 
-    m.setIcon("/images/map-marker-blue.png");
+    if (currentMarker) {
+        currentMarker.setMap(null);
+    }
+    currentMarker = null;
+    if (pannedMarker) {
+        pannedMarker.setIcon(undefined);
+    }
     pannedMarker = m;
+    pannedKey = key;
+    pannedMarker.setIcon("/images/map-marker-blue.png");
 }
 
-async function getMarkers(n, s, w, e) {
+async function getPostingsAndCreateMarkers(n, s, w, e) {
     return new Promise((resolve, reject) => {
         var req = new XMLHttpRequest();
         req.onreadystatechange = function() {
@@ -70,7 +71,7 @@ async function getMarkers(n, s, w, e) {
                 for(var r in json) {
                     dict[json[r]._id] = json[r];
                 }
-                setMarkers(dict);
+                processPostings(dict);
                 resolve();
             }
         };
@@ -79,41 +80,33 @@ async function getMarkers(n, s, w, e) {
         var data = "n="+n+"&s="+s+"&w="+w+"&e="+e;
         req.send(data);
     });
+
+    function processPostings(server_postings) {
+        allPostings = server_postings;
+
+        for(let key in allMarkers) {
+            if(!(key in server_postings)) {
+                allMarkers[key].setMap(null);
+                delete allMarkers[key];
+            }
+        }
+        for(let key in server_postings) {
+            if(key in allMarkers) {
+                continue;
+            }
+            let pos = server_postings[key].coordinates.coordinates;
+            let m = new google.maps.Marker({
+                position: new google.maps.LatLng(pos[1], pos[0]),
+                map: map,
+            })
+            allMarkers[key] = m;
+
+            m.addListener('click', function() {
+                panToMarker(key);
+            })
+        }
+    };
 }
-
-function setMarkers(markers) {
-    postings = markers;
-
-    for(let key in existing) {
-        if(!(key in markers)) {
-            existing[key].setMap(null);
-            delete existing[key];
-        }
-    }
-    for(let key in markers) {
-        if(key in existing) {
-            continue;
-        }
-        let pos = markers[key].coordinates.coordinates;
-        let m = new google.maps.Marker({
-            position: new google.maps.LatLng(pos[1], pos[0]),
-            map: map,
-        })
-        existing[key] = m;
-
-        m.addListener('click', function() {
-            panToMarker(key);
-            // map.panTo(m.position);
-            // showPage("content-post");
-            // document.getElementById('post-title').innerHTML = markers[key].title;
-            // document.getElementById('post-status').innerHTML = "Status: " + markers[key].status;
-            // document.getElementById('post-item').innerHTML = "Item: " + markers[key].category;
-            // document.getElementById('post-date').innerHTML = markers[key].lostDate;
-            // document.getElementById('post-author').innerHTML = "Posted by: " + markers[key].postedBy;
-            // document.getElementById('post-link').href = "/viewpost?id="+markers[key]._id;
-        })
-    }
-};
 
 function initMap() {
     // GLOBALS
@@ -143,30 +136,6 @@ function initMap() {
             )
         }
     }
-
-    // SFU Burnaby
-    // burnabyMinZoom = 16;
-    // burnabyCenter = new google.maps.LatLng(49.2767988, -122.9169812);
-    // burnabyBounds = new google.maps.LatLngBounds(
-    //      new google.maps.LatLng(49.272003, -122.933773),  // South West
-    //      new google.maps.LatLng(49.282021, -122.902325)   // North East
-    // );
-
-    // // SFU Vancouver
-    // vancouverMinZoom = 18;
-    // vancouverCenter = new google.maps.LatLng(49.284526, -123.111648);
-    // vancouverBounds = new google.maps.LatLngBounds(
-    //      new google.maps.LatLng(49.284213, -123.113048),  // South West
-    //      new google.maps.LatLng(49.285356, -123.111055)   // North East
-    // );
-
-    // // SFU Surrey
-    // surreyMinZoom = 17.5
-    // surreyCenter = new google.maps.LatLng(49.18665,-122.8494658);
-    // surreyBounds = new google.maps.LatLngBounds(
-    //      new google.maps.LatLng(49.185315, -122.852098),  // South West
-    //      new google.maps.LatLng(49.190122, -122.845559)   // North East
-    // );
 
     map = new google.maps.Map(document.getElementById('map'), {
         disablePanMomentum: true,
@@ -220,53 +189,30 @@ function initMap() {
           map: map,
           icon: "images/map-marker-orange.png",
         });
+
+        if (pannedMarker) {
+            pannedMarker.setIcon(undefined);
+        }
+        pannedMarker = null;
+        pannedKey = null;
+        if (currentMarker) {
+            currentMarker.setMap(null);
+        }
         currentMarker = marker;
 
-        showPage("content-form");
+        $('#content-form')[0].reset();
         document.getElementById("campus").value = currentCampus;
         document.getElementById("lat").value = event.latLng.lat();
         document.getElementById("lng").value = event.latLng.lng();
-        //Set the attributes
-        // form.className = "selected";
-        // var allpost = document.getElementById("all-post");
-        // var contentpost = document.getElementById("content-post");
-        // allpost.className = "not-selected";
-        // contentpost.className = "not-selected";
-        var form = document.getElementById("content-form");
-        // form.onclick = function() {
-            // var overlay = document.getElementById('overlay')
-            // overlay.style.display = "block";
-            // overlay.style.left = document.getElementById('sidebar').offsetWidth + "px";
-            // overlay.style.width = document.getElementById('map').offsetWidth + "px";
-            // var f = function() {
-            //     overlay.style.display = "none";
-            //     overlay.removeEventListener("click", f);
-            //     marker.setMap(null);
-            //     showPage("all-post");
-            //     // form.className = "not-selected";
-            //     // allpost.className = "selected";
-            // }
-            // overlay.addEventListener("click", f);
-        //     form.onclick = function() {};
-        // };
-
-        marker.addListener('click', function() {
-            if(marker) {
-                marker.setMap(null);
-            }
-        });
-
-        var listener = map.addListener('click', function() {
-            marker.setMap(null);
-            google.maps.event.removeListener(listener);
-        });
-
-        // var overlay = document.getElementById('overlay');
-        // overlay.addEventListener("click", function() {
-        //     overlay.style.display = "none";
-        //     marker.setMap(null);
-        //     showPage("all-post");
-        // });
+        document.getElementById("timezone-offset").value = moment().format('ZZ');
+    
+        var snow = jsDateToDatetime(new Date());
+        var smin = jsDateToDatetime(new Date(2020, 0, 1));
+        document.getElementById("datetime").value = snow;
+        document.getElementById("datetime").max = snow;
+        document.getElementById("datetime").min = smin;
+        
+        showPage('content-form');
     });
 
     showCampus('burnaby');
@@ -287,68 +233,93 @@ async function showCampus(c) {
     var neBounds = bounds.getNorthEast();
     var swBounds = bounds.getSouthWest();
 
-    await getMarkers(neBounds.lat(), swBounds.lat(), swBounds.lng(), neBounds.lng());
+    await getPostingsAndCreateMarkers(neBounds.lat(), swBounds.lat(), swBounds.lng(), neBounds.lng());
 }
 
 function showBurnaby() {
-    // map.setOptions({center: burnabyCenter, zoom: burnabyMinZoom, minZoom: burnabyMinZoom, restriction: {latLngBounds: burnabyBounds, strictBounds: false}})
-    // map.setCenter(burnabyCenter);
-    // map.setZoom(burnabyMinZoom);
-    // campus = "burnaby";
     showCampus('burnaby');
 }
 
 function showVancouver() {
-    // map.setOptions({center: vancouverCenter, zoom: vancouverMinZoom, minZoom: vancouverMinZoom, restriction: {latLngBounds: vancouverBounds, strictBounds: false}})
-    // map.setCenter(vancouverCenter);
-    // map.setZoom(vancouverMinZoom);
-    // campus = "vancouver";
     showCampus('vancouver');
 }
 
 function showSurrey() {
-    // map.setOptions({center: surreyCenter, zoom: surreyMinZoom, minZoom: surreyMinZoom, restriction: {latLngBounds: surreyBounds, strictBounds: false}})
-    // map.setCenter(surreyCenter);
-    // map.setZoom(surreyMinZoom);
-    // campus = "surrey";
     showCampus('surrey');
 }
 
-$(document).ready(function() {
-    $.get(`/api/postings`, function(res) {
-        globals.currentUser = res.user;
+async function refreshPosting(postid) {
+    return new Promise((resolve, reject) => {
+        console.log(`getting ${postid}`);
+        $.get(`api/postings/${postid}`, function(data) {
+            allPostings[postid] = data;
+            console.log(data);
+            if (!(postid in allMarkers)) {
+                let m = new google.maps.Marker({
+                    position: new google.maps.LatLng(data.coordinates.coordinates[1], data.coordinates.coordinates[0]),
+                    map: map,
+                });
+                allMarkers[postid] = m;
+            }
+            console.log(allMarkers[postid], allPostings[postid]);
+            resolve();
+        });
     });
+}
 
+$(document).ready(function() {
+    /* setup callbacks */
     $(".cancel-button").on('click', function(e) {
         showPage("all-post");
+        if (currentMarker) {
+            currentMarker.setMap(null);
+        }
+        currentMarker = null;
+        if (pannedMarker) {
+            pannedMarker.setIcon(undefined);
+        }
+        pannedMarker = null;
+        pannedKey = null;
     });
 
     $(".edit-button").on('click', function(e) {
-        var post = postings[currentPosting];
-        showPage("content-form");
-        document.getElementById("campus").value = currentCampus;
+        $('#content-form')[0].reset();
+
+        pannedMarker.setIcon("images/map-marker-orange.png");
+
+        var post = allPostings[pannedKey];
+        document.getElementById("campus").value = post.campus;
         document.getElementById("lng").value = post.coordinates.coordinates[0];
         document.getElementById("lat").value = post.coordinates.coordinates[1];
-        document.getElementById("postid").value = currentPosting;
+        document.getElementById("postid").value = pannedKey;
         document.getElementById("title").value = post.title;
         document.getElementById("location").value = post.location;
         document.getElementById("detail").value = post.description;
         document.getElementById("item").value = post.category;
-
-        var lostdate = moment(post.lostDate);
-        document.getElementById("date").value = lostdate.format('YYYY-MM-DD');
-        document.getElementById("time").value = lostdate.format('hh:mm');
+    
+        document.getElementById("datetime").value = jsDateToDatetime(new Date(post.lostDate));
+        document.getElementById("datetime").max = jsDateToDatetime(new Date());
         document.getElementById("timezone-offset").value = moment().format('ZZ');
-
-        e.stopPropagation();    // otherwise it'll propagate to the form and show the overlay
+        
+        showPage("content-form");
     });
 
     $("#submit-btn").on('click', function(e) {
-        $.post("api/postings", $('#content-form').serialize(), function(data) {
-            showPage("all-post");
+        var form = $('#content-form');
+        if (form[0].checkValidity() === false) {
+            return;
+        }
+
+        $.post("api/postings", form.serialize(), function(postid) {
+            refreshPosting(postid).then(() => {
+                panToMarker(postid);
+                startPagination({}, getPostsPerPage());
+            });
         });
-        showCampus(currentCampus);
-        panToMarker(currentPosting);
-        startPagination({}, getPostsPerPage());
+    });
+
+    /* get current user */
+    $.get(`/api/postings`, function(res) {
+        globals.currentUser = res.user;
     });
 });

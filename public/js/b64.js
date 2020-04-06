@@ -81,20 +81,48 @@ Below is code written by us (the students)
 function labelImage(data) {
     'use strict';
     let req = new XMLHttpRequest();
+
+    let tags = document.getElementById("mltags");
+    function clearLabels() {
+        tags.textContent = '';
+    }
+
+    function addLabel(label) {
+        var option = document.createElement("option");
+        option.value = label.description;
+        tags.appendChild(option);
+    }
+
+    function createButton(label) {
+        let i = document.createElement('input');
+        i.type = 'checkbox';
+        i.onclick = function() {
+            for (let opt of tags.options) {
+                console.log(opt, opt.value, label.description);
+                if (opt.value == label.description) {
+                    opt.selected = i.checked;
+                    break;
+                }
+            }
+            console.log(label.description, i.checked);
+        }
+        
+        let s = document.createElement('span');
+        s.classList.add('button', 'toggle', 'pseudo', 'smalllabel');
+        s.innerText = label.description;
+
+        let l = document.createElement('label');
+        l.append(i, s);
+        return l;
+    }
+
     function reqListener(e) {
         let span = document.getElementById('labelres');
         span.textContent = '';
+        clearLabels();
         req.response.labels.concat(req.response.logos).forEach(label => {
-            let i = document.createElement('input');
-            let s = document.createElement('span');
-            let l = document.createElement('label');
-            i.type = 'checkbox';
-            i.value = label.description;
-            i.name = 'tag';
-            s.classList.add('toggle', 'pseudo', 'button', 'smalllabel');
-            s.innerText = label.description;
-            l.append(i, s);
-            span.append(l);
+            addLabel(label);
+            span.append(createButton(label));
         });
         span.hidden = false;
     }

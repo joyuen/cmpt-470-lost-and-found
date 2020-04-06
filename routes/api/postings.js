@@ -217,8 +217,7 @@ router.put('/:id', mongoSanitizeBody, multer_image.single('image'), [
  * GET api/postings/:id - get a certain posting
  */
 router.get('/:id', async function(req, res) {
-    req.params.id= req.params.id.slice(1,);
-    // req.params.id = req.params.id.toString();
+    req.params.id = req.params.id.toString();
     var postid = req.params.id;
     try {
         var posting = await Postings.getPostingById(postid);
@@ -253,8 +252,7 @@ router.post('/', mongoSanitizeBody, multer_image.single('image'), [
     // date, time, and timezone-offset will all be checked below
     check('date').customSanitizer((date, {req}) => {
         // hopefully this is safe
-        var parsed_date = moment(`${date} ${req.body.time}`).utcOffset(req.body["timezone-offset"]).toDate();
-        delete req.body.time;
+        var parsed_date = moment(`${date}`).utcOffset(req.body["timezone-offset"]).toDate();
         delete req.body["timezone-offset"];
         return parsed_date;
     }),

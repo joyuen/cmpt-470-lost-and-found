@@ -1,7 +1,11 @@
 <div id="b64encoder">
+  <select id="mltags" name="tags" hidden multiple></select>
+
+  <h6 class="full">Using Machine Learning we identified some tags. Select all that apply:</h6>
   <span id="labelres" class="flex two center grow" hidden>
-    <h6 class="full">Using Machine Learning we identified some tags. Select all that apply:</h6>
+    {{!-- buttons are created here --}}
   </span>
+
   <div class="file has-name">
     <label class="file-label">
       <input class="file-input" type="file" name="resume">
