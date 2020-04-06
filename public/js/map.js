@@ -47,6 +47,15 @@ function panToMarker(key) {
     let p = allPostings[key];
     map.panTo(m.position);
     showPage("content-post");
+    var altpic = `https://picsum.photos/800`;
+    $('#post-img')[0].src="";
+    if(p.imageID) {
+        $('#post-img')[0].src=window.location.host + "/image/"+p.imageID;
+    }
+    else {
+        $('#post-img')[0].src=altpic+"?"+Math.random();
+    }
+    document.getElementById('post-title').innerHTML = p.title;
     document.getElementById('post-title').innerHTML = p.title;
     document.getElementById('post-status').innerHTML = "Status: " + p.status;
     document.getElementById('post-item').innerHTML = "Item: " + p.category;
