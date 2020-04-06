@@ -50,7 +50,7 @@ function panToMarker(key) {
     var altpic = `https://picsum.photos/800`;
     $('#post-img')[0].src="";
     if(p.imageID) {
-        $('#post-img')[0].src="http://"+window.location.host + "/api/image/"+p.imageID;
+        getImage(p.imageID);
     }
     else {
         $('#post-img')[0].src=altpic+"?"+Math.random();
@@ -312,6 +312,16 @@ async function refreshPosting(postid) {
                 allMarkers[postid] = m;
             }
             console.log(allMarkers[postid], allPostings[postid]);
+            resolve();
+        });
+    });
+}
+
+async function getImage(imageID) {
+    return new Promise((resolve, reject) => {
+        $.get(`api/image/${imageID}`, function(data) {
+            console.log(data);
+            $('#post-img')[0].src=data;
             resolve();
         });
     });
