@@ -77,7 +77,7 @@ const posting_schema = new mongoose.Schema({
 });
 
 // Create indexes
-posting_schema.index({ title: "text", category: "text", description: "text"}, {name: "keyword_index"});
+posting_schema.index({ title: "text", category: "text", description: "text", tags: "text"}, {name: "keyword_index"});
 
 // Custom validators
 posting_schema.path('lostDate').validate(function (v) {

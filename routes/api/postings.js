@@ -246,6 +246,8 @@ router.post('/', mongoSanitizeBody, multer_image.single('image'), [
         var parsed_date = moment(`${date}`).utcOffset(req.body["timezone-offset"]).toDate();
         delete req.body["timezone-offset"];
         return parsed_date;
+    }).custom(date => {
+        return (new Date(2020, 0, 1) <= date) && (date <= new Date());
     }),
     check('campus').isString().isIn(['burnaby', 'surrey', 'vancouver']),
     check('location').isString().isLength({max: 256}),

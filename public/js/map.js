@@ -26,6 +26,11 @@ var heatmapLocations;
 // when changing currentMarker, must delete it if it exists
 // when changing pannedMarker, reset its logo first
 
+function resetForm() {
+    $('#content-form')[0].reset();
+    resetImage();
+}
+
 function jsDateToDatetime(date) {
     return moment(date).format('YYYY-MM-DDTHH:mm');
 }
@@ -209,7 +214,7 @@ function initMap() {
         currentMarker = marker;
 
         if($("#postid")[0].value) {
-            $('#content-form')[0].reset();
+            resetForm();
             $('#postid')[0].value = '';
         }
 
@@ -333,12 +338,12 @@ $(document).ready(function() {
         }
         pannedMarker = null;
         pannedKey = null;
-        $('#content-form')[0].reset();
+        resetForm();
         $('#postid')[0].value = '';
     });
 
     $(".edit-button").on('click', function(e) {
-        $('#content-form')[0].reset();
+        resetForm();
 
         pannedMarker.setIcon("images/map-marker-orange.png");
 
@@ -355,6 +360,7 @@ $(document).ready(function() {
     
         document.getElementById("datetime").value = jsDateToDatetime(new Date(post.lostDate));
         document.getElementById("datetime").max = jsDateToDatetime(new Date());
+        document.getElementById("datetime").min = jsDateToDatetime(new Date(2020, 0, 1));
         document.getElementById("timezone-offset").value = moment().format('ZZ');
         
         showPage("content-form");
@@ -363,6 +369,7 @@ $(document).ready(function() {
     $("#submit-btn").on('click', function(e) {
         var form = $('#content-form');
         if (form[0].checkValidity() === false) {
+            form[0].reportValidity();
             return;
         }
 
@@ -370,7 +377,7 @@ $(document).ready(function() {
             refreshPosting(postid).then(() => {
                 panToMarker(postid);
                 startPagination({}, getPostsPerPage());
-                $('#content-form')[0].reset();
+                resetForm();
                 $('#postid')[0].value = '';
             });
         });

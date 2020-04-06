@@ -14,17 +14,21 @@ const $images = ['gif', 'jpg', 'jpeg', 'png', 'bmp'];
 
 var b64 =
 {
+    reset: function() {
+        $('#b64result').hide();
+        $('#b64image').val('');
+        $('#b64name, #b64error').text('');
+        $('#b64errorbox').hide();
+        $('#b64reset').attr('hidden', true);
+    },
     init: function () {
-        $('#b64reset').click(function () {
-            $('#b64result').hide();
-            $('#b64image').val('');
-        });
+        $('#b64reset').click(this.reset);
         this.b64ImageEncoder();
     },
     b64ImageEncoder: function () {
         var $select = $('#b64encoder input[type="file"]');
         $select.on('change', function (event) {
-            $('.b64name, #b64error').text('');
+            $('#b64name, #b64error').text('');
             $('#b64errorbox').hide();
 
             var $file = event.target.files[0],
@@ -98,13 +102,11 @@ function labelImage(data) {
         i.type = 'checkbox';
         i.onclick = function() {
             for (let opt of tags.options) {
-                console.log(opt, opt.value, label.description);
                 if (opt.value == label.description) {
                     opt.selected = i.checked;
                     break;
                 }
             }
-            console.log(label.description, i.checked);
         }
         
         let s = document.createElement('span');
@@ -132,4 +134,12 @@ function labelImage(data) {
     req.open('POST', '/api/vision', true);
     req.setRequestHeader("Content-Type", "text/plain");
     req.send(data);
+}
+
+function resetImage() {
+    let span = document.getElementById('labelres');
+    span.textContent = '';
+    let tags = document.getElementById("mltags");
+    tags.textContent = '';
+    b64.reset();
 }
