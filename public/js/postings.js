@@ -1,17 +1,19 @@
 function renderPosts(postings) {
     var x = ejs.render(`
-        <table>
-        <tbody>
+        <div class="flex">
         <% for(var i=0; i<postings.length; i++) { %>
-            <tr class="posting <%= postings[i].status %> flex">
-                <td><%= postings[i].statusFull %></td>
-                <td><a class='postings-link' href='#<%= postings[i].id %>'><%= postings[i].title %></a></td>
-                <td><%= postings[i].campusFull %></td>
-                <td title="<%= new Date(postings[i].lostDate) %>"><%= moment.duration(new Date(postings[i].lostDate) - now, 'milliseconds').humanize(true); %></td>
-            </tr>
+            <div class="posting <%= postings[i].status %>">
+                <p class="posting-left">
+                    <span style="font-size: 20px;"><%= postings[i].statusFull %></span><br>
+                    <span style="font-size: 12px;"><%= postings[i].campusFull %></span>
+                </p>
+                <p class="posting-right" style="margin-top: 2px;">
+                    <a class='postings-link' href='#<%= postings[i].id %>'><%= postings[i].title %></a><br>
+                    <span style="font-size: 12px"><span title="<%= new Date(postings[i].lostDate) %>"><%= moment.duration(new Date(postings[i].lostDate) - now, 'milliseconds').humanize(true); %></span></span>
+                </p>
+            </div>
         <% } %>
-        </tbody>
-        </table>
+        </div>
     `, { 'postings': postings, 'now': new Date() });
     document.getElementById('postings').innerHTML = x;
 

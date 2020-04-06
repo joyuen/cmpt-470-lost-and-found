@@ -157,7 +157,7 @@ posting_schema.statics.getPostingById = async function(posting_id) {
  *  @returns cursor to iterate through all postings within coordinates
  */
 posting_schema.statics.getPostingsWithin = async function(n,s,w,e) {
-    var query = Postings.find({coordinates:{$geoWithin:{$box:[[w,s],[e,n]]}}},{imageID:0, creationDate:0, __v:0});
+    var query = Postings.find({coordinates:{$geoWithin:{$box:[[w,s],[e,n]]}}},{creationDate:0, __v:0});
     return query.exec();
 };
 

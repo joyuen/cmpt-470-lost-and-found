@@ -47,10 +47,19 @@ function panToMarker(key) {
     let p = allPostings[key];
     map.panTo(m.position);
     showPage("content-post");
+    var altpic = `https://picsum.photos/800`;
+    $('#post-img')[0].src="";
+    if(p.imageID) {
+        $('#post-img')[0].src="http://"+window.location.host + "/api/image/"+p.imageID;
+    }
+    else {
+        $('#post-img')[0].src=altpic+"?"+Math.random();
+    }
+    document.getElementById('post-title').innerHTML = p.title;
     document.getElementById('post-title').innerHTML = p.title;
     document.getElementById('post-status').innerHTML = "Status: " + p.status;
     document.getElementById('post-item').innerHTML = "Item: " + p.category;
-    document.getElementById('post-date').innerHTML = p.lostDate;
+    document.getElementById('post-date').innerHTML = moment(new Date(p.lostDate), "LL");
     document.getElementById('post-author').innerHTML = "Posted by: " + p.postedBy;
     document.getElementById('post-link').href = "/viewpost?id="+p._id;
     $("#edit-button").toggle((globals.currentUser == p.postedBy) && (p.status != "returned"));
@@ -85,6 +94,12 @@ async function getPostingsAndCreateMarkers(n, s, w, e) {
                     }
                 }
                 processPostings(dict);
+                if($("#heatmap")[0].checked) {
+                    if(heatmap) {
+                        heatmap.setMap(null);
+                    }
+                    toggleHeatmap();
+                }
                 resolve();
             }
         };
@@ -223,7 +238,7 @@ function initMap() {
         document.getElementById("lat").value = event.latLng.lat();
         document.getElementById("lng").value = event.latLng.lng();
         document.getElementById("timezone-offset").value = moment().format('ZZ');
-    
+
         var snow = jsDateToDatetime(new Date());
         var smin = jsDateToDatetime(new Date(2020, 0, 1));
         document.getElementById("datetime").value = snow;
@@ -264,12 +279,6 @@ async function showCampus(c) {
     var swBounds = bounds.getSouthWest();
 
     await getPostingsAndCreateMarkers(neBounds.lat(), swBounds.lat(), swBounds.lng(), neBounds.lng());
-    if($("#heatmap")[0].checked) {
-        if(heatmap) {
-            heatmap.setMap(null);
-        }
-        toggleHeatmap();
-    }
 }
 
 function showBurnaby() {
@@ -296,6 +305,10 @@ async function refreshPosting(postid) {
                     position: new google.maps.LatLng(data.coordinates.coordinates[1], data.coordinates.coordinates[0]),
                     map: map,
                 });
+
+                m.addListener('click', function() {
+                    panToMarker(postid);
+                })
                 allMarkers[postid] = m;
             }
             console.log(allMarkers[postid], allPostings[postid]);
@@ -319,13 +332,11 @@ function toggleHeatmap() {
     }
 }
 
-function init(){
+function init() {
     $.get(`/api/postings`, function(res) {
         globals.currentUser = res.user;
     });
-}
 
-$(document).ready(function() {
     /* setup callbacks */
     $(".cancel-button").on('click', function(e) {
         showPage("all-post");
@@ -357,12 +368,12 @@ $(document).ready(function() {
         document.getElementById("location").value = post.location;
         document.getElementById("detail").value = post.description;
         document.getElementById("item").value = post.category;
-    
+
         document.getElementById("datetime").value = jsDateToDatetime(new Date(post.lostDate));
         document.getElementById("datetime").max = jsDateToDatetime(new Date());
         document.getElementById("datetime").min = jsDateToDatetime(new Date(2020, 0, 1));
         document.getElementById("timezone-offset").value = moment().format('ZZ');
-        
+
         showPage("content-form");
     });
 
@@ -394,4 +405,4 @@ $(document).ready(function() {
     });
 
     $("#heatmap").on('click',toggleHeatmap);
-});
+};
