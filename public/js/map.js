@@ -305,7 +305,7 @@ async function refreshPosting(postid) {
                     position: new google.maps.LatLng(data.coordinates.coordinates[1], data.coordinates.coordinates[0]),
                     map: map,
                 });
-
+                heatmapLocations.push(m.position);
                 m.addListener('click', function() {
                     panToMarker(postid);
                 })
@@ -330,6 +330,9 @@ async function getImage(imageID) {
 function toggleHeatmap() {
     var heatmapElement = $('#heatmap')[0]
     if(heatmapElement.checked) {
+        if(heatmap) {
+            heatmap.setMap(null);
+        }
         heatmap = new google.maps.visualization.HeatmapLayer({
           data: heatmapLocations,
           radius: 50,
@@ -397,6 +400,7 @@ function init() {
         $.post("api/postings", form.serialize(), function(postid) {
             refreshPosting(postid).then(() => {
                 panToMarker(postid);
+                toggleHeatmap();
                 startPagination({}, getPostsPerPage());
                 resetForm();
                 $('#postid')[0].value = '';
