@@ -289,6 +289,7 @@ function initMap() {
 
     showCampus('burnaby');
     init();
+    initPostings();
 }
 
 async function showCampus(c) {

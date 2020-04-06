@@ -187,9 +187,9 @@ function initSearch() {
     $('#pageRight').on('click', nextPage);
 }
 
-$(document).ready(function () {
+function initPostings() {
     initAdvButtons();
     initDatePicker();
     initSearch();
     startPagination({}, getPostsPerPage());        // by default, search with no params
-});
+};
