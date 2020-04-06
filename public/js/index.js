@@ -24,12 +24,14 @@ function removeAllNotif() {
 
 function createNotifElement(notif) {
     return ejs.render(`
+      <div class="padding-div">
       <div class="card notif" style="position: relative;">
         <p class="notif-message"><%- notif.message %></p>
         <p class="notif-sent">
           <%= humanizeRelative(now, new Date(notif.sent)) %>
           <button class="pseudo notif-remove" onclick="removeNotif('<%= notif._id %>', this);">Remove</button>
         </p>
+      </div>
       </div>
     `, { 'notif': notif, 'now': new Date() });
 }

@@ -15,6 +15,14 @@
   bottom: 7px;
 }
 
+.padding-div {
+  padding: 0px 2.5px;
+}
+
+.notif {
+  margin-bottom: 5px;
+}
+
 .notif-message {
   font-size: 14px;
 }
