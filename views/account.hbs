@@ -3,22 +3,24 @@
 <link rel="stylesheet" href="/css/account.css">
 {{/inline}}
 {{#*inline "content"}}
-<form method="POST" class="half">
-  <label class="stack">Username
-    <input type="text" value="{{user.id}}" disabled />
-  </label>
-  <label class="stack">Email
-    <input type="text" value="{{user.email}}" disabled />
-  </label>
-  <label class="stack">Display Name
-    <input type="text" name="name" id="name" value="{{user.name}}" />
-  </label>
-  <label class="stack">Phone Number (Optional)
-    <input type="tel" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" value="{{user.phone}}">
-    <span class="validity"></span>
-    <small>Format: 123-456-7890</small>
-  </label>
-  <button type="submit" class="stack">Save</button>
-</form>
+<section>
+  <form method="POST" class="flex one center" id="account-form">
+    <label>Username
+      <input type="text" value="{{user.id}}" disabled />
+    </label>
+    <label>Email
+      <input type="text" value="{{user.email}}" disabled />
+    </label>
+    <label>Display Name
+      <input type="text" name="name" id="name" value="{{user.name}}" />
+    </label>
+    <label>Phone Number (Optional)
+      <input type="tel" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" value="{{user.phone}}">
+      <span class="validity"></span>
+      <small>Format: 123-456-7890</small>
+    </label>
+    <button type="submit" id="save">Save</button>
+  </form>
+</section>
 {{/inline}}
 {{/layout}}

@@ -19,11 +19,10 @@ input:valid+span:after {
   color: #009000;
 }
 
-#sudo {
-  font-style: italic;
-  font-weight: bolder;
+#account-form {
+  padding: 4% 20%;
 }
 
-section {
-  max-height: min-content;
+#save {
+  margin: 0% 30%;
 }
