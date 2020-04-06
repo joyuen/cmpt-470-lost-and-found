@@ -16,6 +16,9 @@ var currentMarker;
 var pannedMarker;
 var currentPosting;
 
+var heatmap;
+var heatmapLocations;
+
 // Track current campus
 var currentCampus;
 
@@ -32,7 +35,9 @@ function showPage(id) {
     }
 
     if (id == "content-form") {
-        $('#content-form')[0].reset();
+        // Don't clear form since user might move location
+        // Now cleared after submitting
+        // $('#content-form')[0].reset();
     }
 
 
@@ -60,6 +65,7 @@ function panToMarker(key) {
 }
 
 async function getMarkers(n, s, w, e) {
+    heatmapLocations = [];
     return new Promise((resolve, reject) => {
         var req = new XMLHttpRequest();
         req.onreadystatechange = function() {
@@ -69,6 +75,11 @@ async function getMarkers(n, s, w, e) {
                 dict = {}
                 for(var r in json) {
                     dict[json[r]._id] = json[r];
+                    if(json[r].status == "stolen") {
+                        var pos = json[r].coordinates.coordinates;
+                        var latlng = new google.maps.LatLng(pos[1], pos[0]);
+                        heatmapLocations.push(latlng);
+                    }
                 }
                 setMarkers(dict);
                 resolve();
@@ -94,9 +105,10 @@ function setMarkers(markers) {
         if(key in existing) {
             continue;
         }
-        let pos = markers[key].coordinates.coordinates;
+        var pos = markers[key].coordinates.coordinates;
+        var latlng = new google.maps.LatLng(pos[1], pos[0]);
         let m = new google.maps.Marker({
-            position: new google.maps.LatLng(pos[1], pos[0]),
+            position: latlng,
             map: map,
         })
         existing[key] = m;
@@ -222,6 +234,11 @@ function initMap() {
         });
         currentMarker = marker;
 
+        if($("#postid")[0].value) {
+            $('#content-form')[0].reset();
+            $('#postid')[0].value = '';
+        }
+
         showPage("content-form");
         document.getElementById("campus").value = currentCampus;
         document.getElementById("lat").value = event.latLng.lat();
@@ -253,6 +270,7 @@ function initMap() {
         marker.addListener('click', function() {
             if(marker) {
                 marker.setMap(null);
+                showPage("all-post");
             }
         });
 
@@ -270,6 +288,8 @@ function initMap() {
     });
 
     showCampus('burnaby');
+    init();
+    initPostings();
 }
 
 async function showCampus(c) {
@@ -288,6 +308,12 @@ async function showCampus(c) {
     var swBounds = bounds.getSouthWest();
 
     await getMarkers(neBounds.lat(), swBounds.lat(), swBounds.lng(), neBounds.lng());
+    if($("#heatmap")[0].checked) {
+        if(heatmap) {
+            heatmap.setMap(null);
+        }
+        toggleHeatmap();
+    }
 }
 
 function showBurnaby() {
@@ -314,13 +340,30 @@ function showSurrey() {
     showCampus('surrey');
 }
 
-$(document).ready(function() {
+function toggleHeatmap() {
+    var heatmapElement = $('#heatmap')[0]
+    if(heatmapElement.checked) {
+        heatmap = new google.maps.visualization.HeatmapLayer({
+          data: heatmapLocations,
+          radius: 50,
+          opacity: 0.3,
+        });
+        heatmap.setMap(map);
+    }
+    else {
+        heatmap.setMap(null);
+    }
+}
+
+function init(){
     $.get(`/api/postings`, function(res) {
         globals.currentUser = res.user;
     });
 
     $(".cancel-button").on('click', function(e) {
         showPage("all-post");
+        $('#content-form')[0].reset();
+        $('#postid')[0].value = '';
     });
 
     $(".edit-button").on('click', function(e) {
@@ -331,6 +374,7 @@ $(document).ready(function() {
         document.getElementById("lat").value = post.coordinates.coordinates[1];
         document.getElementById("postid").value = currentPosting;
         document.getElementById("title").value = post.title;
+        document.getElementById(post.status).checked = true;
         document.getElementById("location").value = post.location;
         document.getElementById("detail").value = post.description;
         document.getElementById("item").value = post.category;
@@ -346,9 +390,14 @@ $(document).ready(function() {
     $("#submit-btn").on('click', function(e) {
         $.post("api/postings", $('#content-form').serialize(), function(data) {
             showPage("all-post");
+            currentPosting = data;
+            showCampus(currentCampus);
+            map.panTo(existing[currentPosting].position);
+            startPagination({}, getPostsPerPage());
+            $('#content-form')[0].reset();
+            $('#postid')[0].value = '';
         });
-        showCampus(currentCampus);
-        panToMarker(currentPosting);
-        startPagination({}, getPostsPerPage());
     });
-});
+
+    $("#heatmap").on('click',toggleHeatmap);
+};
