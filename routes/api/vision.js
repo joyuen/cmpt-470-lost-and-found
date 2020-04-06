@@ -18,7 +18,7 @@ const options = {
 }
 const client = new vision.ImageAnnotatorClient(options);
 
-router.post('/', express.text({ type: '*/*' }), async function (req, res) {
+router.post('/', express.text({ type: '*/*', limit: '50mb' }), async function (req, res) {
     let buff = new Buffer(req.body, 'base64');
     let request = {
         image: buff,
