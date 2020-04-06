@@ -30,3 +30,7 @@ hbs.registerHelper("post_date", function(date) {
 hbs.registerHelper('ifEquals', function(arg1, arg2, options) {
     return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
 });
+
+hbs.registerHelper('commaList', function(arr) {
+    return arr.join(', ');
+});

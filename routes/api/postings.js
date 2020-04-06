@@ -246,6 +246,8 @@ router.post('/', mongoSanitizeBody, multer_image.single('image'), [
         var parsed_date = moment(`${date}`).utcOffset(req.body["timezone-offset"]).toDate();
         delete req.body["timezone-offset"];
         return parsed_date;
+    }).custom(date => {
+        return (new Date(2020, 0, 1) <= date) && (date <= new Date());
     }),
     check('campus').isString().isIn(['burnaby', 'surrey', 'vancouver']),
     check('location').isString().isLength({max: 256}),
@@ -331,7 +333,7 @@ router.post('/', mongoSanitizeBody, multer_image.single('image'), [
         if (req.body.b64image) {
             new_post_entries.imageID = await Images.saveImageFromB64(req.body.b64image);
         }
-        if (req.body.tags) {
+        if (req.body.tags && /* temp fix so editing doesn't wipe the tags, replace with something proper */ req.body.tags != []) {
             new_post_entries.tags = req.body.tags;
         }
 
