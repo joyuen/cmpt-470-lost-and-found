@@ -26,7 +26,6 @@ main {
     color: #303030;
 }
 
-
 #sidebar {
     height: 100%;
     text-align: left;
@@ -37,6 +36,7 @@ main {
     position: absolute;
     right: 10px;
     top: 0px;
+}
 
 /* .title-container {
     font-size: 30px;
