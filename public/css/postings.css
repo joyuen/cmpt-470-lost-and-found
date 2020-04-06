@@ -19,27 +19,28 @@ tr.posting:first-child {
 /* .posting {
     height: 2em;
 } */
-.lost {
+tr.lost {
     background-color: thistle;
 }
-.stolen {
+tr.stolen {
     background-color: lightpink;
 }
-.found {
+tr.found {
     background-color: lightblue;
 }
-.returned {
+tr.returned {
   background-color: lightgreen;
 }
 
 /* add 5px padding to .posting */
-/* .posting td:first-child {
+.posting td:first-child {
     padding-left: 5px;
 }
 .posting td:last-child {
     padding-right: 5px;
 }
 
+/*
 .posting td:nth-child(1) {
   width: 100px;
   text-align: center;
@@ -71,7 +72,7 @@ tr.posting:first-child {
 
 #advancedOptions {
     display: grid;
-    grid-template-columns: 125px 375px;
+    grid-template-columns: 20% 50%;
     column-gap: 10px;
     margin: 10px;
     align-items: center;
