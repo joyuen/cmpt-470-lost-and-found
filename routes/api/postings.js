@@ -298,8 +298,12 @@ router.post('/', mongoSanitizeBody, multer_image.single('image'), [
                 type: "Point",
                 coordinates: [req.body.lng, req.body.lat],
             },
+            tags: [],
         };
         new_post.imageID = await processImage(req.file);
+        if (req.body.tags) {
+            new_post.tags = req.body.tags;
+        }
 
         var id = await Postings.addPosting(new_post);
         return res.json(id);
@@ -333,6 +337,9 @@ router.post('/', mongoSanitizeBody, multer_image.single('image'), [
         };
         if (req.file) {
             new_post_entries.imageID = await processImage(req.file);
+        }
+        if (req.body.tags) {
+            new_post_entries.tags = req.body.tags;
         }
 
         // don't update any empty keys
