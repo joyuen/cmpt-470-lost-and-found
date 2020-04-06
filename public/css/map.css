@@ -33,6 +33,11 @@ main {
     overflow: scroll;
 }
 
+.cancel-button {
+    position: absolute;
+    right: 10px;
+    top: 0px;
+
 /* .title-container {
     font-size: 30px;
     text-align: left;
