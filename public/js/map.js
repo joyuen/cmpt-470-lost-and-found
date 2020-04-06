@@ -50,7 +50,7 @@ function panToMarker(key) {
     var altpic = `https://picsum.photos/800`;
     $('#post-img')[0].src="";
     if(p.imageID) {
-        $('#post-img')[0].src=window.location.host + "/image/"+p.imageID;
+        $('#post-img')[0].src="http://"+window.location.host + "/api/image/"+p.imageID;
     }
     else {
         $('#post-img')[0].src=altpic+"?"+Math.random();
